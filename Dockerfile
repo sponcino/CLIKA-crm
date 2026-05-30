@@ -1,11 +1,9 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
-
-FROM base AS builder
 RUN npm ci
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:20-alpine AS runner
@@ -15,5 +13,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 EXPOSE 3000
 CMD ["node", "server.js"]
