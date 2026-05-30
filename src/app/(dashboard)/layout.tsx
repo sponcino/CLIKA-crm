@@ -3,6 +3,7 @@ import { auth, signOut } from "@/auth";
 import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SidebarNav } from "@/components/SidebarNav";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -54,8 +55,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Bar (Height 48px = h-12) */}
         <header className="h-12 flex-shrink-0 bg-darkBg border-b border-[#ffffff10] flex items-center justify-between px-4">
-          <div className="text-xs font-semibold text-gray-400">
-            Workspace: <span className="text-white">Demo Workspace</span>
+          <div className="flex items-center gap-4">
+            <GlobalSearch />
+            <div className="text-xs font-semibold text-gray-400">
+              Workspace: <span className="text-white">Demo Workspace</span>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">

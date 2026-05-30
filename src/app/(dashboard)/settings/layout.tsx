@@ -7,6 +7,7 @@ const settingsNav = [
   { name: "Webhooks", href: "/settings/webhooks" },
   { name: "Agente IA", href: "/settings/ai-agent" },
   { name: "Disponibilidad", href: "/settings/availability" },
+  { name: "Resp. Rápidas", href: "/settings/quick-replies" },
 ];
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

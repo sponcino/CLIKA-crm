@@ -10,9 +10,12 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Search, Send, AlertTriangle, MessageSquare } from "lucide-react"
+import { Search, Send, AlertTriangle, MessageSquare, Bot } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
+import { ConversationLabels } from "./ConversationLabels"
+import { ConversationNotes } from "./ConversationNotes"
+import { ConversationSnooze } from "./ConversationSnooze"
 
 export default function InboxPage() {
   const { data: session } = useSession()
@@ -83,6 +86,22 @@ export default function InboxPage() {
     onSuccess: () => {
       setText("")
       queryClient.invalidateQueries({ queryKey: ['conversation', activeConversationId] })
+    }
+  })
+
+  const toggleAiMutation = useMutation({
+    mutationFn: async (aiEnabled: boolean) => {
+      const res = await fetch(`/api/conversations/${activeConversationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aiEnabled })
+      })
+      if (!res.ok) throw new Error("Failed to toggle AI")
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversation', activeConversationId] })
+      queryClient.invalidateQueries({ queryKey: ['conversations', workspaceId] })
     }
   })
 
@@ -166,19 +185,29 @@ export default function InboxPage() {
                 <div>
                   <h3 className="font-semibold text-white leading-none">{activeConversation.contact.whatsappName || activeConversation.contact.whatsappPhone}</h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    {activeConversation.aiActive ? (
-                      <span className="text-xs text-[#6366f1] font-semibold flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#6366f1] animate-pulse" /> IA Activa
-                      </span>
-                    ) : (
-                      <span className="text-xs text-amber-500 font-semibold flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" /> Humano
-                      </span>
-                    )}
+                    <button
+                      onClick={() => toggleAiMutation.mutate(!activeConversation.aiActive)}
+                      disabled={toggleAiMutation.isPending}
+                      className={`text-xs font-semibold flex items-center gap-1 px-1.5 py-0.5 rounded-sm transition-all border ${
+                        activeConversation.aiActive 
+                          ? 'bg-[#6366f1]/10 text-[#6366f1] border-[#6366f1]/20 hover:bg-[#6366f1]/20' 
+                          : 'bg-gray-500/10 text-gray-400 border-gray-500/20 hover:bg-gray-500/20'
+                      }`}
+                    >
+                      <Bot className="h-3 w-3" />
+                      {activeConversation.aiActive ? 'Bot activo' : 'Bot pausado'}
+                    </button>
                   </div>
                 </div>
               </div>
               <div className="flex gap-2">
+                {workspaceId && (
+                  <ConversationSnooze 
+                    conversationId={activeConversation.id} 
+                    workspaceId={workspaceId}
+                    snoozedUntil={activeConversation.snoozedUntil}
+                  />
+                )}
                 <Button variant="outline" size="sm" className="h-7 px-3 text-xs bg-transparent border-[#ffffff15] text-gray-300 hover:bg-white/5 hover:text-white rounded-md">
                   Cerrar
                 </Button>
@@ -285,10 +314,12 @@ export default function InboxPage() {
               </div>
               
               <div className="space-y-3 pt-4 border-t border-[#ffffff08]">
+                {workspaceId && <ConversationLabels conversationId={activeConversation.id} workspaceId={workspaceId} />}
+              </div>
+              
+              <div className="space-y-3 pt-4 border-t border-[#ffffff08]">
                 <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Notas Internas</h4>
-                <div className="p-3 bg-[#1a1a1a] rounded-md text-xs text-gray-400 italic border border-[#ffffff08]">
-                  Sin notas disponibles.
-                </div>
+                {workspaceId && <ConversationNotes conversationId={activeConversation.id} workspaceId={workspaceId} />}
               </div>
             </div>
           </ScrollArea>
