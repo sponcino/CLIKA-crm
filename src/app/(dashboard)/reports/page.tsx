@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell, PieChart, Pie, Legend,
+  ResponsiveContainer, Cell, PieChart, Pie,
 } from "recharts";
 import {
   Users, MessageSquare, CalendarCheck2, Bot, UserCheck,
