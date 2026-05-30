@@ -13,7 +13,7 @@ async function getWorkspaceId(userId: string): Promise<string | null> {
   return membership?.workspaceId ?? null;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return new NextResponse('Unauthorized', { status: 401 });
 

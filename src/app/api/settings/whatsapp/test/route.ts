@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { decrypt } from '@/lib/crypto';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return new NextResponse('Unauthorized', { status: 401 });
 
