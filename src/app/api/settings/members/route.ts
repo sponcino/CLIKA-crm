@@ -6,8 +6,8 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return new NextResponse('Unauthorized', { status: 401 });
 
-  const { searchParams } = new URL(req.url);
-  const qWorkspaceId = searchParams.get('workspaceId');
+  // workspaceId comes from session only
+  const qWorkspaceId = null;
 
   // Resolve workspaceId
   let workspaceId = qWorkspaceId;
