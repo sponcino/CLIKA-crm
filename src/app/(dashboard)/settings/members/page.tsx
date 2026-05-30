@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, UserPlus, Loader2, Shield, Eye, Settings, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Users, UserPlus, Loader2, Shield, Eye, Settings, User, Copy } from "lucide-react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -57,14 +60,79 @@ const ROLE_CONFIG: Record<
 export default function MembersSettingsPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Invite Dialog State
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("AGENT");
+  const [inviting, setInviting] = useState(false);
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchMembers = () => {
+    setLoading(true);
     fetch("/api/settings/members")
       .then((r) => r.json())
       .then((data) => setMembers(data))
       .catch(() => toast.error("Error al cargar los miembros"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchMembers();
   }, []);
+
+  const handleInvite = async () => {
+    if (!inviteEmail || !inviteEmail.includes("@")) {
+      toast.error("Ingresa un correo electrónico válido");
+      return;
+    }
+    
+    setInviting(true);
+    try {
+      const res = await fetch("/api/settings/members/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.status === 409) {
+          throw new Error("El usuario ya es miembro de este workspace");
+      }
+      
+      if (!res.ok) {
+          throw new Error(data.error || "Error al invitar al miembro");
+      }
+      
+      toast.success("Miembro invitado correctamente");
+      if (data.tempPassword) {
+         setTempPassword(data.tempPassword);
+      } else {
+          // If no temp password, it means user already existed in the system, just close.
+          setInviteOpen(false);
+          setInviteEmail("");
+      }
+      fetchMembers();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Error desconocido");
+    } finally {
+      setInviting(false);
+    }
+  };
+  
+  const handleCopyPassword = () => {
+    if (tempPassword) {
+      navigator.clipboard.writeText(tempPassword);
+      toast.success("Contraseña copiada al portapapeles");
+    }
+  };
+
+  const handleCloseInvite = () => {
+      setInviteOpen(false);
+      setTempPassword(null);
+      setInviteEmail("");
+  }
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -82,7 +150,7 @@ export default function MembersSettingsPage() {
 
         <Button
           id="btn-invite-member"
-          onClick={() => toast.info("Invitación de miembros próximamente disponible.")}
+          onClick={() => setInviteOpen(true)}
           className="bg-[#111111] hover:bg-white/5 border border-white/10 text-white font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
         >
           <UserPlus className="h-3.5 w-3.5" />
@@ -199,6 +267,98 @@ export default function MembersSettingsPage() {
           ))}
         </div>
       </div>
+      
+      {/* Invite Dialog */}
+      <Dialog open={inviteOpen} onOpenChange={(open) => !open && handleCloseInvite()}>
+        <DialogContent className="bg-[#111111] border border-white/10 text-white rounded-md max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-white tracking-tight">Invitar Miembro</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-2">
+            {!tempPassword ? (
+                <>
+                <div className="space-y-1.5">
+                    <Label className="text-xs text-gray-400 font-medium" htmlFor="inviteEmail">
+                        Correo Electrónico
+                    </Label>
+                    <Input
+                        id="inviteEmail"
+                        type="email"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        placeholder="usuario@empresa.com"
+                        className="bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-whatsapp"
+                    />
+                </div>
+                
+                <div className="space-y-1.5">
+                    <Label className="text-xs text-gray-400 font-medium" htmlFor="inviteRole">
+                        Rol
+                    </Label>
+                    <select
+                        id="inviteRole"
+                        value={inviteRole}
+                        onChange={(e) => setInviteRole(e.target.value)}
+                        className="w-full bg-[#1a1a1a] border border-white/10 text-white text-sm h-9 rounded-md px-3 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none"
+                    >
+                        <option value="ADMIN">Admin</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="AGENT">Agent</option>
+                        <option value="VIEWER">Viewer</option>
+                    </select>
+                </div>
+                </>
+            ) : (
+                <div className="space-y-3 bg-whatsapp/10 border border-whatsapp/20 p-4 rounded-md">
+                    <p className="text-xs text-whatsapp font-medium text-center">
+                        ¡Usuario creado e invitado exitosamente!
+                    </p>
+                    <p className="text-xs text-gray-300 text-center">
+                        Comparte esta contraseña temporal con el usuario para que pueda iniciar sesión:
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <Input 
+                           value={tempPassword} 
+                           readOnly 
+                           className="bg-[#0a0a0a] border-whatsapp/30 text-white font-mono h-9 focus-visible:ring-0 text-center"
+                        />
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={handleCopyPassword}
+                            className="h-9 w-9 bg-[#0a0a0a] border-whatsapp/30 text-whatsapp hover:text-white hover:bg-whatsapp shrink-0 transition-colors"
+                        >
+                            <Copy className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
+          </div>
+          
+          <DialogFooter className="mt-2">
+            {!tempPassword ? (
+                <>
+                <Button variant="outline" onClick={handleCloseInvite} className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 h-8 text-xs">
+                    Cancelar
+                </Button>
+                <Button 
+                    onClick={handleInvite} 
+                    disabled={inviting || !inviteEmail.trim()} 
+                    className="bg-whatsapp hover:bg-whatsappHover text-black font-semibold h-8 text-xs px-4"
+                >
+                    {inviting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+                    {inviting ? "Invitando..." : "Invitar"}
+                </Button>
+                </>
+            ) : (
+                <Button onClick={handleCloseInvite} className="bg-white hover:bg-gray-200 text-black font-semibold h-8 text-xs w-full">
+                    Aceptar
+                </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

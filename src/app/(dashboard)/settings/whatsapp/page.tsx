@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,7 +132,7 @@ export default function WhatsAppSettingsPage() {
   return (
     <div className="max-w-2xl space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Phone className="h-5 w-5 text-whatsapp" />
           <div>
@@ -142,20 +143,28 @@ export default function WhatsAppSettingsPage() {
           </div>
         </div>
 
-        {/* Connection Status Badge */}
-        <div
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-bold uppercase tracking-wider ${
-            isConnected
-              ? "bg-green-950/40 border-green-500/25 text-green-400"
-              : "bg-red-950/40 border-red-500/25 text-red-400"
-          }`}
-        >
-          {isConnected ? (
-            <Wifi className="h-3.5 w-3.5" />
-          ) : (
-            <WifiOff className="h-3.5 w-3.5" />
-          )}
-          {isConnected ? "CONECTADO" : "DESCONECTADO"}
+        <div className="flex items-center gap-3">
+          <Link href="/settings/whatsapp/guide">
+            <Button variant="outline" className="h-8 px-3 text-xs bg-transparent border-white/10 text-gray-300 hover:text-white hover:bg-white/5">
+              Guía de conexión
+            </Button>
+          </Link>
+          
+          {/* Connection Status Badge */}
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-bold uppercase tracking-wider ${
+              isConnected
+                ? "bg-green-950/40 border-green-500/25 text-green-400"
+                : "bg-red-950/40 border-red-500/25 text-red-400"
+            }`}
+          >
+            {isConnected ? (
+              <Wifi className="h-3.5 w-3.5" />
+            ) : (
+              <WifiOff className="h-3.5 w-3.5" />
+            )}
+            {isConnected ? "CONECTADO" : "DESCONECTADO"}
+          </div>
         </div>
       </div>
 
