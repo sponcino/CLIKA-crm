@@ -1,0 +1,352 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MANAGER
+  AGENT
+  VIEWER
+}
+
+enum ConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+enum ConversationStatus {
+  OPEN
+  PENDING
+  HUMAN_REQUIRED
+  CLOSED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  INTERESTED
+  APPOINTMENT_SCHEDULED
+  PROPOSAL_SENT
+  WON
+  LOST
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CANCELED
+  COMPLETED
+  NO_SHOW
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships   WorkspaceMember[]
+}
+
+model Workspace {
+  id          String   @id @default(uuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members           WorkspaceMember[]
+  whatsappConfig    WhatsAppConfig?
+  contacts          Contact[]
+  conversations     Conversation[]
+  aiAgentConfig     AIAgentConfig?
+  appointments      Appointment[]
+  availabilityRules AvailabilityRule[]
+  knowledgeDocs     KnowledgeDocument[]
+  whatsappTemplates WhatsAppTemplate[]
+  webhooks          WebhookConfig[]
+  auditLogs         AuditLog[]
+}
+
+model WorkspaceMember {
+  id          String    @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        Role      @default(VIEWER)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+}
+
+model WhatsAppConfig {
+  id                     String           @id @default(uuid())
+  workspaceId            String           @unique
+  businessId             String?
+  wabaId                 String?
+  phoneNumberId          String?
+  displayPhoneNumber     String?
+  encryptedAccessToken   String?
+  webhookVerifyToken     String?
+  appSecret              String?
+  connectionStatus       ConnectionStatus @default(DISCONNECTED)
+  lastConnectionCheckAt  DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  workspace              Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@index([workspaceId])
+}
+
+model Contact {
+  id               String     @id @default(uuid())
+  workspaceId      String
+  whatsappPhone    String
+  whatsappName     String?
+  fullName         String?
+  email            String?
+  company          String?
+  businessType     String?
+  needSummary      String?
+  leadSource       String?
+  campaignId       String?
+  adId             String?
+  status           LeadStatus @default(NEW)
+  leadScore        Int        @default(0)
+  tags             String[]   @default([])
+  assignedUserId   String?
+  aiEnabled        Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  lastMessageAt    DateTime?
+
+  workspace        Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  conversations    Conversation[]
+  appointments     Appointment[]
+
+  @@unique([workspaceId, whatsappPhone])
+  @@index([workspaceId])
+}
+
+model Conversation {
+  id           String             @id @default(uuid())
+  workspaceId  String
+  contactId    String
+  status       ConversationStatus @default(OPEN)
+  assignedUser String?
+  aiActive         Boolean            @default(true)
+  requiresTemplate Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  workspace    Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact      Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@index([workspaceId])
+  @@index([contactId])
+}
+
+model Message {
+  id             String           @id @default(uuid())
+  conversationId String
+  whatsappMsgId  String?          @unique
+  direction      MessageDirection
+  content        String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  conversation   Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AIAgentConfig {
+  id                     String   @id @default(uuid())
+  workspaceId            String   @unique
+  agentName              String   @default("AI Agent")
+  businessContext        String?
+  tone                   String   @default("professional")
+  language               String   @default("es")
+  welcomeMessage         String?
+  fallbackMessage        String?
+  humanEscalationMessage String?
+  workingHours           String?
+  requiredFields         String[] @default([])
+  qualificationRules     String?
+  systemPrompt           String?
+  modelProvider          String   @default("openai")
+  modelName              String   @default("gpt-4o")
+  temperature            Float    @default(0.7)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  workspace              Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@index([workspaceId])
+}
+
+model Appointment {
+  id               String            @id @default(uuid())
+  workspaceId      String
+  contactId        String
+  title            String
+  startTime        DateTime
+  endTime          DateTime
+  status           AppointmentStatus @default(SCHEDULED)
+  notes            String?
+  createdByAi      Boolean           @default(false)
+  rescheduledCount Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact          Contact           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([contactId])
+}
+
+model AvailabilityRule {
+  id          String   @id @default(uuid())
+  workspaceId String
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@index([workspaceId])
+}
+
+model CalendarBlock {
+  id          String   @id @default(uuid())
+  workspaceId String   // Though technically might map to a user, tying to workspace for now per docs
+  startTime   DateTime
+  endTime     DateTime
+  reason      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([workspaceId])
+}
+
+model KnowledgeDocument {
+  id          String   @id @default(uuid())
+  workspaceId String
+  title       String
+  content     String?
+  category    String   @default("General")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  chunks      KnowledgeChunk[]
+
+  @@index([workspaceId])
+}
+
+model KnowledgeChunk {
+  id          String   @id @default(uuid())
+  documentId  String
+  content     String
+  // embedding Vector? (Skipping raw vector type for now, usually handled via extension in postgres)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  document    KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  @@index([documentId])
+}
+
+model WhatsAppTemplate {
+  id          String   @id @default(uuid())
+  workspaceId String
+  name        String
+  content     String
+  status      String   @default("APPROVED")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace   Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sendLogs    TemplateSendLog[]
+
+  @@index([workspaceId])
+}
+
+model TemplateSendLog {
+  id          String   @id @default(uuid())
+  templateId  String
+  contactId   String?
+  status      String   @default("SENT")
+  error       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  template    WhatsAppTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  @@index([templateId])
+}
+
+model WebhookConfig {
+  id            String   @id @default(uuid())
+  workspaceId   String
+  name          String
+  url           String
+  event         String
+  enabled       Boolean  @default(true)
+  secret        String?
+  customHeaders String?
+  lastStatus    Int?
+  lastError     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  logs          WebhookLog[]
+
+  @@index([workspaceId])
+}
+
+model WebhookLog {
+  id          String   @id @default(uuid())
+  webhookId   String
+  payload     String
+  status      Int
+  error       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  webhook     WebhookConfig @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  @@index([webhookId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  workspaceId String
+  userId      String?
+  action      String
+  details     String?
+  createdAt   DateTime @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@index([workspaceId])
+}
