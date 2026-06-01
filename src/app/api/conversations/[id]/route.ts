@@ -3,6 +3,41 @@ import { Prisma } from '@prisma/client';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 
+// ─── GET: fetch single conversation with messages ─────────────────────────────
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await auth();
+  if (!session?.user?.id) return new NextResponse('Unauthorized', { status: 401 });
+
+  try {
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: params.id },
+      include: {
+        contact: true,
+        messages: { orderBy: { createdAt: 'asc' } },
+        labels: { include: { label: true } },
+        assignedTo: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    if (!conversation) return new NextResponse('Not Found', { status: 404 });
+
+    // Verify membership
+    const membership = await prisma.workspaceMember.findUnique({
+      where: { userId_workspaceId: { userId: session.user.id, workspaceId: conversation.workspaceId } },
+    });
+    if (!membership) return new NextResponse('Forbidden', { status: 403 });
+
+    return NextResponse.json(conversation);
+  } catch (error) {
+    console.error('Error fetching conversation:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
+
+// ─── PATCH: update conversation (AI toggle, assignedUser) ────────────────────
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -21,7 +56,7 @@ export async function PATCH(
 
     if (!conversation) return new NextResponse('Not Found', { status: 404 });
 
-    // Verify user belongs to workspace
+    // Verify membership
     const membership = await prisma.workspaceMember.findUnique({
       where: { userId_workspaceId: { userId: session.user.id, workspaceId: conversation.workspaceId } },
     });
@@ -31,7 +66,6 @@ export async function PATCH(
     if (assignedUserId !== undefined) {
       updateData.assignedTo = assignedUserId ? { connect: { id: assignedUserId } } : { disconnect: true };
     }
-    
     if (aiEnabled !== undefined) {
       updateData.aiActive = aiEnabled;
     }
@@ -40,14 +74,17 @@ export async function PATCH(
       prisma.conversation.update({
         where: { id: params.id },
         data: updateData,
-        include: { assignedTo: { select: { id: true, name: true, email: true } } }
+        include: {
+          contact: true,
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
       }),
-      ...(aiEnabled !== undefined 
+      ...(aiEnabled !== undefined
         ? [prisma.contact.update({
             where: { id: conversation.contactId },
-            data: { aiEnabled }
+            data: { aiEnabled },
           })]
-        : [])
+        : []),
     ]);
 
     return NextResponse.json(updatedConversation);

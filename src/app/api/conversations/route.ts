@@ -33,6 +33,9 @@ export async function GET(req: NextRequest) {
         orderBy: { createdAt: 'desc' },
         take: 1,
       },
+      labels: {
+        include: { label: true },
+      },
     },
     orderBy: { updatedAt: 'desc' },
     skip: (page - 1) * limit,
