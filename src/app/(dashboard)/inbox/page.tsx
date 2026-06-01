@@ -86,6 +86,7 @@ export default function InboxPage() {
       return res.json()
     },
     enabled: !!workspaceId,
+    refetchInterval: 5000,
   })
 
   useEffect(() => {
@@ -102,6 +103,7 @@ export default function InboxPage() {
       return res.json()
     },
     enabled: !!activeConversationId && !!workspaceId,
+    refetchInterval: 3000,
   })
 
   useEffect(() => {
