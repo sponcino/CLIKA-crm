@@ -87,6 +87,7 @@ model Workspace {
   notes             Note[]
   quickReplies      QuickReply[]
   funnels           Funnel[]
+  apiKeys           ApiKey[]
 }
 
 model WorkspaceMember {
@@ -465,4 +466,20 @@ model ContactFunnelState {
   @@unique([contactId, funnelId])
   @@index([contactId])
   @@index([funnelId])
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  workspaceId String
+  name        String
+  key         String    @unique
+  keyPrefix   String
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  isActive    Boolean   @default(true)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([key])
 }

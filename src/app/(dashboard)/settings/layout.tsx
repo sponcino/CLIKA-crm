@@ -5,6 +5,7 @@ const settingsNav = [
   { name: "WhatsApp", href: "/settings/whatsapp" },
   { name: "Miembros", href: "/settings/members" },
   { name: "Webhooks", href: "/settings/webhooks" },
+  { name: "API Keys", href: "/settings/api-keys" },
   { name: "Agente IA", href: "/settings/ai-agent" },
   { name: "Disponibilidad", href: "/settings/availability" },
   { name: "Resp. Rápidas", href: "/settings/quick-replies" },
