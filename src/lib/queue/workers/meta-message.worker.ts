@@ -2,7 +2,7 @@ import { Worker, Job } from 'bullmq';
 import prisma from '../../prisma';
 import redis, { bullmqConnection } from '../../redis';
 import { decrypt } from '../../crypto';
-import { markAsRead } from '../../meta/client';
+import { markAsRead, getMediaUrl } from '../../meta/client';
 import { normalizeMetaPayload } from '../../meta/normalizer';
 import { dispatchWebhook } from '../../webhooks/dispatcher';
 import { aiResponsesQueue } from '../index';
@@ -27,6 +27,17 @@ export const metaMessagesWorker = new Worker(
       }
 
       const workspaceId = config.workspaceId;
+
+      // Fetch media URL if applicable
+      let mediaUrl: string | undefined = undefined;
+      const accessToken = config.encryptedAccessToken ? decrypt(config.encryptedAccessToken) : null;
+      if (data.mediaId && accessToken) {
+        try {
+          mediaUrl = await getMediaUrl(data.mediaId, accessToken);
+        } catch (err) {
+          console.error(`Failed to get media url for ${data.mediaId}:`, err);
+        }
+      }
 
       // b & c. Get or create Contact & update lastMessageAt
       const now = new Date();
@@ -106,14 +117,14 @@ export const metaMessagesWorker = new Worker(
           whatsappMsgId: data.waMessageId,
           direction: 'INBOUND',
           content: data.text || `[Media: ${data.type}]`,
+          mediaUrl: mediaUrl,
           createdAt: data.timestamp,
         },
       });
 
       // f. Mark message as read via Meta API
-      if (config.encryptedAccessToken) {
+      if (accessToken) {
         try {
-          const accessToken = decrypt(config.encryptedAccessToken);
           await markAsRead(data.phoneNumberId, accessToken, data.waMessageId);
         } catch (err) {
           console.error(`Failed to mark message ${data.waMessageId} as read`, err);
@@ -133,7 +144,19 @@ export const metaMessagesWorker = new Worker(
       }
 
       // g2. Emit webhook
-      await dispatchWebhook(workspaceId, "message.received", { contact, message });
+      const webhookPayload = {
+        contact: { ...contact },
+        message: {
+          id: message.id,
+          content: message.content,
+          type: data.type,
+          mediaUrl: message.mediaUrl,
+          mediaId: data.mediaId,
+          direction: message.direction,
+          createdAt: message.createdAt
+        }
+      };
+      await dispatchWebhook(workspaceId, "message.received", webhookPayload);
 
       // h. Emit SSE event via Redis Pub/Sub
       const channel = `workspace:${workspaceId}:inbox`;

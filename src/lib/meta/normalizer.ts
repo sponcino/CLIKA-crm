@@ -36,18 +36,32 @@ export function normalizeMetaPayload(payload: any): NormalizedMessage[] {
           text = msg.text?.body;
           break;
         case 'image':
+          mediaId = msg.image?.id;
+          text = msg.image?.caption || undefined;
+          break;
         case 'audio':
+          mediaId = msg.audio?.id;
+          type = 'audio';
+          break;
         case 'video':
+          mediaId = msg.video?.id;
+          text = msg.video?.caption || undefined;
+          break;
         case 'document':
+          mediaId = msg.document?.id;
+          text = msg.document?.filename || undefined;
+          break;
         case 'sticker':
-          mediaId = msg[type]?.id;
+          mediaId = msg.sticker?.id;
           break;
         case 'reaction':
           text = msg.reaction?.emoji;
           break;
         case 'location':
-          // just to handle it somehow
           text = `Location: ${msg.location?.latitude}, ${msg.location?.longitude}`;
+          break;
+        case 'contacts':
+          text = msg.contacts?.map((c: any) => `${c.name?.formatted_name || 'Contact'} (${c.phones?.[0]?.phone || 'No phone'})`).join(', ') || 'Contact card';
           break;
         default:
           type = 'unsupported';
