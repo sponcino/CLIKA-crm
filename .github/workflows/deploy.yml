@@ -1,10 +1,8 @@
 name: Deploy to VPS
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,5 +16,5 @@ jobs:
           script: |
             cd /opt/clika
             git pull origin main
-            docker build -t clika-app .
+            docker build --no-cache -t clika-app .
             docker service update --image clika-app:latest --force clika_app
