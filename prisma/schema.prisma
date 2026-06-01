@@ -86,6 +86,7 @@ model Workspace {
   labels            Label[]
   notes             Note[]
   quickReplies      QuickReply[]
+  funnels           Funnel[]
 }
 
 model WorkspaceMember {
@@ -414,4 +415,53 @@ model QuickReply {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   @@index([workspaceId])
+}
+
+model Funnel {
+  id          String   @id @default(uuid())
+  workspaceId String
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  steps       FunnelStep[]
+  contacts    ContactFunnelState[]
+
+  @@index([workspaceId])
+}
+
+model FunnelStep {
+  id          String   @id @default(uuid())
+  funnelId    String
+  name        String
+  stepId      String
+  nextStepId  String?
+  order       Int      @default(0)
+  description String?
+  actions     Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  funnel      Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@unique([funnelId, stepId])
+  @@index([funnelId])
+}
+
+model ContactFunnelState {
+  id            String    @id @default(uuid())
+  contactId     String
+  funnelId      String
+  currentStepId String?
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+
+  funnel        Funnel    @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@unique([contactId, funnelId])
+  @@index([contactId])
+  @@index([funnelId])
 }

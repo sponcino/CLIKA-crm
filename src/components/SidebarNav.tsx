@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Users, Calendar, FileText, BookOpen, BarChart3, Settings } from "lucide-react";
+import { MessageSquare, Users, Calendar, FileText, BookOpen, BarChart3, Settings, GitFork } from "lucide-react";
 
 const navItems = [
   { name: "Inbox", href: "/inbox", icon: MessageSquare },
   { name: "Contactos", href: "/contacts", icon: Users },
   { name: "Agenda", href: "/agenda", icon: Calendar },
   { name: "Plantillas", href: "/templates", icon: FileText },
+  { name: "Funnels", href: "/funnels", icon: GitFork },
   { name: "Conocimiento", href: "/knowledge", icon: BookOpen },
   { name: "Reportes", href: "/reports", icon: BarChart3 },
   { name: "Configuración", href: "/settings", icon: Settings },

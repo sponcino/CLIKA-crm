@@ -38,6 +38,9 @@ const patchSchema = z.object({
   status: z.nativeEnum(LeadStatus).optional(),
   leadScore: z.number().optional(),
   aiEnabled: z.boolean().optional(),
+  leadSource: z.string().optional(),
+  campaignId: z.string().optional(),
+  adId: z.string().optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
