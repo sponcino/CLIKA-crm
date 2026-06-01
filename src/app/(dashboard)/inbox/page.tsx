@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Search, Send, AlertTriangle, MessageSquare, Bot,
   Clock, Tag, X, Plus, StickyNote, PanelRightClose, PanelRightOpen,
+  Paperclip, Image as ImageIcon, Headphones, FileText, Loader2
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
@@ -51,16 +52,20 @@ export default function InboxPage() {
   const [inputMode, setInputMode] = useState<"message" | "note">("message")
   const [snoozeOpen, setSnoozeOpen] = useState(false)
   const [labelOpen, setLabelOpen] = useState(false)
+  const [attachmentOpen, setAttachmentOpen] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [newLabelName, setNewLabelName] = useState("")
   const [rightPanelOpen, setRightPanelOpen] = useState(false)   // hidden by default
   const snoozeRef = useRef<HTMLDivElement>(null)
   const labelRef  = useRef<HTMLDivElement>(null)
+  const attachmentRef = useRef<HTMLDivElement>(null)
 
   // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (snoozeRef.current && !snoozeRef.current.contains(e.target as Node)) setSnoozeOpen(false)
       if (labelRef.current  && !labelRef.current.contains(e.target as Node))  setLabelOpen(false)
+      if (attachmentRef.current && !attachmentRef.current.contains(e.target as Node)) setAttachmentOpen(false)
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
@@ -261,6 +266,45 @@ export default function InboxPage() {
     if (!text.trim() || !activeConversationId) return
     if (inputMode === "note") noteMutation.mutate(text)
     else sendMutation.mutate(text)
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "audio" | "document") => {
+    const file = e.target.files?.[0]
+    if (!file || !activeConversationId || !workspaceId) return
+    setAttachmentOpen(false)
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("workspaceId", workspaceId)
+      
+      const uploadRes = await fetch("/api/media/upload", {
+        method: "POST",
+        body: formData,
+      })
+      
+      if (!uploadRes.ok) throw new Error("Upload failed")
+      const { mediaId, type: mediaType } = await uploadRes.json()
+
+      const sendRes = await fetch("/api/messages/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversationId: activeConversationId,
+          type: mediaType || type,
+          mediaId,
+          workspaceId
+        }),
+      })
+      if (!sendRes.ok) throw new Error("Send failed")
+      queryClient.invalidateQueries({ queryKey: ["conversation", activeConversationId] })
+    } catch (err) {
+      console.error(err)
+      alert("Error al enviar archivo")
+    } finally {
+      setUploading(false)
+      if (e.target) e.target.value = "" // Reset file input
+    }
   }
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId)
@@ -563,7 +607,26 @@ export default function InboxPage() {
                             ? "bg-[#1a3a2a] text-[#dcfce7] border border-whatsapp/15"
                             : "bg-[#1a1a1a] text-white border border-[#ffffff10]"
                         }`}>
-                          <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                          {msg.mediaUrl ? (
+                            <div className="mb-1">
+                              {msg.content?.includes("image") || msg.content?.includes("sticker") ? (
+                                <img src={msg.mediaUrl} alt="media" className="max-w-[240px] rounded-md" />
+                              ) : msg.content?.includes("video") ? (
+                                <video src={msg.mediaUrl} controls className="max-w-[240px] rounded-md" />
+                              ) : msg.content?.includes("audio") ? (
+                                <audio src={msg.mediaUrl} controls className="max-w-[240px]" />
+                              ) : (
+                                <a href={msg.mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-400 hover:underline p-2 bg-black/20 rounded">
+                                  <FileText className="h-4 w-4 shrink-0" /> <span className="truncate text-xs">Ver Archivo Adjunto</span>
+                                </a>
+                              )}
+                              {msg.content && !msg.content.startsWith("[Media:") && (
+                                <div className="whitespace-pre-wrap text-sm leading-relaxed mt-2">{msg.content}</div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                          )}
                           <div className="text-[10px] text-gray-500 mt-1.5 text-right font-medium">
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </div>
@@ -616,13 +679,42 @@ export default function InboxPage() {
                     }}
                   />
                 ) : (
-                  <Input
-                    placeholder="Escribe un mensaje..."
-                    className="flex-1 bg-[#1a1a1a] border-0 text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  />
+                  <div className="flex-1 flex gap-2">
+                    <div className="relative" ref={attachmentRef}>
+                      <Button
+                        onClick={() => setAttachmentOpen(!attachmentOpen)}
+                        className="h-10 w-10 p-0 shrink-0 bg-[#1a1a1a] border border-[#ffffff10] hover:bg-[#ffffff10] text-gray-400"
+                        variant="outline"
+                        disabled={uploading}
+                      >
+                        {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                      </Button>
+                      
+                      {attachmentOpen && (
+                        <div className="absolute bottom-full left-0 mb-2 w-48 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl py-1 z-50">
+                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
+                            <ImageIcon className="h-4 w-4" /> Imagen
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, "image")} />
+                          </label>
+                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
+                            <Headphones className="h-4 w-4" /> Audio
+                            <input type="file" accept="audio/*" className="hidden" onChange={(e) => handleFileUpload(e, "audio")} />
+                          </label>
+                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
+                            <FileText className="h-4 w-4" /> Documento
+                            <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={(e) => handleFileUpload(e, "document")} />
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                    <Input
+                      placeholder="Escribe un mensaje..."
+                      className="flex-1 bg-[#1a1a1a] border-0 text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    />
+                  </div>
                 )}
                 <Button
                   onClick={handleSend}

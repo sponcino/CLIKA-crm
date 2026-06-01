@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
-import { sendTextMessage } from '@/lib/meta/client';
+import { sendTextMessage, sendMediaMessage } from '@/lib/meta/client';
 import { decrypt } from '@/lib/crypto';
 import redis from '@/lib/redis';
 
 const sendSchema = z.object({
   conversationId: z.string(),
-  text: z.string().min(1),
+  text: z.string().optional(),
+  type: z.enum(['text', 'image', 'audio', 'document', 'video']).default('text'),
+  mediaId: z.string().optional(),
   workspaceId: z.string(),
 });
 
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { conversationId, text, workspaceId } = sendSchema.parse(body);
+    const { conversationId, text, type, mediaId, workspaceId } = sendSchema.parse(body);
 
     const membership = await prisma.workspaceMember.findUnique({
       where: { userId_workspaceId: { userId: session.user.id || '', workspaceId } },
@@ -49,7 +51,15 @@ export async function POST(req: NextRequest) {
 
     // Send via Meta
     const accessToken = decrypt(config.encryptedAccessToken);
-    const result = await sendTextMessage(config.phoneNumberId, accessToken, conversation.contact.whatsappPhone, text);
+    let result;
+    
+    if (type === 'text') {
+      if (!text) return new NextResponse('Text required for text messages', { status: 400 });
+      result = await sendTextMessage(config.phoneNumberId, accessToken, conversation.contact.whatsappPhone, text);
+    } else {
+      if (!mediaId) return new NextResponse('Media ID required for media messages', { status: 400 });
+      result = await sendMediaMessage(config.phoneNumberId, accessToken, conversation.contact.whatsappPhone, type as any, mediaId, text);
+    }
 
     // Save to DB
     const message = await prisma.message.create({
@@ -57,7 +67,7 @@ export async function POST(req: NextRequest) {
         conversationId,
         whatsappMsgId: result.messages?.[0]?.id,
         direction: 'OUTBOUND',
-        content: text,
+        content: text || `[Media: ${type}]`,
       },
     });
 
@@ -78,3 +88,4 @@ export async function POST(req: NextRequest) {
     return new NextResponse('Internal Error', { status: 500 });
   }
 }
+

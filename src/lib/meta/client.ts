@@ -69,3 +69,48 @@ export async function getMediaUrl(mediaId: string, accessToken: string): Promise
   const data = await request(`/${mediaId}`, 'GET', accessToken);
   return data.url;
 }
+
+export async function uploadMedia(phoneNumberId: string, accessToken: string, file: File): Promise<{ id: string }> {
+  const formData = new FormData();
+  formData.append('messaging_product', 'whatsapp');
+  formData.append('file', file);
+
+  const response = await fetch(`${BASE_URL}/${phoneNumberId}/media`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new MetaAPIError(
+      data.error?.code || response.status,
+      data.error?.message || 'Unknown Meta API error',
+      data.error
+    );
+  }
+
+  return data;
+}
+
+export async function sendMediaMessage(phoneNumberId: string, accessToken: string, to: string, type: 'image' | 'audio' | 'document' | 'video', mediaId: string, text?: string) {
+  const payload: any = {
+    messaging_product: 'whatsapp',
+    recipient_type: 'individual',
+    to,
+    type,
+    [type]: {
+      id: mediaId,
+    },
+  };
+
+  if (text && (type === 'image' || type === 'video' || type === 'document')) {
+    payload[type].caption = text;
+  }
+
+  return request(`/${phoneNumberId}/messages`, 'POST', accessToken, payload);
+}
+
