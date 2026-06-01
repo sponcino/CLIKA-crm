@@ -25,27 +25,32 @@ export async function GET(req: NextRequest) {
   if (status) where.status = status as ConversationStatus;
   if (assignedUser) where.assignedUser = assignedUser;
 
-  const conversations = await prisma.conversation.findMany({
-    where,
-    include: {
-      contact: true,
-      messages: {
-        orderBy: { createdAt: 'desc' },
-        take: 1,
+  try {
+    const conversations = await prisma.conversation.findMany({
+      where,
+      include: {
+        contact: true,
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+        labels: {
+          include: { label: true },
+        },
       },
-      labels: {
-        include: { label: true },
-      },
-    },
-    orderBy: { updatedAt: 'desc' },
-    skip: (page - 1) * limit,
-    take: limit,
-  });
+      orderBy: { updatedAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
-  const total = await prisma.conversation.count({ where });
+    const total = await prisma.conversation.count({ where });
 
-  return NextResponse.json({
-    data: conversations,
-    meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
-  });
+    return NextResponse.json({
+      data: conversations,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
+  } catch (error) {
+    console.error('Error fetching conversations:', error);
+    return NextResponse.json({ data: [], meta: { total: 0, page, limit, totalPages: 0 } }, { status: 500 });
+  }
 }

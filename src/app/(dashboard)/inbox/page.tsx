@@ -12,12 +12,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
   Search, Send, AlertTriangle, MessageSquare, Bot,
-  Clock, Tag, X, Plus, StickyNote
+  Clock, Tag, X, Plus, StickyNote, PanelRightClose, PanelRightOpen,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 
-// ─── colour helpers for labels ────────────────────────────────────────────────
+// ─── colour helpers for labels ─────────────────────────────────────────────────
 const LABEL_COLORS: Record<string, string> = {
   red:    "bg-red-500/10 text-red-400 border-red-500/20",
   orange: "bg-orange-500/10 text-orange-400 border-orange-500/20",
@@ -28,7 +28,8 @@ const LABEL_COLORS: Record<string, string> = {
   pink:   "bg-pink-500/10 text-pink-400 border-pink-500/20",
 }
 const COLOR_KEYS = Object.keys(LABEL_COLORS)
-const labelColor = (c: string) => LABEL_COLORS[c] ?? "bg-gray-500/10 text-gray-400 border-gray-500/20"
+const labelColor = (c?: string | null) =>
+  LABEL_COLORS[c ?? ""] ?? "bg-gray-500/10 text-gray-400 border-gray-500/20"
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function InboxPage() {
@@ -45,12 +46,13 @@ export default function InboxPage() {
 
   useInboxStream(workspaceId)
 
-  // ── local UI state ────────────────────────────────────────────────────────
+  // ── local UI state ─────────────────────────────────────────────────────────
   const [text, setText] = useState("")
   const [inputMode, setInputMode] = useState<"message" | "note">("message")
   const [snoozeOpen, setSnoozeOpen] = useState(false)
   const [labelOpen, setLabelOpen] = useState(false)
   const [newLabelName, setNewLabelName] = useState("")
+  const [rightPanelOpen, setRightPanelOpen] = useState(false)   // hidden by default
   const snoozeRef = useRef<HTMLDivElement>(null)
   const labelRef  = useRef<HTMLDivElement>(null)
 
@@ -64,7 +66,12 @@ export default function InboxPage() {
     return () => document.removeEventListener("mousedown", handler)
   }, [])
 
-  // ── conversations list ────────────────────────────────────────────────────
+  // Hide right panel when no conversation is selected
+  useEffect(() => {
+    if (!activeConversationId) setRightPanelOpen(false)
+  }, [activeConversationId])
+
+  // ── conversations list ─────────────────────────────────────────────────────
   const { data: convData, isLoading: isLoadingConvs } = useQuery({
     queryKey: ["conversations", workspaceId],
     queryFn: async () => {
@@ -80,7 +87,7 @@ export default function InboxPage() {
     if (convData?.data) setConversations(convData.data)
   }, [convData, setConversations])
 
-  // ── active conversation (messages + full data) ────────────────────────────
+  // ── active conversation full data (messages, snoozedUntil, labels) ─────────
   const { data: activeConvData } = useQuery({
     queryKey: ["conversation", activeConversationId, workspaceId],
     queryFn: async () => {
@@ -98,16 +105,21 @@ export default function InboxPage() {
     }
   }, [activeConvData, activeConversationId, setMessages])
 
-  // ── labels for active conversation ───────────────────────────────────────
-  const { data: convLabels = [] } = useQuery({
+  // ── labels for active conversation ────────────────────────────────────────
+  const { data: rawConvLabels = [] } = useQuery({
     queryKey: ["conversation-labels", activeConversationId],
     queryFn: async () => {
-      const res = await fetch(`/api/conversations/${activeConversationId}/labels?workspaceId=${workspaceId}`)
+      const res = await fetch(
+        `/api/conversations/${activeConversationId}/labels?workspaceId=${workspaceId}`
+      )
       if (!res.ok) throw new Error("Failed")
       return res.json()
     },
     enabled: !!activeConversationId && !!workspaceId,
   })
+  // Defensive: filter out any ConversationLabel where the nested label is missing
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const convLabels = (rawConvLabels as any[]).filter((cl) => cl?.label != null)
 
   const { data: workspaceLabels = [] } = useQuery({
     queryKey: ["workspace-labels", workspaceId],
@@ -119,18 +131,20 @@ export default function InboxPage() {
     enabled: !!workspaceId && labelOpen,
   })
 
-  // ── notes for active conversation ─────────────────────────────────────────
+  // ── notes for active conversation ──────────────────────────────────────────
   const { data: convNotes = [] } = useQuery({
     queryKey: ["conversation-notes", activeConversationId],
     queryFn: async () => {
-      const res = await fetch(`/api/conversations/${activeConversationId}/notes?workspaceId=${workspaceId}`)
+      const res = await fetch(
+        `/api/conversations/${activeConversationId}/notes?workspaceId=${workspaceId}`
+      )
       if (!res.ok) throw new Error("Failed")
       return res.json()
     },
     enabled: !!activeConversationId && !!workspaceId,
   })
 
-  // ── mutations ─────────────────────────────────────────────────────────────
+  // ── mutations ──────────────────────────────────────────────────────────────
   const sendMutation = useMutation({
     mutationFn: async (content: string) => {
       const res = await fetch("/api/messages/send", {
@@ -206,7 +220,8 @@ export default function InboxPage() {
       if (!res.ok) throw new Error("Failed")
       return res.json()
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["conversation-labels", activeConversationId] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["conversation-labels", activeConversationId] }),
   })
 
   const removeLabelMutation = useMutation({
@@ -219,7 +234,8 @@ export default function InboxPage() {
       if (!res.ok) throw new Error("Failed")
       return res.json()
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["conversation-labels", activeConversationId] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["conversation-labels", activeConversationId] }),
   })
 
   const createLabelMutation = useMutation({
@@ -240,40 +256,38 @@ export default function InboxPage() {
     },
   })
 
-  // ── derived state ─────────────────────────────────────────────────────────
+  // ── helpers ────────────────────────────────────────────────────────────────
   const handleSend = () => {
     if (!text.trim() || !activeConversationId) return
-    if (inputMode === "note") {
-      noteMutation.mutate(text)
-    } else {
-      sendMutation.mutate(text)
-    }
+    if (inputMode === "note") noteMutation.mutate(text)
+    else sendMutation.mutate(text)
   }
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId)
-  const activeMessages = activeConversationId ? messages[activeConversationId] || [] : []
+  const activeMessages = activeConversationId ? messages[activeConversationId] ?? [] : []
 
-  // snoozedUntil comes from the detailed fetch (activeConvData) since list may not include it
+  // snoozedUntil comes from the detailed fetch
   const snoozedUntil: string | null = activeConvData?.snoozedUntil ?? null
   const isSnoozed = !!snoozedUntil && new Date(snoozedUntil) > new Date()
 
-  // ── render ────────────────────────────────────────────────────────────────
+  // ── render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full w-full bg-[#0a0a0a] text-sm text-gray-200">
+    <div className="flex h-full w-full overflow-hidden bg-[#0a0a0a] text-sm text-gray-200">
 
-      {/* ═══════════════════ LEFT: Conversation List ═══════════════════ */}
-      <div className="w-80 border-r border-[#ffffff10] flex flex-col bg-[#0a0a0a] shrink-0">
+      {/* ══════════ LEFT: Conversation List ══════════ */}
+      <div className="w-80 border-r border-[#ffffff10] flex flex-col bg-[#0a0a0a] shrink-0 overflow-hidden">
         <div className="p-4 border-b border-[#ffffff10] space-y-3">
           <h2 className="font-bold text-lg tracking-tight text-white">Mensajes</h2>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Buscar contacto..."
-              className="pl-8 bg-[#111111] border-[#ffffff10] text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all duration-150"
+              className="pl-8 bg-[#111111] border-[#ffffff10] text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
             />
           </div>
         </div>
-        <ScrollArea className="flex-1 scrollbar-thin">
+
+        <ScrollArea className="flex-1">
           <div className="divide-y divide-[#ffffff08]">
             {isLoadingConvs ? (
               <div className="p-6 text-center text-gray-500 animate-pulse">Cargando...</div>
@@ -283,31 +297,33 @@ export default function InboxPage() {
               <div
                 key={conv.id}
                 onClick={() => setActiveConversation(conv.id)}
-                className={`p-4 cursor-pointer hover:bg-[#ffffff06] transition-all duration-150 relative ${
+                className={`p-4 cursor-pointer hover:bg-[#ffffff06] transition-all relative ${
                   activeConversationId === conv.id ? "bg-[#ffffff10]" : ""
                 }`}
               >
                 <div className="flex justify-between items-start mb-1 gap-2">
                   <span className="font-semibold text-white truncate">
-                    {conv.contact.whatsappName || conv.contact.whatsappPhone}
+                    {conv.contact?.whatsappName || conv.contact?.whatsappPhone}
                   </span>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    {conv.contact.aiEnabled && (
-                      <span className="bg-[#6366f1] text-[10px] text-white font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider shrink-0">
+                    {conv.contact?.aiEnabled && (
+                      <span className="bg-[#6366f1] text-[10px] text-white font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
                         IA
                       </span>
                     )}
                     {conv.requiresTemplate ? (
-                      <div className="h-2 w-2 rounded-full bg-amber-500 shrink-0" title="Requiere Plantilla" />
+                      <div className="h-2 w-2 rounded-full bg-amber-500" title="Requiere Plantilla" />
                     ) : (
-                      <div className="h-2 w-2 rounded-full bg-whatsapp shrink-0" title="Activo" />
+                      <div className="h-2 w-2 rounded-full bg-whatsapp" title="Activo" />
                     )}
                   </div>
                 </div>
                 <div className="flex justify-between items-center text-xs text-gray-400">
-                  <span className="truncate max-w-[170px] text-gray-500">{conv.contact.whatsappPhone}</span>
+                  <span className="truncate max-w-[170px] text-gray-500">{conv.contact?.whatsappPhone}</span>
                   <span className="text-[10px] text-gray-500 font-medium">
-                    {conv.updatedAt ? formatDistanceToNow(new Date(conv.updatedAt), { addSuffix: false, locale: es }) : ""}
+                    {conv.updatedAt
+                      ? formatDistanceToNow(new Date(conv.updatedAt), { addSuffix: false, locale: es })
+                      : ""}
                   </span>
                 </div>
               </div>
@@ -316,55 +332,59 @@ export default function InboxPage() {
         </ScrollArea>
       </div>
 
-      {/* ═══════════════════ CENTER: Chat Panel ═══════════════════════ */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#0f0f0f]">
+      {/* ══════════ CENTER: Chat Panel ══════════ */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#0f0f0f]">
         {activeConversation ? (
           <>
-            {/* ── Chat Header ── */}
-            <div className="h-14 border-b border-[#ffffff10] flex items-center justify-between px-4 bg-[#0a0a0a] shrink-0 gap-3">
+            {/* ── Header ── */}
+            <div className="h-14 border-b border-[#ffffff10] flex items-center justify-between px-4 bg-[#0a0a0a] shrink-0 gap-2">
 
-              {/* Contact info + AI toggle */}
+              {/* Left: avatar + name */}
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="h-7 w-7 border border-[#ffffff15] shrink-0">
                   <AvatarFallback className="bg-whatsapp/10 text-whatsapp text-xs font-semibold">
-                    {activeConversation.contact.whatsappName?.charAt(0) || "C"}
+                    {activeConversation.contact?.whatsappName?.charAt(0) ?? "C"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-white leading-none truncate">
-                    {activeConversation.contact.whatsappName || activeConversation.contact.whatsappPhone}
+                  <h3 className="font-semibold text-white leading-none truncate text-sm">
+                    {activeConversation.contact?.whatsappName || activeConversation.contact?.whatsappPhone}
                   </h3>
-                  <p className="text-[10px] text-gray-500 mt-0.5 truncate">{activeConversation.contact.whatsappPhone}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5 truncate">
+                    {activeConversation.contact?.whatsappPhone}
+                  </p>
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Right: action buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
 
                 {/* AI Toggle */}
                 <button
                   onClick={() => toggleAiMutation.mutate(!activeConversation.aiActive)}
                   disabled={toggleAiMutation.isPending}
                   title={activeConversation.aiActive ? "Pausar IA" : "Reanudar IA"}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border transition-all disabled:opacity-50 ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border transition-all disabled:opacity-50 ${
                     activeConversation.aiActive
                       ? "bg-[#6366f1]/10 text-[#6366f1] border-[#6366f1]/20 hover:bg-[#6366f1]/20"
                       : "bg-gray-500/10 text-gray-400 border-gray-500/20 hover:bg-gray-500/20"
                   }`}
                 >
                   <Bot className="h-3.5 w-3.5" />
-                  {activeConversation.aiActive ? "Pausar IA" : "Reanudar IA"}
+                  <span className="hidden sm:inline">
+                    {activeConversation.aiActive ? "Pausar IA" : "Reanudar IA"}
+                  </span>
                 </button>
 
-                {/* Label Button (dropdown) */}
+                {/* Label dropdown */}
                 <div className="relative" ref={labelRef}>
                   <button
                     onClick={() => setLabelOpen((o) => !o)}
-                    title="Agregar etiqueta"
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border border-[#ffffff15] bg-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                    title="Etiquetas"
+                    className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border border-[#ffffff15] bg-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all"
                   >
                     <Tag className="h-3.5 w-3.5" />
-                    Etiqueta
+                    <span className="hidden sm:inline">Etiqueta</span>
                   </button>
 
                   {labelOpen && (
@@ -374,13 +394,12 @@ export default function InboxPage() {
                       {/* Applied labels */}
                       {convLabels.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
-                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                          {convLabels.map((cl: any) => (
+                          {convLabels.map((cl: any) => ( // eslint-disable-line
                             <span
                               key={cl.id}
-                              className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border ${labelColor(cl.label.color)}`}
+                              className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border ${labelColor(cl.label?.color)}`}
                             >
-                              {cl.label.name}
+                              {cl.label?.name}
                               <button
                                 onClick={() => removeLabelMutation.mutate(cl.labelId)}
                                 className="hover:opacity-70 transition-opacity ml-0.5"
@@ -392,20 +411,21 @@ export default function InboxPage() {
                         </div>
                       )}
 
-                      {/* Available workspace labels */}
-                      {workspaceLabels.length > 0 && (
+                      {/* Available workspace labels not yet applied */}
+                      {(workspaceLabels as any[]).filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id)).length > 0 && ( // eslint-disable-line
                         <div className="flex flex-wrap gap-1.5">
-                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                          {workspaceLabels.filter((l: any) => !convLabels.some((cl: any) => cl.labelId === l.id)).map((label: any) => (
-                            <button
-                              key={label.id}
-                              onClick={() => addLabelMutation.mutate(label.id)}
-                              className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border transition-opacity hover:opacity-80 ${labelColor(label.color)}`}
-                            >
-                              <Plus className="h-2.5 w-2.5" />
-                              {label.name}
-                            </button>
-                          ))}
+                          {(workspaceLabels as any[]) // eslint-disable-line
+                            .filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id)) // eslint-disable-line
+                            .map((label: any) => ( // eslint-disable-line
+                              <button
+                                key={label.id}
+                                onClick={() => addLabelMutation.mutate(label.id)}
+                                className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border transition-opacity hover:opacity-80 ${labelColor(label?.color)}`}
+                              >
+                                <Plus className="h-2.5 w-2.5" />
+                                {label.name}
+                              </button>
+                            ))}
                         </div>
                       )}
 
@@ -421,12 +441,12 @@ export default function InboxPage() {
                           value={newLabelName}
                           onChange={(e) => setNewLabelName(e.target.value)}
                           placeholder="Nueva etiqueta..."
-                          className="flex-1 bg-[#1a1a1a] border border-[#ffffff10] rounded-md px-2 py-1 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp"
+                          className="flex-1 bg-[#1a1a1a] border border-[#ffffff10] rounded px-2 py-1 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp"
                         />
                         <button
                           type="submit"
                           disabled={createLabelMutation.isPending || !newLabelName.trim()}
-                          className="px-2 py-1 bg-whatsapp hover:bg-whatsapp/90 text-black text-xs rounded-md font-semibold disabled:opacity-50 transition-all"
+                          className="px-2 py-1 bg-whatsapp hover:bg-whatsapp/90 text-black text-xs rounded font-bold disabled:opacity-50 transition-all"
                         >
                           +
                         </button>
@@ -435,24 +455,26 @@ export default function InboxPage() {
                   )}
                 </div>
 
-                {/* Snooze Button (dropdown) */}
+                {/* Snooze dropdown */}
                 <div className="relative" ref={snoozeRef}>
                   <button
                     onClick={() => setSnoozeOpen((o) => !o)}
                     title="Pausar conversación"
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
+                    className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border transition-all ${
                       isSnoozed
                         ? "bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20"
                         : "bg-transparent text-gray-300 border-[#ffffff15] hover:bg-white/5 hover:text-white"
                     }`}
                   >
                     <Clock className="h-3.5 w-3.5" />
-                    {isSnoozed ? "Pausado" : "Pausar"}
+                    <span className="hidden sm:inline">{isSnoozed ? "Pausado" : "Pausar"}</span>
                   </button>
 
                   {snoozeOpen && (
                     <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl py-1">
-                      <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pausar por</p>
+                      <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                        Pausar por
+                      </p>
                       {[
                         { label: "15 minutos", minutes: 15 },
                         { label: "1 hora",     minutes: 60 },
@@ -462,7 +484,7 @@ export default function InboxPage() {
                         <button
                           key={minutes}
                           onClick={() => snoozeMutation.mutate(minutes)}
-                          className="w-full text-left px-3 py-1.5 text-xs text-gray-200 hover:bg-white/8 hover:text-white transition-colors"
+                          className="w-full text-left px-3 py-1.5 text-xs text-gray-200 hover:bg-white/5 hover:text-white transition-colors"
                         >
                           {label}
                         </button>
@@ -482,33 +504,43 @@ export default function InboxPage() {
                   )}
                 </div>
 
-                {/* Close conversation */}
+                {/* Right panel toggle */}
+                <button
+                  onClick={() => setRightPanelOpen((o) => !o)}
+                  title={rightPanelOpen ? "Ocultar panel" : "Ver detalles"}
+                  className="flex items-center justify-center h-7 w-7 rounded border border-[#ffffff15] text-gray-400 hover:bg-white/5 hover:text-white transition-all"
+                >
+                  {rightPanelOpen
+                    ? <PanelRightClose className="h-3.5 w-3.5" />
+                    : <PanelRightOpen className="h-3.5 w-3.5" />}
+                </button>
+
+                {/* Close */}
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 px-3 text-xs bg-transparent border-[#ffffff15] text-gray-300 hover:bg-white/5 hover:text-white rounded-md"
+                  className="h-7 px-3 text-xs bg-transparent border-[#ffffff15] text-gray-300 hover:bg-white/5 hover:text-white rounded"
                 >
                   Cerrar
                 </Button>
               </div>
             </div>
 
-            {/* Labels bar (below header if any applied) */}
+            {/* Applied labels bar */}
             {convLabels.length > 0 && (
               <div className="flex items-center gap-1.5 px-4 py-1.5 border-b border-[#ffffff08] bg-[#0a0a0a] flex-wrap shrink-0">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {convLabels.map((cl: any) => (
+                {convLabels.map((cl: any) => ( // eslint-disable-line
                   <span
                     key={cl.id}
-                    className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border font-medium ${labelColor(cl.label.color)}`}
+                    className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border font-medium ${labelColor(cl.label?.color)}`}
                   >
-                    {cl.label.name}
+                    {cl.label?.name}
                   </span>
                 ))}
               </div>
             )}
 
-            {/* Requires Template Alert */}
+            {/* Requires template alert */}
             {activeConversation.requiresTemplate && (
               <div className="bg-amber-950/40 text-amber-300 px-4 py-2 text-xs flex items-center justify-center gap-2 border-b border-[#ffffff08] shrink-0">
                 <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
@@ -516,35 +548,36 @@ export default function InboxPage() {
               </div>
             )}
 
-            {/* Messages Scroll Area */}
-            <ScrollArea className="flex-1 p-6 bg-[#0f0f0f] scrollbar-thin">
-              <div className="space-y-4 max-w-4xl mx-auto pb-4">
+            {/* Messages — flex-1 so it fills all remaining vertical space */}
+            <ScrollArea className="flex-1 min-h-0 bg-[#0f0f0f]">
+              <div className="p-6 space-y-4 max-w-4xl mx-auto pb-4">
                 {activeMessages.length === 0 ? (
                   <div className="text-center text-gray-600 my-10">Sin mensajes anteriores</div>
-                ) : activeMessages.map((msg) => {
-                  const isOutbound = msg.direction === "OUTBOUND"
-                  return (
-                    <div key={msg.id} className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-[70%] rounded-md p-3 relative shadow-md transition-all duration-150 ${
-                        isOutbound
-                          ? "bg-[#1a3a2a] text-[#dcfce7] border border-whatsapp/15"
-                          : "bg-[#1a1a1a] text-white border border-[#ffffff10]"
-                      }`}>
-                        <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
-                        <div className="text-[10px] text-gray-500 mt-1.5 text-right font-medium">
-                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                ) : (
+                  activeMessages.map((msg) => {
+                    const isOutbound = msg.direction === "OUTBOUND"
+                    return (
+                      <div key={msg.id} className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}>
+                        <div className={`max-w-[70%] rounded-md p-3 shadow-md ${
+                          isOutbound
+                            ? "bg-[#1a3a2a] text-[#dcfce7] border border-whatsapp/15"
+                            : "bg-[#1a1a1a] text-white border border-[#ffffff10]"
+                        }`}>
+                          <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                          <div className="text-[10px] text-gray-500 mt-1.5 text-right font-medium">
+                            {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                )}
               </div>
             </ScrollArea>
 
-            {/* ── Input tabs + text bar ── */}
+            {/* Input area — always pinned to bottom */}
             <div className="shrink-0 border-t border-[#ffffff10] bg-[#111111]">
-
-              {/* Tab switcher */}
+              {/* Tabs */}
               <div className="flex border-b border-[#ffffff08]">
                 <button
                   onClick={() => setInputMode("message")}
@@ -570,12 +603,12 @@ export default function InboxPage() {
                 </button>
               </div>
 
-              {/* Text input */}
-              <div className={`p-3 flex items-center gap-2 ${inputMode === "note" ? "bg-yellow-950/20" : ""}`}>
+              {/* Text input row */}
+              <div className={`p-3 flex items-end gap-2 ${inputMode === "note" ? "bg-yellow-950/10" : ""}`}>
                 {inputMode === "note" ? (
                   <textarea
                     placeholder="Escribe una nota interna... (solo visible para el equipo)"
-                    className="flex-1 bg-yellow-950/30 border border-yellow-500/20 text-white placeholder-yellow-900/60 focus:outline-none focus:ring-1 focus:ring-yellow-500/40 rounded-md px-3 py-2 text-sm resize-none min-h-[60px] max-h-32"
+                    className="flex-1 bg-yellow-950/30 border border-yellow-500/20 text-white placeholder-yellow-900/50 focus:outline-none focus:ring-1 focus:ring-yellow-500/40 rounded-md px-3 py-2 text-sm resize-none min-h-[56px] max-h-32"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={(e) => {
@@ -585,7 +618,7 @@ export default function InboxPage() {
                 ) : (
                   <Input
                     placeholder="Escribe un mensaje..."
-                    className="flex-1 bg-[#1a1a1a] border-0 text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md px-4 h-10 transition-all duration-150"
+                    className="flex-1 bg-[#1a1a1a] border-0 text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -594,7 +627,7 @@ export default function InboxPage() {
                 <Button
                   onClick={handleSend}
                   disabled={(sendMutation.isPending || noteMutation.isPending) || !text.trim()}
-                  className={`rounded-md h-10 w-10 p-0 shrink-0 transition-all duration-150 ${
+                  className={`rounded-md h-10 w-10 p-0 shrink-0 transition-all ${
                     inputMode === "note"
                       ? "bg-yellow-500 hover:bg-yellow-400 text-black"
                       : "bg-whatsapp hover:bg-whatsappHover text-black"
@@ -604,7 +637,9 @@ export default function InboxPage() {
                 </Button>
               </div>
               {inputMode === "note" && (
-                <p className="px-3 pb-2 text-[10px] text-yellow-600/70">Ctrl+Enter para guardar · Solo visible para el equipo</p>
+                <p className="px-3 pb-2 text-[10px] text-yellow-600/60">
+                  Ctrl+Enter para guardar · Solo visible para el equipo
+                </p>
               )}
             </div>
           </>
@@ -616,32 +651,46 @@ export default function InboxPage() {
         )}
       </div>
 
-      {/* ═══════════════════ RIGHT: Contact + Notes Panel ══════════════ */}
-      {activeConversation && (
-        <div className="w-72 border-l border-[#ffffff10] bg-[#111111] flex flex-col shrink-0">
+      {/* ══════════ RIGHT: Contact + Notes panel (collapsible) ══════════ */}
+      {activeConversation && rightPanelOpen && (
+        <div className="w-72 border-l border-[#ffffff10] bg-[#111111] flex flex-col shrink-0 overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffffff10] bg-[#0d0d0d] shrink-0">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Detalles</span>
+            <button
+              onClick={() => setRightPanelOpen(false)}
+              className="text-gray-600 hover:text-gray-300 transition-colors"
+              title="Cerrar panel"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
           {/* Contact card */}
-          <div className="p-5 border-b border-[#ffffff10] text-center space-y-3 bg-[#0d0d0d]">
+          <div className="p-5 border-b border-[#ffffff10] text-center space-y-3 bg-[#0d0d0d] shrink-0">
             <Avatar className="h-14 w-14 mx-auto border border-[#ffffff15]">
               <AvatarFallback className="text-xl bg-whatsapp/10 text-whatsapp font-bold">
-                {activeConversation.contact.whatsappName?.charAt(0) || "C"}
+                {activeConversation.contact?.whatsappName?.charAt(0) ?? "C"}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="font-semibold text-sm text-white">{activeConversation.contact.whatsappName || "Desconocido"}</h2>
-              <p className="text-xs text-gray-400 mt-0.5">{activeConversation.contact.whatsappPhone}</p>
+              <h2 className="font-semibold text-sm text-white">
+                {activeConversation.contact?.whatsappName ?? "Desconocido"}
+              </h2>
+              <p className="text-xs text-gray-400 mt-0.5">{activeConversation.contact?.whatsappPhone}</p>
             </div>
             <div className="inline-flex">
               <Badge className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-sm ${
-                activeConversation.contact.status === "NEW"
+                activeConversation.contact?.status === "NEW"
                   ? "bg-whatsapp/10 text-whatsapp border border-whatsapp/20"
                   : "bg-indigo-950 text-indigo-300 border border-indigo-500/20"
               }`}>
-                {activeConversation.contact.status}
+                {activeConversation.contact?.status}
               </Badge>
             </div>
           </div>
 
-          <ScrollArea className="flex-1 scrollbar-thin">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="p-4 space-y-5">
 
               {/* Lead details */}
@@ -649,29 +698,29 @@ export default function InboxPage() {
                 <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Detalles del Lead</h4>
                 <div className="grid grid-cols-2 gap-y-2 text-xs">
                   <span className="text-gray-500">Email:</span>
-                  <span className="text-white truncate font-medium">{activeConversation.contact.email || "—"}</span>
+                  <span className="text-white truncate font-medium">{activeConversation.contact?.email ?? "—"}</span>
                   <span className="text-gray-500">Compañía:</span>
-                  <span className="text-white truncate font-medium">{activeConversation.contact.company || "—"}</span>
+                  <span className="text-white truncate font-medium">{activeConversation.contact?.company ?? "—"}</span>
                   <span className="text-gray-500">Score:</span>
-                  <span className="text-white font-medium">{activeConversation.contact.leadScore}</span>
+                  <span className="text-white font-medium">{activeConversation.contact?.leadScore ?? 0}</span>
                 </div>
               </div>
 
-              {/* Internal Notes */}
+              {/* Internal notes */}
               <div className="space-y-2 pt-4 border-t border-[#ffffff08]">
                 <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
                   <StickyNote className="h-3 w-3" /> Notas Internas
                 </h4>
-                <div className="space-y-2 max-h-60 overflow-y-auto pr-0.5 scrollbar-thin">
-                  {convNotes.length === 0 ? (
+                <div className="space-y-2">
+                  {(convNotes as any[]).length === 0 ? ( // eslint-disable-line
                     <p className="text-xs text-gray-600 italic">Sin notas.</p>
                   ) : (
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    convNotes.map((note: any) => (
+                    (convNotes as any[]).map((note: any) => ( // eslint-disable-line
                       <div key={note.id} className="p-2 bg-yellow-950/20 rounded border border-yellow-500/10 space-y-1">
                         <p className="text-xs text-yellow-200/80 whitespace-pre-wrap">{note.content}</p>
                         <p className="text-[9px] text-gray-600">
-                          {note.user?.name || "Usuario"} · {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true, locale: es })}
+                          {note.user?.name ?? "Usuario"} ·{" "}
+                          {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true, locale: es })}
                         </p>
                       </div>
                     ))
