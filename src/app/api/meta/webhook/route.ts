@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import prisma from '@/lib/prisma';
-import { metaMessagesQueue } from '@/lib/queue';
+import { processIncomingPayload } from '@/lib/meta/processor';
+import { aiResponsesQueue } from '@/lib/queue';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -12,24 +13,18 @@ export async function GET(req: NextRequest) {
   if (mode === 'subscribe' && token) {
     const globalVerifyToken = process.env.META_VERIFY_TOKEN;
     if (token === globalVerifyToken) {
-      return new NextResponse(challenge, { 
+      return new NextResponse(challenge, {
         status: 200,
-        headers: { 
-          'Content-Type': 'text/plain',
-          'ngrok-skip-browser-warning': '1'
-        }
+        headers: { 'Content-Type': 'text/plain', 'ngrok-skip-browser-warning': '1' },
       });
     }
     const config = await prisma.whatsAppConfig.findFirst({
       where: { webhookVerifyToken: token },
     });
     if (config) {
-      return new NextResponse(challenge, { 
+      return new NextResponse(challenge, {
         status: 200,
-        headers: { 
-          'Content-Type': 'text/plain',
-          'ngrok-skip-browser-warning': '1'
-        }
+        headers: { 'Content-Type': 'text/plain', 'ngrok-skip-browser-warning': '1' },
       });
     }
   }
@@ -42,27 +37,43 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get('x-hub-signature-256');
 
     if (signature && process.env.META_APP_SECRET) {
-      const expectedSignature = `sha256=${crypto
+      const expected = `sha256=${crypto
         .createHmac('sha256', process.env.META_APP_SECRET)
         .update(rawBody)
         .digest('hex')}`;
-      if (signature !== expectedSignature) {
-        console.warn('Invalid Meta webhook signature');
+      if (signature !== expected) {
+        console.warn('[webhook] Invalid Meta signature — request rejected');
         return new NextResponse('OK', { status: 200 });
       }
     }
 
     const payload = JSON.parse(rawBody);
-    console.log('WEBHOOK POST received:', JSON.stringify(payload).substring(0, 200));
+    console.log('[webhook] POST received:', JSON.stringify(payload).substring(0, 300));
 
-    if (payload.object === 'whatsapp_business_account') {
-      for (const entry of payload.entry || []) {
-        for (const change of entry.changes || []) {
-          if (change.field === 'messages') {
-            await metaMessagesQueue.add('process-message', {
-              payload: change.value,
-              entryId: entry.id,
-            });
+    if (payload.object !== 'whatsapp_business_account') {
+      return new NextResponse('OK', { status: 200 });
+    }
+
+    for (const entry of payload.entry || []) {
+      for (const change of entry.changes || []) {
+        if (change.field !== 'messages') continue;
+
+        // Process directly — no queue dependency for DB writes
+        const processed = await processIncomingPayload(change.value);
+
+        // Queue AI responses (best-effort — don't block or fail if Redis is down)
+        for (const msg of processed) {
+          if (msg.aiEnabled && msg.conversationStatus !== 'HUMAN_REQUIRED') {
+            aiResponsesQueue
+              .add('ai-response', {
+                workspaceId: msg.workspaceId,
+                contactId: msg.contactId,
+                conversationId: msg.conversationId,
+                messageText: msg.messageContent,
+              })
+              .catch((err) =>
+                console.error('[webhook] Failed to queue AI response:', err)
+              );
           }
         }
       }
@@ -70,7 +81,7 @@ export async function POST(req: NextRequest) {
 
     return new NextResponse('OK', { status: 200 });
   } catch (error) {
-    console.error('Webhook POST error:', error);
+    console.error('[webhook] POST error:', error);
     return new NextResponse('OK', { status: 200 });
   }
 }
