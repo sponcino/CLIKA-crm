@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
+import { Prisma, ConversationStatus } from '@prisma/client';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 
@@ -24,7 +24,6 @@ export async function GET(
 
     if (!conversation) return new NextResponse('Not Found', { status: 404 });
 
-    // Verify membership
     const membership = await prisma.workspaceMember.findUnique({
       where: { userId_workspaceId: { userId: session.user.id, workspaceId: conversation.workspaceId } },
     });
@@ -37,7 +36,7 @@ export async function GET(
   }
 }
 
-// ─── PATCH: update conversation (AI toggle, assignedUser) ────────────────────
+// ─── PATCH: update conversation (status, AI toggle, assignedUser) ─────────────
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -47,7 +46,7 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { aiEnabled, assignedUserId } = body;
+    const { aiEnabled, assignedUserId, status } = body;
 
     const conversation = await prisma.conversation.findUnique({
       where: { id: params.id },
@@ -56,7 +55,6 @@ export async function PATCH(
 
     if (!conversation) return new NextResponse('Not Found', { status: 404 });
 
-    // Verify membership
     const membership = await prisma.workspaceMember.findUnique({
       where: { userId_workspaceId: { userId: session.user.id, workspaceId: conversation.workspaceId } },
     });
@@ -68,6 +66,9 @@ export async function PATCH(
     }
     if (aiEnabled !== undefined) {
       updateData.aiActive = aiEnabled;
+    }
+    if (status !== undefined) {
+      updateData.status = status as ConversationStatus;
     }
 
     const [updatedConversation] = await prisma.$transaction([
@@ -90,6 +91,35 @@ export async function PATCH(
     return NextResponse.json(updatedConversation);
   } catch (error) {
     console.error('Error updating conversation:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
+
+// ─── DELETE: hard-delete conversation and all messages ───────────────────────
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await auth();
+  if (!session?.user?.id) return new NextResponse('Unauthorized', { status: 401 });
+
+  try {
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: params.id },
+    });
+
+    if (!conversation) return new NextResponse('Not Found', { status: 404 });
+
+    const membership = await prisma.workspaceMember.findUnique({
+      where: { userId_workspaceId: { userId: session.user.id, workspaceId: conversation.workspaceId } },
+    });
+    if (!membership) return new NextResponse('Forbidden', { status: 403 });
+
+    await prisma.conversation.delete({ where: { id: params.id } });
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

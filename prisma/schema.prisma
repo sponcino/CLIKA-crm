@@ -197,19 +197,29 @@ model AIAgentConfig {
   id                     String   @id @default(uuid())
   workspaceId            String   @unique
   agentName              String   @default("AI Agent")
+  agentRole              String?
+  agentPersonality       String?
   businessContext        String?
+  companyName            String?
+  companyType            String?
+  productsServices       String?
   tone                   String   @default("professional")
   language               String   @default("es")
   welcomeMessage         String?
   fallbackMessage        String?
   humanEscalationMessage String?
+  transferKeywords       String[] @default([])
   workingHours           String?
   requiredFields         String[] @default([])
+  captureFields          Json     @default("[]")
   qualificationRules     String?
   systemPrompt           String?
-  modelProvider          String   @default("openai")
-  modelName              String   @default("gpt-4o")
+  modelProvider          String   @default("anthropic")
+  modelName              String   @default("claude-sonnet-4-6")
   temperature            Float    @default(0.7)
+  maxTokens              Int      @default(1000)
+  useGlobalApiKey        Boolean  @default(true)
+  customApiKey           String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 
@@ -280,12 +290,12 @@ model KnowledgeDocument {
 }
 
 model KnowledgeChunk {
-  id          String   @id @default(uuid())
+  id          String                        @id @default(uuid())
   documentId  String
   content     String
-  // embedding Vector? (Skipping raw vector type for now, usually handled via extension in postgres)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  embedding   Unsupported("vector(1536)")?
+  createdAt   DateTime                      @default(now())
+  updatedAt   DateTime                      @updatedAt
 
   document    KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
   @@index([documentId])
@@ -325,11 +335,13 @@ model WebhookConfig {
   name          String
   url           String
   event         String
+  events        String[] @default([])
   enabled       Boolean  @default(true)
   secret        String?
   customHeaders String?
   lastStatus    Int?
   lastError     String?
+  lastCalledAt  DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -420,11 +432,12 @@ model QuickReply {
 }
 
 model Funnel {
-  id          String   @id @default(uuid())
-  workspaceId String
-  name        String
-  description String?
-  isActive    Boolean  @default(true)
+  id                   String   @id @default(uuid())
+  workspaceId          String
+  name                 String
+  description          String?
+  isActive             Boolean  @default(true)
+  adAttributionEnabled Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -436,14 +449,16 @@ model Funnel {
 }
 
 model FunnelStep {
-  id          String   @id @default(uuid())
-  funnelId    String
-  name        String
-  stepId      String
-  nextStepId  String?
-  order       Int      @default(0)
-  description String?
-  actions     Json     @default("{}")
+  id                 String   @id @default(uuid())
+  funnelId           String
+  name               String
+  stepId             String
+  nextStepId         String?
+  order              Int      @default(0)
+  description        String?
+  instructions       String?
+  transitionCriteria String?
+  actions            Json     @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { generateEmbeddings } from '@/lib/ai/embeddings';
 
 function chunkContent(content: string, maxChars = 500, overlap = 50): string[] {
   const paragraphs = content.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
@@ -35,18 +36,33 @@ export async function GET(
 
   const doc = await prisma.knowledgeDocument.findUnique({
     where: { id: params.id },
-    include: { chunks: true },
+    include: { chunks: { select: { id: true, content: true }, orderBy: { createdAt: 'asc' } } },
   });
 
   if (!doc) return new NextResponse('Not Found', { status: 404 });
 
-  // Auth check via workspace membership
   const membership = await prisma.workspaceMember.findUnique({
     where: { userId_workspaceId: { userId: session.user.id || '', workspaceId: doc.workspaceId } },
   });
   if (!membership) return new NextResponse('Forbidden', { status: 403 });
 
-  return NextResponse.json(doc);
+  // Check which chunks have embeddings via raw query
+  interface EmbedRow { id: string }
+  const embeddedChunks = await prisma.$queryRaw<EmbedRow[]>`
+    SELECT id FROM "KnowledgeChunk"
+    WHERE "documentId" = ${params.id} AND embedding IS NOT NULL
+  `.catch(() => [] as EmbedRow[]);
+
+  const embeddedIds = new Set(embeddedChunks.map((r) => r.id));
+
+  return NextResponse.json({
+    ...doc,
+    chunks: doc.chunks.map((c) => ({
+      id: c.id,
+      content: c.content,
+      hasEmbedding: embeddedIds.has(c.id),
+    })),
+  });
 }
 
 export async function PATCH(
@@ -68,13 +84,32 @@ export async function PATCH(
     });
     if (!membership) return new NextResponse('Forbidden', { status: 403 });
 
-    // If content changed, rechunk
+    // Re-chunk and re-embed if content changed
     if (content !== undefined && content !== doc.content) {
       await prisma.knowledgeChunk.deleteMany({ where: { documentId: params.id } });
-      const chunks = chunkContent(content);
+      const chunkTexts = chunkContent(content);
+      const embeddings = await generateEmbeddings(chunkTexts);
+
       await prisma.knowledgeChunk.createMany({
-        data: chunks.map((c) => ({ documentId: params.id, content: c })),
+        data: chunkTexts.map((c) => ({ documentId: params.id, content: c })),
       });
+
+      if (embeddings.some((e) => e.length > 0)) {
+        const newChunks = await prisma.knowledgeChunk.findMany({
+          where: { documentId: params.id },
+          orderBy: { createdAt: 'asc' },
+          select: { id: true },
+        });
+        for (let i = 0; i < newChunks.length; i++) {
+          const emb = embeddings[i];
+          if (!emb || emb.length === 0) continue;
+          await prisma.$executeRawUnsafe(
+            `UPDATE "KnowledgeChunk" SET embedding = $1::vector WHERE id = $2`,
+            `[${emb.join(',')}]`,
+            newChunks[i].id
+          );
+        }
+      }
     }
 
     const updated = await prisma.knowledgeDocument.update({
@@ -110,8 +145,6 @@ export async function DELETE(
   });
   if (!membership) return new NextResponse('Forbidden', { status: 403 });
 
-  // Chunks deleted via cascade
   await prisma.knowledgeDocument.delete({ where: { id: params.id } });
-
   return NextResponse.json({ success: true });
 }

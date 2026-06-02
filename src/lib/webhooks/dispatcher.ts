@@ -6,9 +6,12 @@ export async function dispatchWebhook(workspaceId: string, event: string, payloa
     const webhooks = await prisma.webhookConfig.findMany({
       where: {
         workspaceId,
-        event,
         enabled: true,
-      }
+        OR: [
+          { event },                      // legacy single-event records
+          { events: { has: event } },     // new multi-event records
+        ],
+      },
     });
 
     for (const webhook of webhooks) {
@@ -78,8 +81,9 @@ export async function dispatchWebhook(workspaceId: string, event: string, payloa
         where: { id: webhook.id },
         data: {
           lastStatus,
+          lastCalledAt: new Date(),
           lastError: lastError ? String(lastError).substring(0, 500) : null,
-        }
+        },
       });
     }
   } catch (error) {

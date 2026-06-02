@@ -9,7 +9,7 @@ export async function GET() {
 
   const webhooks = await prisma.webhookConfig.findMany({
     where: { workspaceId: session.user.workspaceId },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
   });
 
   return NextResponse.json(webhooks);
@@ -18,9 +18,9 @@ export async function GET() {
 const postSchema = z.object({
   name: z.string().min(1),
   url: z.string().url(),
-  event: z.string().min(1),
+  events: z.array(z.string()).min(1),
   secret: z.string().optional(),
-  customHeaders: z.string().optional(),
+  enabled: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -33,12 +33,17 @@ export async function POST(req: NextRequest) {
 
     const webhook = await prisma.webhookConfig.create({
       data: {
-        ...data,
         workspaceId: session.user.workspaceId,
-      }
+        name: data.name,
+        url: data.url,
+        event: data.events[0],       // legacy field — first event
+        events: data.events,
+        secret: data.secret ?? null,
+        enabled: data.enabled ?? true,
+      },
     });
 
-    return NextResponse.json(webhook);
+    return NextResponse.json(webhook, { status: 201 });
   } catch {
     return new NextResponse('Bad Request', { status: 400 });
   }

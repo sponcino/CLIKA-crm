@@ -19,7 +19,7 @@ export async function PATCH(
     if (!funnel) return new NextResponse('Not Found', { status: 404 });
 
     const body = await req.json();
-    const { name, nextStepId, order, description, actions } = body;
+    const { name, nextStepId, order, description, instructions, transitionCriteria, actions } = body;
 
     const step = await prisma.funnelStep.updateMany({
       where: { id: params.stepId, funnelId: params.id },
@@ -28,6 +28,8 @@ export async function PATCH(
         ...(nextStepId !== undefined && { nextStepId }),
         ...(order !== undefined && { order }),
         ...(description !== undefined && { description }),
+        ...(instructions !== undefined && { instructions }),
+        ...(transitionCriteria !== undefined && { transitionCriteria }),
         ...(actions !== undefined && { actions }),
       },
     });

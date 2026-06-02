@@ -44,7 +44,7 @@ export async function POST(
     if (!funnel) return new NextResponse('Not Found', { status: 404 });
 
     const body = await req.json();
-    const { name, stepId, nextStepId, order, description, actions } = body;
+    const { name, stepId, nextStepId, order, description, instructions, transitionCriteria, actions } = body;
     if (!name || !stepId) return new NextResponse('name and stepId required', { status: 400 });
 
     const step = await prisma.funnelStep.create({
@@ -55,6 +55,8 @@ export async function POST(
         nextStepId: nextStepId ?? null,
         order: order ?? 0,
         description: description ?? null,
+        instructions: instructions ?? null,
+        transitionCriteria: transitionCriteria ?? null,
         actions: actions ?? {},
       },
     });

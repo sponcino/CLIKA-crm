@@ -42,13 +42,14 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { name, description, isActive } = body;
+    const { name, description, isActive, adAttributionEnabled } = body;
     const funnel = await prisma.funnel.updateMany({
       where: { id: params.id, workspaceId },
       data: {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
         ...(isActive !== undefined && { isActive }),
+        ...(adAttributionEnabled !== undefined && { adAttributionEnabled }),
       },
     });
     if (!funnel.count) return new NextResponse('Not Found', { status: 404 });

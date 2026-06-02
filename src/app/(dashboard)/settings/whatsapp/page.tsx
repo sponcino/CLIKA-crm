@@ -136,7 +136,7 @@ export default function WhatsAppSettingsPage() {
         <div className="flex items-center gap-3">
           <Phone className="h-5 w-5 text-whatsapp" />
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">WhatsApp Cloud API</h1>
+            <h1 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">WhatsApp Cloud API</h1>
             <p className="text-gray-500 text-xs mt-0.5">
               Conecta tu número de WhatsApp Business mediante Meta Cloud API.
             </p>
@@ -169,7 +169,7 @@ export default function WhatsAppSettingsPage() {
       </div>
 
       {/* Form Card */}
-      <div className="bg-[#111111] border border-[#ffffff0d] rounded-md divide-y divide-[#ffffff08]">
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md divide-y divide-[var(--border-color)]">
         {/* Section: Identifiers */}
         <div className="p-5 space-y-4">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">

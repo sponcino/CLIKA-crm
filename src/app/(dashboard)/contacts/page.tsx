@@ -52,7 +52,7 @@ export default function ContactsPage() {
   })
 
   return (
-    <div className="p-8 w-full h-full flex flex-col bg-[#0a0a0a] text-white font-sans antialiased">
+    <div className="p-8 w-full h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased">
       {/* Top bar */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -78,22 +78,22 @@ export default function ContactsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre, teléfono o email..."
-            className="pl-8 bg-[#111111] border-[#ffffff10] text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
+            className="pl-8 bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="border border-[#ffffff10] rounded-md flex-1 overflow-auto bg-[#111111] scrollbar-thin">
+      <div className="border border-[var(--border-color)] rounded-md flex-1 overflow-auto bg-[var(--bg-secondary)] scrollbar-thin">
         <Table>
-          <TableHeader className="bg-[#0a0a0a]">
-            <TableRow className="hover:bg-[#0a0a0a] border-b border-[#ffffff10]">
-              <TableHead className="text-gray-400 font-semibold h-10">Nombre</TableHead>
-              <TableHead className="text-gray-400 font-semibold h-10">Teléfono</TableHead>
-              <TableHead className="text-gray-400 font-semibold h-10">Estado</TableHead>
-              <TableHead className="text-gray-400 font-semibold h-10">Lead Score</TableHead>
-              <TableHead className="text-gray-400 font-semibold h-10">Campaña / Anuncio</TableHead>
-              <TableHead className="text-gray-400 font-semibold h-10">Último Mensaje</TableHead>
+          <TableHeader className="bg-[var(--bg-primary)]">
+            <TableRow className="hover:bg-[var(--bg-primary)] border-b border-[var(--border-color)]">
+              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Nombre</TableHead>
+              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Teléfono</TableHead>
+              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Estado</TableHead>
+              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Lead Score</TableHead>
+              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Campaña / Anuncio</TableHead>
+              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Último Mensaje</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -108,7 +108,7 @@ export default function ContactsPage() {
             ) : (
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               filtered.map((contact: any) => (
-                <TableRow key={contact.id} className="border-b border-[#ffffff05] cursor-pointer hover:bg-[#ffffff06] bg-[#111111] transition-all">
+                <TableRow key={contact.id} className="border-b border-[var(--border-color)] cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 bg-[var(--bg-secondary)] transition-all">
                   <TableCell className="py-3">
                     <div>
                       <p className="font-semibold text-white">

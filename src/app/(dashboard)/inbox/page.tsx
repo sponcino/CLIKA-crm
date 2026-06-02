@@ -4,19 +4,24 @@ import { useSession } from "next-auth/react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useInboxStore } from "@/stores/inbox.store"
 import { useInboxStream } from "@/hooks/useInboxStream"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog"
+import {
   Search, Send, AlertTriangle, MessageSquare, Bot,
   Clock, Tag, X, Plus, StickyNote, PanelRightClose, PanelRightOpen,
-  Paperclip, Image as ImageIcon, Headphones, FileText, Loader2
+  Paperclip, Image as ImageIcon, Headphones, FileText, Loader2,
+  ChevronDown, ChevronUp, Pencil, Archive, Trash2, Check,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
+import { toast } from "sonner"
 
 // ─── colour helpers for labels ─────────────────────────────────────────────────
 const LABEL_COLORS: Record<string, string> = {
@@ -31,6 +36,40 @@ const LABEL_COLORS: Record<string, string> = {
 const COLOR_KEYS = Object.keys(LABEL_COLORS)
 const labelColor = (c?: string | null) =>
   LABEL_COLORS[c ?? ""] ?? "bg-gray-500/10 text-gray-400 border-gray-500/20"
+
+// ─── lead status helpers ───────────────────────────────────────────────────────
+const LEAD_STATUS_OPTIONS = [
+  { value: "NEW",                   label: "Nuevo",               color: "text-gray-400" },
+  { value: "CONTACTED",             label: "Contactado",          color: "text-blue-400" },
+  { value: "QUALIFIED",             label: "Calificado",          color: "text-indigo-400" },
+  { value: "INTERESTED",            label: "Interesado",          color: "text-purple-400" },
+  { value: "APPOINTMENT_SCHEDULED", label: "Cita agendada",       color: "text-yellow-400" },
+  { value: "PROPOSAL_SENT",         label: "Propuesta enviada",   color: "text-orange-400" },
+  { value: "WON",                   label: "Ganado",              color: "text-green-400" },
+  { value: "LOST",                  label: "Perdido",             color: "text-red-400" },
+]
+const statusOption = (v?: string | null) =>
+  LEAD_STATUS_OPTIONS.find((o) => o.value === v) ?? LEAD_STATUS_OPTIONS[0]
+
+// ─── collapsible section ───────────────────────────────────────────────────────
+function Section({
+  title, open, onToggle, children,
+}: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return (
+    <div className="border-b border-[#ffffff08]">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-bold text-white/40 uppercase tracking-widest hover:text-white/60 transition-colors"
+      >
+        {title}
+        {open
+          ? <ChevronUp className="h-3 w-3" />
+          : <ChevronDown className="h-3 w-3" />}
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  )
+}
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function InboxPage() {
@@ -55,10 +94,29 @@ export default function InboxPage() {
   const [attachmentOpen, setAttachmentOpen] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [newLabelName, setNewLabelName] = useState("")
-  const [rightPanelOpen, setRightPanelOpen] = useState(false)   // hidden by default
+  const [rightPanelOpen, setRightPanelOpen] = useState(false)
   const snoozeRef = useRef<HTMLDivElement>(null)
   const labelRef  = useRef<HTMLDivElement>(null)
   const attachmentRef = useRef<HTMLDivElement>(null)
+
+  // ── right panel state ──────────────────────────────────────────────────────
+  const [sections, setSections] = useState({
+    status: true, score: true, funnel: false, datos: true, etiquetas: true, info: true,
+  })
+  const toggleSection = (key: keyof typeof sections) =>
+    setSections((s) => ({ ...s, [key]: !s[key] }))
+
+  const [editingField, setEditingField] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState("")
+  const [flashField, setFlashField] = useState<string | null>(null)
+  const [contactRefreshedAgo, setContactRefreshedAgo] = useState<string | null>(null)
+  const [panelLabelOpen, setPanelLabelOpen] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [windowCountdown, setWindowCountdown] = useState("")
+
+  const prevLeadScoreRef = useRef<number | null>(null)
+  const contactRefreshTimeRef = useRef<Date | null>(null)
+  const panelLabelRef = useRef<HTMLDivElement>(null)
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -66,12 +124,13 @@ export default function InboxPage() {
       if (snoozeRef.current && !snoozeRef.current.contains(e.target as Node)) setSnoozeOpen(false)
       if (labelRef.current  && !labelRef.current.contains(e.target as Node))  setLabelOpen(false)
       if (attachmentRef.current && !attachmentRef.current.contains(e.target as Node)) setAttachmentOpen(false)
+      if (panelLabelRef.current && !panelLabelRef.current.contains(e.target as Node)) setPanelLabelOpen(false)
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [])
 
-  // Hide right panel when no conversation is selected
+  // Hide right panel when no conversation selected
   useEffect(() => {
     if (!activeConversationId) setRightPanelOpen(false)
   }, [activeConversationId])
@@ -93,7 +152,7 @@ export default function InboxPage() {
     if (convData?.data) setConversations(convData.data)
   }, [convData, setConversations])
 
-  // ── active conversation full data (messages, snoozedUntil, labels) ─────────
+  // ── active conversation full data ──────────────────────────────────────────
   const { data: activeConvData } = useQuery({
     queryKey: ["conversation", activeConversationId, workspaceId],
     queryFn: async () => {
@@ -112,7 +171,65 @@ export default function InboxPage() {
     }
   }, [activeConvData, activeConversationId, setMessages])
 
-  // ── labels for active conversation ────────────────────────────────────────
+  // ── contact detail (live, every 10s) ──────────────────────────────────────
+  const { data: contactDetail } = useQuery({
+    queryKey: ["contact-detail", activeConvData?.contactId],
+    queryFn: async () => {
+      const contactId = activeConvData?.contactId
+      if (!contactId || !workspaceId) return null
+      const res = await fetch(`/api/contacts/${contactId}?workspaceId=${workspaceId}`)
+      if (!res.ok) return null
+      return res.json()
+    },
+    enabled: !!activeConvData?.contactId && !!workspaceId && rightPanelOpen,
+    refetchInterval: 10000,
+  })
+
+  // Lead score change detection + refresh label
+  useEffect(() => {
+    if (!contactDetail) return
+    contactRefreshTimeRef.current = new Date()
+    setContactRefreshedAgo("ahora")
+
+    const prev = prevLeadScoreRef.current
+    if (prev !== null && contactDetail.leadScore !== prev) {
+      toast.success(`Lead score actualizado: ${prev} → ${contactDetail.leadScore}`)
+      setFlashField("leadScore")
+      setTimeout(() => setFlashField(null), 1500)
+    }
+    prevLeadScoreRef.current = contactDetail.leadScore ?? 0
+  }, [contactDetail])
+
+  // "actualizado hace X" counter
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!contactRefreshTimeRef.current) return
+      const secs = Math.floor((Date.now() - contactRefreshTimeRef.current.getTime()) / 1000)
+      if (secs < 60) setContactRefreshedAgo(`${secs}s`)
+      else setContactRefreshedAgo(`${Math.floor(secs / 60)}m`)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // ── 24h window countdown ───────────────────────────────────────────────────
+  useEffect(() => {
+    const update = () => {
+      const lastMsgAt =
+        activeConvData?.contact?.lastMessageAt ??
+        conversations.find((c) => c.id === activeConversationId)?.contact?.lastMessageAt
+      if (!lastMsgAt) { setWindowCountdown(""); return }
+      const remaining = 24 * 60 * 60 * 1000 - (Date.now() - new Date(lastMsgAt).getTime())
+      if (remaining <= 0) { setWindowCountdown("cerrada"); return }
+      const h = Math.floor(remaining / (1000 * 60 * 60))
+      const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+      setWindowCountdown(`${h}h ${m}m`)
+    }
+    update()
+    const interval = setInterval(update, 60_000)
+    return () => clearInterval(interval)
+  }, [activeConvData, activeConversationId, conversations])
+
+  // ── labels ─────────────────────────────────────────────────────────────────
   const { data: rawConvLabels = [] } = useQuery({
     queryKey: ["conversation-labels", activeConversationId],
     queryFn: async () => {
@@ -124,7 +241,6 @@ export default function InboxPage() {
     },
     enabled: !!activeConversationId && !!workspaceId,
   })
-  // Defensive: filter out any ConversationLabel where the nested label is missing
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const convLabels = (rawConvLabels as any[]).filter((cl) => cl?.label != null)
 
@@ -135,10 +251,10 @@ export default function InboxPage() {
       if (!res.ok) throw new Error("Failed")
       return res.json()
     },
-    enabled: !!workspaceId && labelOpen,
+    enabled: !!workspaceId && (labelOpen || panelLabelOpen),
   })
 
-  // ── notes for active conversation ──────────────────────────────────────────
+  // ── notes ──────────────────────────────────────────────────────────────────
   const { data: convNotes = [] } = useQuery({
     queryKey: ["conversation-notes", activeConversationId],
     queryFn: async () => {
@@ -263,6 +379,58 @@ export default function InboxPage() {
     },
   })
 
+  const updateContactMutation = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutationFn: async (data: Record<string, any>) => {
+      const contactId = activeConvData?.contactId ?? activeConvData?.contact?.id
+      const res = await fetch(`/api/contacts/${contactId}?workspaceId=${workspaceId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error("Failed")
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contact-detail"] })
+      queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] })
+      queryClient.invalidateQueries({ queryKey: ["conversation", activeConversationId] })
+      setEditingField(null)
+    },
+  })
+
+  const archiveMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/conversations/${activeConversationId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "ARCHIVED" }),
+      })
+      if (!res.ok) throw new Error("Failed")
+      return res.json()
+    },
+    onSuccess: () => {
+      toast.success("Conversación archivada")
+      queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] })
+      setActiveConversation(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/conversations/${activeConversationId}`, {
+        method: "DELETE",
+      })
+      if (!res.ok) throw new Error("Failed")
+    },
+    onSuccess: () => {
+      toast.success("Conversación eliminada")
+      queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] })
+      setActiveConversation(null)
+      setShowDeleteConfirm(false)
+    },
+  })
+
   // ── helpers ────────────────────────────────────────────────────────────────
   const handleSend = () => {
     if (!text.trim() || !activeConversationId) return
@@ -279,15 +447,9 @@ export default function InboxPage() {
       const formData = new FormData()
       formData.append("file", file)
       formData.append("workspaceId", workspaceId)
-      
-      const uploadRes = await fetch("/api/media/upload", {
-        method: "POST",
-        body: formData,
-      })
-      
+      const uploadRes = await fetch("/api/media/upload", { method: "POST", body: formData })
       if (!uploadRes.ok) throw new Error("Upload failed")
       const { mediaId, type: mediaType } = await uploadRes.json()
-
       const sendRes = await fetch("/api/messages/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -295,35 +457,92 @@ export default function InboxPage() {
           conversationId: activeConversationId,
           type: mediaType || type,
           mediaId,
-          workspaceId
+          workspaceId,
         }),
       })
       if (!sendRes.ok) throw new Error("Send failed")
       queryClient.invalidateQueries({ queryKey: ["conversation", activeConversationId] })
     } catch (err) {
       console.error(err)
-      alert("Error al enviar archivo")
+      toast.error("Error al enviar archivo")
     } finally {
       setUploading(false)
-      if (e.target) e.target.value = "" // Reset file input
+      if (e.target) e.target.value = ""
     }
   }
 
+  const startEdit = useCallback((field: string, currentValue: string) => {
+    setEditingField(field)
+    setEditValue(currentValue)
+  }, [])
+
+  const commitEdit = useCallback(
+    (field: string) => {
+      if (editValue.trim() === "") { setEditingField(null); return }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: Record<string, any> = { [field]: editValue.trim() }
+      updateContactMutation.mutate(payload)
+    },
+    [editValue, updateContactMutation]
+  )
+
   const activeConversation = conversations.find((c) => c.id === activeConversationId)
   const activeMessages = activeConversationId ? messages[activeConversationId] ?? [] : []
-
-  // snoozedUntil comes from the detailed fetch
   const snoozedUntil: string | null = activeConvData?.snoozedUntil ?? null
   const isSnoozed = !!snoozedUntil && new Date(snoozedUntil) > new Date()
 
+  // Merged contact: prefer live-polled data
+  const contact = contactDetail ?? activeConvData?.contact ?? activeConversation?.contact
+  const leadScore = contact?.leadScore ?? 0
+
+  // Inline edit field renderer
+  const EditableField = ({
+    field, label, value,
+  }: { field: string; label: string; value?: string | null }) => {
+    const isEditing = editingField === field
+    return (
+      <div className="flex items-start justify-between gap-2 py-1.5">
+        <span className="text-[11px] text-white/40 shrink-0 w-20">{label}</span>
+        {isEditing ? (
+          <div className="flex items-center gap-1 flex-1">
+            <input
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => commitEdit(field)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitEdit(field)
+                if (e.key === "Escape") setEditingField(null)
+              }}
+              className="flex-1 bg-white/5 border border-white/15 rounded px-2 py-0.5 text-xs text-white outline-none focus:border-white/30"
+            />
+            <button onClick={() => commitEdit(field)} className="text-green-400 hover:text-green-300">
+              <Check className="h-3 w-3" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => startEdit(field, value ?? "")}
+            className="flex items-center gap-1 group flex-1 text-right justify-end"
+          >
+            <span className={`text-[11px] font-medium truncate ${value ? "text-white" : "text-white/25"}`}>
+              {value || "—"}
+            </span>
+            <Pencil className="h-2.5 w-2.5 text-white/0 group-hover:text-white/30 transition-colors shrink-0" />
+          </button>
+        )}
+      </div>
+    )
+  }
+
   // ── render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#0a0a0a] text-sm text-gray-200">
+    <div className="flex h-full w-full overflow-hidden bg-[var(--bg-primary)] text-sm text-[var(--text-primary)]">
 
       {/* ══════════ LEFT: Conversation List ══════════ */}
-      <div className="w-80 border-r border-[#ffffff10] flex flex-col bg-[#0a0a0a] shrink-0 overflow-hidden">
-        <div className="p-4 border-b border-[#ffffff10] space-y-3">
-          <h2 className="font-bold text-lg tracking-tight text-white">Mensajes</h2>
+      <div className="w-80 border-r border-[var(--border-color)] flex flex-col bg-[var(--bg-primary)] shrink-0 overflow-hidden">
+        <div className="p-4 border-b border-[var(--border-color)] space-y-3">
+          <h2 className="font-bold text-lg tracking-tight text-[var(--text-primary)]">Mensajes</h2>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
@@ -379,11 +598,11 @@ export default function InboxPage() {
       </div>
 
       {/* ══════════ CENTER: Chat Panel ══════════ */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#0f0f0f]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[var(--bg-secondary)]">
         {activeConversation ? (
           <>
             {/* ── Header ── */}
-            <div className="h-14 border-b border-[#ffffff10] flex items-center justify-between px-4 bg-[#0a0a0a] shrink-0 gap-2">
+            <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 bg-[var(--bg-primary)] shrink-0 gap-2">
 
               {/* Left: avatar + name */}
               <div className="flex items-center gap-3 min-w-0">
@@ -437,10 +656,10 @@ export default function InboxPage() {
                     <div className="absolute right-0 top-full mt-1 z-50 w-60 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl p-3 space-y-3">
                       <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Etiquetas</p>
 
-                      {/* Applied labels */}
                       {convLabels.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
-                          {convLabels.map((cl: any) => ( // eslint-disable-line
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                          {convLabels.map((cl: any) => (
                             <span
                               key={cl.id}
                               className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border ${labelColor(cl.label?.color)}`}
@@ -457,12 +676,15 @@ export default function InboxPage() {
                         </div>
                       )}
 
-                      {/* Available workspace labels not yet applied */}
-                      {(workspaceLabels as any[]).filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id)).length > 0 && ( // eslint-disable-line
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {(workspaceLabels as any[]).filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id)).length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
-                          {(workspaceLabels as any[]) // eslint-disable-line
-                            .filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id)) // eslint-disable-line
-                            .map((label: any) => ( // eslint-disable-line
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                          {(workspaceLabels as any[])
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            .filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id))
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            .map((label: any) => (
                               <button
                                 key={label.id}
                                 onClick={() => addLabelMutation.mutate(label.id)}
@@ -475,7 +697,6 @@ export default function InboxPage() {
                         </div>
                       )}
 
-                      {/* Create new label */}
                       <form
                         onSubmit={(e) => {
                           e.preventDefault()
@@ -561,7 +782,6 @@ export default function InboxPage() {
                     : <PanelRightOpen className="h-3.5 w-3.5" />}
                 </button>
 
-                {/* Close */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -575,7 +795,8 @@ export default function InboxPage() {
             {/* Applied labels bar */}
             {convLabels.length > 0 && (
               <div className="flex items-center gap-1.5 px-4 py-1.5 border-b border-[#ffffff08] bg-[#0a0a0a] flex-wrap shrink-0">
-                {convLabels.map((cl: any) => ( // eslint-disable-line
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {convLabels.map((cl: any) => (
                   <span
                     key={cl.id}
                     className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border font-medium ${labelColor(cl.label?.color)}`}
@@ -586,15 +807,19 @@ export default function InboxPage() {
               </div>
             )}
 
-            {/* Requires template alert */}
+            {/* 24h window banner — live countdown */}
             {activeConversation.requiresTemplate && (
               <div className="bg-amber-950/40 text-amber-300 px-4 py-2 text-xs flex items-center justify-center gap-2 border-b border-[#ffffff08] shrink-0">
-                <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
-                La ventana de 24 horas ha cerrado. Debes usar una plantilla para iniciar la conversación.
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                {windowCountdown === "cerrada"
+                  ? "Ventana cerrada — usá una plantilla para reiniciar la conversación"
+                  : windowCountdown
+                    ? `Ventana cierra en: ${windowCountdown} — respondé antes para no perderla`
+                    : "Ventana de 24h activa — calculando tiempo restante..."}
               </div>
             )}
 
-            {/* Messages — flex-1 so it fills all remaining vertical space */}
+            {/* Messages */}
             <ScrollArea className="flex-1 min-h-0 bg-[#0f0f0f]">
               <div className="p-6 space-y-4 max-w-4xl mx-auto pb-4">
                 {activeMessages.length === 0 ? (
@@ -619,7 +844,8 @@ export default function InboxPage() {
                                 <audio src={msg.mediaUrl} controls className="max-w-[240px]" />
                               ) : (
                                 <a href={msg.mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-400 hover:underline p-2 bg-black/20 rounded">
-                                  <FileText className="h-4 w-4 shrink-0" /> <span className="truncate text-xs">Ver Archivo Adjunto</span>
+                                  <FileText className="h-4 w-4 shrink-0" />
+                                  <span className="truncate text-xs">Ver Archivo Adjunto</span>
                                 </a>
                               )}
                               {msg.content && !msg.content.startsWith("[Media:") && (
@@ -640,9 +866,8 @@ export default function InboxPage() {
               </div>
             </ScrollArea>
 
-            {/* Input area — always pinned to bottom */}
+            {/* Input area */}
             <div className="shrink-0 border-t border-[#ffffff10] bg-[#111111]">
-              {/* Tabs */}
               <div className="flex border-b border-[#ffffff08]">
                 <button
                   onClick={() => setInputMode("message")}
@@ -668,7 +893,6 @@ export default function InboxPage() {
                 </button>
               </div>
 
-              {/* Text input row */}
               <div className={`p-3 flex items-end gap-2 ${inputMode === "note" ? "bg-yellow-950/10" : ""}`}>
                 {inputMode === "note" ? (
                   <textarea
@@ -691,7 +915,6 @@ export default function InboxPage() {
                       >
                         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
                       </Button>
-                      
                       {attachmentOpen && (
                         <div className="absolute bottom-full left-0 mb-2 w-48 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl py-1 z-50">
                           <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
@@ -745,74 +968,246 @@ export default function InboxPage() {
         )}
       </div>
 
-      {/* ══════════ RIGHT: Contact + Notes panel (collapsible) ══════════ */}
-      {activeConversation && rightPanelOpen && (
-        <div className="w-72 border-l border-[#ffffff10] bg-[#111111] flex flex-col shrink-0 overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffffff10] bg-[#0d0d0d] shrink-0">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Detalles</span>
-            <button
-              onClick={() => setRightPanelOpen(false)}
-              className="text-gray-600 hover:text-gray-300 transition-colors"
-              title="Cerrar panel"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          {/* Contact card */}
-          <div className="p-5 border-b border-[#ffffff10] text-center space-y-3 bg-[#0d0d0d] shrink-0">
-            <Avatar className="h-14 w-14 mx-auto border border-[#ffffff15]">
-              <AvatarFallback className="text-xl bg-whatsapp/10 text-whatsapp font-bold">
-                {activeConversation.contact?.whatsappName?.charAt(0) ?? "C"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="font-semibold text-sm text-white">
-                {activeConversation.contact?.whatsappName ?? "Desconocido"}
-              </h2>
-              <p className="text-xs text-gray-400 mt-0.5">{activeConversation.contact?.whatsappPhone}</p>
+      {/* ══════════ RIGHT: Contact panel (320px, slide-in) ══════════ */}
+      <div
+        className={`border-l border-[#ffffff10] bg-[#111111] flex flex-col shrink-0 overflow-hidden transition-all duration-200 ease-in-out ${
+          activeConversation && rightPanelOpen ? "w-80 opacity-100" : "w-0 opacity-0"
+        }`}
+      >
+        {activeConversation && rightPanelOpen && (
+          <>
+            {/* ── Panel header ── */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffffff10] bg-[#0d0d0d] shrink-0">
+              <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Contacto</span>
+              <div className="flex items-center gap-2">
+                {contactRefreshedAgo && (
+                  <span className="text-[9px] text-white/20">actualizado hace {contactRefreshedAgo}</span>
+                )}
+                <button
+                  onClick={() => setRightPanelOpen(false)}
+                  className="text-white/20 hover:text-white/50 transition-colors"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
-            <div className="inline-flex">
-              <Badge className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-sm ${
-                activeConversation.contact?.status === "NEW"
-                  ? "bg-whatsapp/10 text-whatsapp border border-whatsapp/20"
-                  : "bg-indigo-950 text-indigo-300 border border-indigo-500/20"
-              }`}>
-                {activeConversation.contact?.status}
-              </Badge>
-            </div>
-          </div>
 
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="p-4 space-y-5">
-
-              {/* Lead details */}
-              <div className="space-y-2">
-                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Detalles del Lead</h4>
-                <div className="grid grid-cols-2 gap-y-2 text-xs">
-                  <span className="text-gray-500">Email:</span>
-                  <span className="text-white truncate font-medium">{activeConversation.contact?.email ?? "—"}</span>
-                  <span className="text-gray-500">Compañía:</span>
-                  <span className="text-white truncate font-medium">{activeConversation.contact?.company ?? "—"}</span>
-                  <span className="text-gray-500">Score:</span>
-                  <span className="text-white font-medium">{activeConversation.contact?.leadScore ?? 0}</span>
+            <ScrollArea className="flex-1 min-h-0">
+              {/* ── Avatar + name ── */}
+              <div className="px-4 py-5 border-b border-[#ffffff08] text-center space-y-3 bg-[#0d0d0d]">
+                <div className="relative inline-block">
+                  <Avatar className="h-16 w-16 mx-auto border-2 border-[#ffffff15]">
+                    <AvatarFallback className="text-2xl bg-whatsapp/10 text-whatsapp font-bold">
+                      {contact?.whatsappName?.charAt(0) ?? contact?.fullName?.charAt(0) ?? "C"}
+                    </AvatarFallback>
+                  </Avatar>
+                  {/* Bot indicator */}
+                  <span
+                    className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-[#0d0d0d] flex items-center justify-center ${
+                      contact?.aiEnabled ? "bg-[#6366f1]" : "bg-gray-600"
+                    }`}
+                    title={contact?.aiEnabled ? "IA activa" : "IA pausada"}
+                  >
+                    <Bot className="h-2 w-2 text-white" />
+                  </span>
+                </div>
+                <div>
+                  <h2 className="font-semibold text-sm text-white leading-tight">
+                    {contact?.fullName || contact?.whatsappName || "Desconocido"}
+                  </h2>
+                  <p className="text-[11px] text-white/40 mt-0.5">{contact?.whatsappPhone}</p>
                 </div>
               </div>
 
-              {/* Internal notes */}
-              <div className="space-y-2 pt-4 border-t border-[#ffffff08]">
-                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
+              {/* ── Estado del Lead ── */}
+              <Section
+                title="Estado del Lead"
+                open={sections.status}
+                onToggle={() => toggleSection("status")}
+              >
+                <select
+                  value={contact?.status ?? "NEW"}
+                  onChange={(e) => updateContactMutation.mutate({ status: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-xs text-white focus:outline-none focus:border-white/25 cursor-pointer"
+                >
+                  {LEAD_STATUS_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value} className="bg-[#1a1a1a]">
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className={`text-[11px] font-medium ${statusOption(contact?.status).color}`}>
+                    {statusOption(contact?.status).label}
+                  </span>
+                </div>
+              </Section>
+
+              {/* ── Puntuación ── */}
+              <Section
+                title="Puntuación"
+                open={sections.score}
+                onToggle={() => toggleSection("score")}
+              >
+                <div
+                  className={`space-y-2 transition-all duration-700 ${
+                    flashField === "leadScore" ? "ring-1 ring-green-400/40 rounded-md p-1" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-white/40">Lead Score</span>
+                    <span className={`text-sm font-bold tabular-nums ${
+                      leadScore >= 70 ? "text-green-400"
+                      : leadScore >= 40 ? "text-yellow-400"
+                      : "text-white/60"
+                    }`}>
+                      {leadScore}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${
+                        leadScore >= 70 ? "bg-green-500"
+                        : leadScore >= 40 ? "bg-yellow-500"
+                        : "bg-white/20"
+                      }`}
+                      style={{ width: `${Math.min(leadScore, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[9px] text-white/20">
+                    <span>0</span>
+                    <span>100</span>
+                  </div>
+                </div>
+              </Section>
+
+              {/* ── Progreso del Paso ── */}
+              <Section
+                title="Progreso del Paso"
+                open={sections.funnel}
+                onToggle={() => toggleSection("funnel")}
+              >
+                <p className="text-[11px] text-white/25 italic">Sin funnel asignado</p>
+              </Section>
+
+              {/* ── Datos Capturados ── */}
+              <Section
+                title="Datos Capturados"
+                open={sections.datos}
+                onToggle={() => toggleSection("datos")}
+              >
+                <div className="space-y-0.5">
+                  <EditableField field="fullName"     label="Nombre"    value={contact?.fullName} />
+                  <EditableField field="email"        label="Email"     value={contact?.email} />
+                  <EditableField field="whatsappPhone" label="Teléfono" value={contact?.whatsappPhone} />
+                  <EditableField field="company"      label="Empresa"   value={contact?.company} />
+                  <EditableField field="businessType" label="Tipo neg." value={contact?.businessType} />
+                </div>
+              </Section>
+
+              {/* ── Etiquetas ── */}
+              <Section
+                title="Etiquetas"
+                open={sections.etiquetas}
+                onToggle={() => toggleSection("etiquetas")}
+              >
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {convLabels.map((cl: any) => (
+                    <span
+                      key={cl.id}
+                      className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border ${labelColor(cl.label?.color)}`}
+                    >
+                      {cl.label?.name}
+                      <button
+                        onClick={() => removeLabelMutation.mutate(cl.labelId)}
+                        className="hover:opacity-70 ml-0.5"
+                      >
+                        <X className="h-2 w-2" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="relative" ref={panelLabelRef}>
+                  <button
+                    onClick={() => setPanelLabelOpen((o) => !o)}
+                    className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors border border-white/10 rounded px-2 py-1"
+                  >
+                    <Plus className="h-2.5 w-2.5" />
+                    Agregar etiqueta...
+                  </button>
+                  {panelLabelOpen && (
+                    <div className="absolute left-0 top-full mt-1 z-50 w-52 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl p-2 space-y-1">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {(workspaceLabels as any[])
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        .filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id))
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        .map((label: any) => (
+                          <button
+                            key={label.id}
+                            onClick={() => { addLabelMutation.mutate(label.id); setPanelLabelOpen(false) }}
+                            className={`w-full text-left inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded hover:bg-white/5 ${labelColor(label?.color)}`}
+                          >
+                            {label.name}
+                          </button>
+                        ))}
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {(workspaceLabels as any[]).filter((l) => !convLabels.some((cl: any) => cl.labelId === l.id)).length === 0 && (
+                        <p className="text-[10px] text-white/25 px-2 py-1">No hay etiquetas disponibles</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </Section>
+
+              {/* ── WhatsApp ID ── */}
+              <Section
+                title="WhatsApp"
+                open={sections.info}
+                onToggle={() => toggleSection("info")}
+              >
+                <div className="space-y-2 text-[11px]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Número</span>
+                    <span className="text-white/70 font-mono">{contact?.whatsappPhone}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Registrado</span>
+                    <span className="text-white/50">
+                      {contact?.createdAt
+                        ? new Date(contact.createdAt).toLocaleDateString("es-AR", {
+                            day: "2-digit", month: "short", year: "numeric",
+                          })
+                        : "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Último msj</span>
+                    <span className="text-white/50">
+                      {contact?.lastMessageAt
+                        ? formatDistanceToNow(new Date(contact.lastMessageAt), { addSuffix: true, locale: es })
+                        : "—"}
+                    </span>
+                  </div>
+                </div>
+              </Section>
+
+              {/* ── Internal Notes ── */}
+              <div className="px-4 py-4 border-b border-[#ffffff08]">
+                <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-1.5 mb-3">
                   <StickyNote className="h-3 w-3" /> Notas Internas
                 </h4>
                 <div className="space-y-2">
-                  {(convNotes as any[]).length === 0 ? ( // eslint-disable-line
-                    <p className="text-xs text-gray-600 italic">Sin notas.</p>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(convNotes as any[]).length === 0 ? (
+                    <p className="text-[11px] text-white/20 italic">Sin notas.</p>
                   ) : (
-                    (convNotes as any[]).map((note: any) => ( // eslint-disable-line
-                      <div key={note.id} className="p-2 bg-yellow-950/20 rounded border border-yellow-500/10 space-y-1">
-                        <p className="text-xs text-yellow-200/80 whitespace-pre-wrap">{note.content}</p>
-                        <p className="text-[9px] text-gray-600">
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (convNotes as any[]).map((note: any) => (
+                      <div key={note.id} className="p-2.5 bg-yellow-950/20 rounded-md border border-yellow-500/10 space-y-1">
+                        <p className="text-[11px] text-yellow-200/80 whitespace-pre-wrap">{note.content}</p>
+                        <p className="text-[9px] text-white/25">
                           {note.user?.name ?? "Usuario"} ·{" "}
                           {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true, locale: es })}
                         </p>
@@ -822,10 +1217,64 @@ export default function InboxPage() {
                 </div>
               </div>
 
-            </div>
-          </ScrollArea>
-        </div>
-      )}
+              {/* ── Bottom actions ── */}
+              <div className="p-4 space-y-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => archiveMutation.mutate()}
+                  disabled={archiveMutation.isPending}
+                  className="w-full h-8 text-xs border-white/10 bg-transparent text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors gap-1.5"
+                >
+                  <Archive className="h-3.5 w-3.5" />
+                  {archiveMutation.isPending ? "Archivando..." : "Archivar conversación"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full h-8 text-xs border-red-500/20 bg-transparent text-red-400/70 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors gap-1.5"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Eliminar conversación
+                </Button>
+              </div>
+            </ScrollArea>
+          </>
+        )}
+      </div>
+
+      {/* ── Delete confirmation dialog ── */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="bg-[#111] border-white/10 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Trash2 className="h-4 w-4 text-red-400" />
+              Eliminar conversación
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-white/50">
+            Esta acción eliminará permanentemente la conversación y todos sus mensajes. No se puede deshacer.
+          </p>
+          <div className="flex gap-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              className="flex-1 border-white/10 bg-transparent text-white/60 hover:bg-white/5"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+              className="flex-1 bg-red-500/90 hover:bg-red-500 text-white border-0"
+            >
+              {deleteMutation.isPending ? "Eliminando..." : "Eliminar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   )
 }
