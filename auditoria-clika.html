@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditoría CLIKA CRM — 01/06/2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d0d0d;
+      color: #e2e8f0;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      border-left: 4px solid #22c55e;
+      padding: 1.5rem 1.5rem 1.5rem 2rem;
+      background: #111827;
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 2.5rem;
+    }
+    .header .logo {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #22c55e;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .header h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 0.3rem;
+    }
+    .header .meta {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    /* Executive summary */
+    .exec-summary {
+      background: #1a1f2e;
+      border: 1px solid #1e3a5f;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .exec-summary p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+    .exec-summary strong { color: #e2e8f0; }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: #111827;
+      border-radius: 10px;
+      padding: 1.2rem;
+      text-align: center;
+      border: 1px solid #1f2937;
+    }
+    .stat-card .num {
+      font-size: 2rem;
+      font-weight: 800;
+      display: block;
+    }
+    .stat-card .label {
+      font-size: 0.78rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stat-card.green .num  { color: #22c55e; }
+    .stat-card.red .num    { color: #ef4444; }
+    .stat-card.yellow .num { color: #f59e0b; }
+    .stat-card.blue .num   { color: #3b82f6; }
+
+    /* Section */
+    h2.section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #22c55e;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    /* Module cards */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .module-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+    }
+    .module-card .mod-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.8rem;
+    }
+    .mod-status {
+      font-size: 1rem;
+    }
+    .module-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .module-card ul {
+      list-style: none;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .module-card ul li {
+      padding: 0.25rem 0;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+    .module-card ul li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: #374151;
+    }
+    .module-card ul li.ok::before   { content: '✓'; color: #22c55e; }
+    .module-card ul li.bug::before  { content: '✗'; color: #ef4444; }
+    .module-card ul li.warn::before { content: '⚠'; color: #f59e0b; }
+    .module-card ul li.gap::before  { content: '○'; color: #3b82f6; }
+
+    /* Bug table */
+    .section-block {
+      margin-bottom: 2.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead tr {
+      background: #1a1f2e;
+    }
+    th {
+      text-align: left;
+      padding: 0.7rem 1rem;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid #1f2937;
+    }
+    td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid #1a1f2e;
+      color: #cbd5e1;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #131c2e; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge.red    { background: rgba(239,68,68,0.15);  color: #ef4444; }
+    .badge.yellow { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .badge.green  { background: rgba(34,197,94,0.15);  color: #22c55e; }
+    .badge.blue   { background: rgba(59,130,246,0.15); color: #3b82f6; }
+
+    /* Security */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .sec-item {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .sec-item .icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .sec-item .text strong { display: block; color: #e2e8f0; margin-bottom: 0.15rem; font-size: 0.87rem; }
+
+    /* Priority list */
+    .priority-list { list-style: none; margin-bottom: 2.5rem; }
+    .priority-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.9rem 1.2rem;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+    }
+    .priority-list li .num {
+      font-size: 0.75rem;
+      font-weight: 800;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .priority-list li.p1 .num { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .priority-list li.p2 .num { background: rgba(245,158,11,0.2); color: #f59e0b; }
+    .priority-list li.p3 .num { background: rgba(59,130,246,0.2); color: #3b82f6; }
+    .priority-list li strong { color: #f1f5f9; }
+
+    /* Settings table */
+    .settings-table td:first-child { font-weight: 600; color: #f1f5f9; width: 200px; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #374151;
+      padding-top: 2rem;
+      border-top: 1px solid #1f2937;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">CLIKA CRM · Auditoría técnica</div>
+    <h1>Reporte de Auditoría</h1>
+    <div class="meta">URL: clika.aisouthside.com &nbsp;·&nbsp; Fecha: 01 de junio de 2026 &nbsp;·&nbsp; Auditor: Claude Code</div>
+  </div>
+
+  <!-- Exec Summary -->
+  <div class="exec-summary">
+    <p>La aplicación tiene una <strong>base sólida y navegable</strong>. Los 8 módulos principales están implementados y responden correctamente. Se detectaron <strong>2 bugs críticos</strong>, <strong>1 bug medio</strong>, y <strong>9 features faltantes</strong> respecto al spec original. La seguridad tiene buenas prácticas implementadas (AES-256-GCM, HMAC, RBAC). El próximo paso crítico es reparar el audio en inbox, crear la página de detalle de contacto, y conectar el número de WhatsApp con el agente IA configurado.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card green"><span class="num">8</span><span class="label">Módulos OK</span></div>
+    <div class="stat-card red"><span class="num">2</span><span class="label">Bugs críticos</span></div>
+    <div class="stat-card yellow"><span class="num">1</span><span class="label">Bug medio</span></div>
+    <div class="stat-card blue"><span class="num">9</span><span class="label">Features faltantes</span></div>
+    <div class="stat-card green"><span class="num">5</span><span class="label">Controles de seguridad</span></div>
+  </div>
+
+  <!-- Modules -->
+  <h2 class="section-title">Auditoría por módulo</h2>
+  <div class="modules-grid section-block">
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">✅</span><h3>Inbox</h3></div>
+      <ul>
+        <li class="ok">Panel de contacto derecho con lead score, datos capturados, notas</li>
+        <li class="ok">Botón Pausar IA con dropdown: 15min / 1h / 3h / Mañana</li>
+        <li class="ok">Tabs Mensaje / Nota interna</li>
+        <li class="ok">Botones Etiqueta, Pausar, Cerrar</li>
+        <li class="ok">Badge IA activo visible en lista de conversaciones</li>
+        <li class="bug">Audio mensajes no reproducen (0:00/0:00 sin duración)</li>
+        <li class="bug">Mensajes de audio muestran "[Media: audio]" como texto duplicado</li>
+        <li class="gap">Faltan filtros por estado, etiqueta, agente, fecha, canal</li>
+        <li class="gap">Sin alerta de ventana de 24h de WhatsApp</li>
+        <li class="gap">Sin asignación de agente desde el inbox</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">⚠️</span><h3>Contactos</h3></div>
+      <ul>
+        <li class="ok">Tabla: Nombre, Teléfono, Estado, Lead Score, Campaña, Último Mensaje</li>
+        <li class="ok">Botón Export CSV</li>
+        <li class="ok">Búsqueda por nombre, teléfono o email</li>
+        <li class="bug">Clic en fila no navega — no existe página de detalle de contacto</li>
+        <li class="gap">Sin filtros avanzados (estado, score, etiqueta, agente)</li>
+        <li class="gap">Sin botón para crear contacto manualmente</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">✅</span><h3>Agenda</h3></div>
+      <ul>
+        <li class="ok">Vistas Día / Semana / Mes implementadas</li>
+        <li class="ok">Navegación entre semanas con fecha correcta</li>
+        <li class="ok">Botón "Nueva cita" operativo</li>
+        <li class="ok">Panel "Próximas Citas" en sidebar derecho</li>
+        <li class="warn">Todos los días en "No disponible" — requiere configurar Disponibilidad</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">✅</span><h3>Plantillas WhatsApp</h3></div>
+      <ul>
+        <li class="ok">Plantilla hello_world con estado APPROVED visible</li>
+        <li class="ok">Botón "Sincronizar Meta"</li>
+        <li class="ok">Tab "Envíos Recientes"</li>
+        <li class="ok">Botón "Enviar" por plantilla</li>
+        <li class="gap">Sin opción de envío masivo con filtros de contactos</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">✅</span><h3>Funnels</h3></div>
+      <ul>
+        <li class="ok">Estado vacío correcto: "Sin funnels. Crea el primero."</li>
+        <li class="ok">Botón "+" para crear nuevo funnel</li>
+        <li class="warn">Spinner de carga tarda ~2s antes de resolver — posible query lenta</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">⚠️</span><h3>Conocimiento (RAG)</h3></div>
+      <ul>
+        <li class="ok">Buscador semántico presente</li>
+        <li class="ok">Botón "+ Nuevo documento"</li>
+        <li class="warn">Spinner "Cargando documentos..." lento en carga inicial</li>
+        <li class="gap">Sin categorías visibles (Productos, FAQ, Servicios, etc.)</li>
+        <li class="gap">Sin score de relevancia en resultados de búsqueda</li>
+        <li class="gap">Sin probador de búsqueda semántica</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">✅</span><h3>Reportes</h3></div>
+      <ul>
+        <li class="ok">Filtros 7 / 30 / 90 días</li>
+        <li class="ok">KPIs: Contactos, Conversaciones, Citas, IA%, Intervención humana%, Plantillas</li>
+        <li class="ok">Gráficos: Contactos por día, Conversaciones por día, Leads por estado (donut)</li>
+        <li class="ok">Top Fuentes de Leads (vacío — sin datos aún)</li>
+        <li class="warn">Fuente/campaña de lead no se captura aún en el CRM</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <div class="mod-header"><span class="mod-status">✅</span><h3>Configuración</h3></div>
+      <ul>
+        <li class="ok">Workspace: nombre, ID, fecha creación, zona de peligro</li>
+        <li class="ok">WhatsApp: todos los campos, webhook URL visible, cifrado AES-256-GCM</li>
+        <li class="ok">Miembros: 5 roles (Owner, Admin, Manager, Agent, Viewer)</li>
+        <li class="ok">Webhooks: HMAC, referencia payload, documentación</li>
+        <li class="ok">API Keys: N8N activa, endpoint /api/external/send documentado</li>
+        <li class="ok">Agente IA: 4 tabs, modelo claude-sonnet-4-6 por defecto</li>
+        <li class="ok">Disponibilidad: duración y buffer de citas configurables</li>
+        <li class="ok">Respuestas Rápidas: atajo "/" en chat</li>
+        <li class="warn">WhatsApp DESCONECTADO — número sin vincular</li>
+        <li class="warn">Agente IA sin configurar — todos los campos en blanco</li>
+        <li class="warn">Horario laboral: todos los días OFF</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Bugs table -->
+  <h2 class="section-title">Bugs identificados</h2>
+  <div class="section-block">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Descripción</th>
+          <th>Módulo</th>
+          <th>Severidad</th>
+          <th>Impacto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Clic en fila de contacto no navega a detalle — no existe página de perfil de contacto</td>
+          <td>Contactos</td>
+          <td><span class="badge red">Alta</span></td>
+          <td>Bloquea gestión individual de leads</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Los players de audio muestran 0:00/0:00 sin cargar duración ni reproducir</td>
+          <td>Inbox</td>
+          <td><span class="badge red">Alta</span></td>
+          <td>Audios de WhatsApp ilegibles</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Mensajes de audio muestran "[Media: audio]" como texto antes del player (render doble)</td>
+          <td>Inbox</td>
+          <td><span class="badge yellow">Media</span></td>
+          <td>UX confusa, contenido duplicado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Features faltantes -->
+  <h2 class="section-title">Features faltantes vs. spec</h2>
+  <div class="section-block">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Módulo</th>
+          <th>Requerida en spec</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Página de detalle / perfil de contacto</td>
+          <td>Contactos</td>
+          <td>Sí</td>
+          <td><span class="badge red">No existe</span></td>
+        </tr>
+        <tr>
+          <td>Filtros en inbox (estado, etiqueta, agente, fecha, canal)</td>
+          <td>Inbox</td>
+          <td>Sí</td>
+          <td><span class="badge red">No existe</span></td>
+        </tr>
+        <tr>
+          <td>Alerta de ventana de 24h de WhatsApp</td>
+          <td>Inbox</td>
+          <td>Sí</td>
+          <td><span class="badge red">No existe</span></td>
+        </tr>
+        <tr>
+          <td>Asignación de agente responsable desde inbox</td>
+          <td>Inbox</td>
+          <td>Sí</td>
+          <td><span class="badge red">No visible</span></td>
+        </tr>
+        <tr>
+          <td>Filtros avanzados de contactos (estado, score, etiqueta)</td>
+          <td>Contactos</td>
+          <td>Sí</td>
+          <td><span class="badge red">No existe</span></td>
+        </tr>
+        <tr>
+          <td>Envío masivo de plantillas con filtros de contactos</td>
+          <td>Plantillas</td>
+          <td>Sí</td>
+          <td><span class="badge yellow">No visible</span></td>
+        </tr>
+        <tr>
+          <td>Categorías en base de conocimiento</td>
+          <td>Conocimiento</td>
+          <td>Sí</td>
+          <td><span class="badge red">No existe</span></td>
+        </tr>
+        <tr>
+          <td>Score de relevancia en búsqueda RAG</td>
+          <td>Conocimiento</td>
+          <td>Sí</td>
+          <td><span class="badge red">No existe</span></td>
+        </tr>
+        <tr>
+          <td>Captura de fuente/campaña de lead</td>
+          <td>CRM</td>
+          <td>Sí</td>
+          <td><span class="badge yellow">Sin datos</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Seguridad -->
+  <h2 class="section-title">Seguridad</h2>
+  <div class="security-grid section-block">
+    <div class="sec-item">
+      <span class="icon">✅</span>
+      <div class="text"><strong>Cifrado AES-256-GCM</strong>Access Token de WhatsApp almacenado cifrado en base de datos</div>
+    </div>
+    <div class="sec-item">
+      <span class="icon">✅</span>
+      <div class="text"><strong>HMAC en webhooks salientes</strong>Header X-CLIKA-Signature con sha256 para verificar origen</div>
+    </div>
+    <div class="sec-item">
+      <span class="icon">✅</span>
+      <div class="text"><strong>API Keys con prefijo</strong>Clave nunca expuesta completa — solo prefijo visible (clika_88...)</div>
+    </div>
+    <div class="sec-item">
+      <span class="icon">✅</span>
+      <div class="text"><strong>RBAC con 5 roles</strong>Owner, Admin, Manager, Agent, Viewer — control granular de permisos</div>
+    </div>
+    <div class="sec-item">
+      <span class="icon">✅</span>
+      <div class="text"><strong>Zona de Peligro separada</strong>Delete workspace requiere acción explícita aislada visualmente</div>
+    </div>
+    <div class="sec-item">
+      <span class="icon">⚠️</span>
+      <div class="text"><strong>Email demo en producción</strong>admin@test.com debe reemplazarse por credenciales reales</div>
+    </div>
+  </div>
+
+  <!-- Configuración actual -->
+  <h2 class="section-title">Estado de configuración del workspace</h2>
+  <div class="section-block">
+    <table class="settings-table">
+      <thead>
+        <tr><th>Sección</th><th>Estado</th><th>Notas</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>WhatsApp Cloud API</td><td><span class="badge red">Desconectado</span></td><td>Número +54 9 11 XXXX-XXXX sin vincular</td></tr>
+        <tr><td>Agente IA</td><td><span class="badge yellow">Sin configurar</span></td><td>Todos los campos en blanco; modelo claude-sonnet-4-6 definido</td></tr>
+        <tr><td>Disponibilidad</td><td><span class="badge yellow">Sin horarios</span></td><td>Los 7 días en OFF — la IA no agendará citas</td></tr>
+        <tr><td>Base de conocimiento</td><td><span class="badge yellow">Vacía</span></td><td>Sin documentos cargados — RAG sin contexto</td></tr>
+        <tr><td>Webhooks (n8n)</td><td><span class="badge yellow">Sin configurar</span></td><td>No hay webhooks activos</td></tr>
+        <tr><td>API Keys</td><td><span class="badge green">Activa</span></td><td>Clave N8N activa, último uso hoy</td></tr>
+        <tr><td>Plantillas</td><td><span class="badge green">1 aprobada</span></td><td>hello_world APPROVED sincronizada desde Meta</td></tr>
+        <tr><td>Miembros</td><td><span class="badge yellow">1 miembro</span></td><td>Solo Admin Test (Owner) — sin equipo</td></tr>
+        <tr><td>Respuestas rápidas</td><td><span class="badge yellow">Vacía</span></td><td>Sin atajos configurados</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Prioridades -->
+  <h2 class="section-title">Plan de acción — Prioridades</h2>
+  <ul class="priority-list">
+    <li class="p1"><span class="num">1</span><div><strong>Reparar reproducción de audio en inbox</strong> — Los mensajes de voz de WhatsApp son críticos; revisar la URL de los archivos de media y el CORS del storage.</div></li>
+    <li class="p1"><span class="num">2</span><div><strong>Crear página de detalle de contacto</strong> — Actualmente imposible ver/editar campos de un contacto individualmente. Ruta sugerida: /contacts/[id].</div></li>
+    <li class="p1"><span class="num">3</span><div><strong>Conectar número de WhatsApp y configurar Agente IA</strong> — Sin esto el producto no funciona en producción.</div></li>
+    <li class="p2"><span class="num">4</span><div><strong>Agregar filtros en inbox</strong> — Por estado (open/pending/closed), agente asignado, etiqueta y canal.</div></li>
+    <li class="p2"><span class="num">5</span><div><strong>Alerta de ventana 24h</strong> — Mostrar banner/badge cuando la ventana de conversación de WhatsApp esté por cerrar.</div></li>
+    <li class="p2"><span class="num">6</span><div><strong>Asignación de agente desde inbox</strong> — Dropdown para asignar responsable dentro de la conversación activa.</div></li>
+    <li class="p2"><span class="num">7</span><div><strong>Activar horario laboral y configurar Agente IA</strong> — Cargar negocio, tono, mensajes, y activar al menos un día de disponibilidad.</div></li>
+    <li class="p3"><span class="num">8</span><div><strong>Envío masivo de plantillas</strong> — Flujo para seleccionar segmento de contactos y enviar plantilla en batch.</div></li>
+    <li class="p3"><span class="num">9</span><div><strong>Categorías en base de conocimiento</strong> — Organizar documentos por tipo: Productos, FAQ, Precios, Objeciones, etc.</div></li>
+    <li class="p3"><span class="num">10</span><div><strong>Filtros avanzados en Contactos</strong> — Por estado del lead, score, etiqueta, agente asignado y fecha.</div></li>
+    <li class="p3"><span class="num">11</span><div><strong>Captura de fuente y campaña de lead</strong> — Registrar utm_source/utm_campaign para alimentar los reportes de "Top Fuentes".</div></li>
+  </ul>
+
+  <div class="footer">
+    Auditoría generada el 01/06/2026 &nbsp;·&nbsp; CLIKA CRM &nbsp;·&nbsp; clika.aisouthside.com
+  </div>
+
+</div>
+</body>
+</html>

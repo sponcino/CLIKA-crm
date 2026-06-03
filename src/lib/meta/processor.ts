@@ -128,7 +128,7 @@ async function processNormalizedMessage(data: NormalizedMessage): Promise<Proces
     }
   }
 
-  await dispatchWebhook(workspaceId, 'message.received', {
+  if (conversation.aiActive !== false) await dispatchWebhook(workspaceId, 'message.received', {
     contact: { ...contact },
     message: {
       id: message.id,
