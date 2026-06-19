@@ -117,6 +117,7 @@ export default function InboxPage() {
   const prevLeadScoreRef = useRef<number | null>(null)
   const contactRefreshTimeRef = useRef<Date | null>(null)
   const panelLabelRef = useRef<HTMLDivElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -184,6 +185,11 @@ export default function InboxPage() {
     enabled: !!activeConvData?.contactId && !!workspaceId && rightPanelOpen,
     refetchInterval: 10000,
   })
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [activeMessages])
 
   // Lead score change detection + refresh label
   useEffect(() => {
@@ -820,7 +826,7 @@ export default function InboxPage() {
             )}
 
             {/* Messages */}
-            <ScrollArea className="flex-1 min-h-0 bg-[#0f0f0f]">
+            <div className="flex-1 min-h-0 overflow-y-auto bg-[#0f0f0f] dark:bg-[#0f0f0f] bg-slate-50">
               <div className="p-6 space-y-4 max-w-4xl mx-auto pb-4">
                 {activeMessages.length === 0 ? (
                   <div className="text-center text-gray-600 my-10">Sin mensajes anteriores</div>
@@ -864,7 +870,8 @@ export default function InboxPage() {
                   })
                 )}
               </div>
-            </ScrollArea>
+              <div ref={messagesEndRef} />
+            </div>
 
             {/* Input area */}
             <div className="shrink-0 border-t border-slate-200 dark:border-[#ffffff10] bg-[var(--bg-surface)]">
