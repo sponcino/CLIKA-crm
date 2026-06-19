@@ -186,10 +186,6 @@ export default function InboxPage() {
     refetchInterval: 10000,
   })
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [activeMessages])
 
   // Lead score change detection + refresh label
   useEffect(() => {
@@ -494,6 +490,11 @@ export default function InboxPage() {
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId)
   const activeMessages = activeConversationId ? messages[activeConversationId] ?? [] : []
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [activeMessages])
   const snoozedUntil: string | null = activeConvData?.snoozedUntil ?? null
   const isSnoozed = !!snoozedUntil && new Date(snoozedUntil) > new Date()
 
