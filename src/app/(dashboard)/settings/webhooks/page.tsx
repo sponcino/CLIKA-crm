@@ -133,13 +133,13 @@ function EventPills({ events }: { events: string[] }) {
       {visible.map((ev) => (
         <span
           key={ev}
-          className="inline-block text-[9px] font-mono bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-white/50 px-1.5 py-0.5 rounded"
+          className="inline-block text-[9px] font-mono bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-white/50 px-1.5 py-0.5 rounded"
         >
           {ev}
         </span>
       ))}
       {rest > 0 && (
-        <span className="inline-block text-[9px] bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-white/40 px-1.5 py-0.5 rounded">
+        <span className="inline-block text-[9px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-white/40 px-1.5 py-0.5 rounded">
           +{rest}
         </span>
       )}
@@ -514,7 +514,7 @@ export default function WebhooksSettingsPage() {
                 value={form.name}
                 onChange={(e) => setField("name", e.target.value)}
                 placeholder="Ej: Zapier, Mi CRM, HubSpot"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
               />
             </div>
 
@@ -527,7 +527,7 @@ export default function WebhooksSettingsPage() {
                 value={form.url}
                 onChange={(e) => setField("url", e.target.value)}
                 placeholder="https://hooks.zapier.com/hooks/catch/..."
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
               />
               <p className="text-[10px] text-white/25">URL donde enviaremos los eventos (POST)</p>
             </div>
@@ -539,7 +539,7 @@ export default function WebhooksSettingsPage() {
                 value={form.secret}
                 onChange={(e) => setField("secret", e.target.value)}
                 placeholder="tu-secret-key"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
               />
               <p className="text-[10px] text-white/25">
                 Para verificar la firma HMAC-SHA256 de los requests
@@ -594,7 +594,7 @@ export default function WebhooksSettingsPage() {
               <Button
                 variant="outline"
                 onClick={closeModal}
-                className="flex-1 border-[var(--border-color)] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
+                className="flex-1 border-slate-200 dark:border-white/10 bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
               >
                 Cancelar
               </Button>

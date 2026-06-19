@@ -136,7 +136,7 @@ export default function WhatsAppSettingsPage() {
         <div className="flex items-center gap-3">
           <Phone className="h-5 w-5 text-whatsapp" />
           <div>
-            <h1 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">WhatsApp Cloud API</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">WhatsApp Cloud API</h1>
             <p className="text-gray-500 text-xs mt-0.5">
               Conecta tu número de WhatsApp Business mediante Meta Cloud API.
             </p>
@@ -145,7 +145,7 @@ export default function WhatsAppSettingsPage() {
 
         <div className="flex items-center gap-3">
           <Link href="/settings/whatsapp/guide">
-            <Button variant="outline" className="h-8 px-3 text-xs bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5">
+            <Button variant="outline" className="h-8 px-3 text-xs bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5">
               Guía de conexión
             </Button>
           </Link>
@@ -169,7 +169,7 @@ export default function WhatsAppSettingsPage() {
       </div>
 
       {/* Form Card */}
-      <div className="bg-white dark:bg-[#111111] border border-[var(--border-color)] rounded-md divide-y divide-[var(--border-color)]">
+      <div className="bg-white dark:bg-[#111111] border border-slate-200 dark:border-white/10 rounded-md divide-y divide-[var(--border-color)]">
         {/* Section: Identifiers */}
         <div className="p-5 space-y-4">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
@@ -186,7 +186,7 @@ export default function WhatsAppSettingsPage() {
                 value={form.phoneNumberId}
                 onChange={(e) => handleChange("phoneNumberId", e.target.value)}
                 placeholder="116867XXXXXXXXX"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
               />
             </div>
             <div className="space-y-1.5">
@@ -198,7 +198,7 @@ export default function WhatsAppSettingsPage() {
                 value={form.wabaId}
                 onChange={(e) => handleChange("wabaId", e.target.value)}
                 placeholder="175366XXXXXXXXX"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
               />
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function WhatsAppSettingsPage() {
                 value={form.businessId}
                 onChange={(e) => handleChange("businessId", e.target.value)}
                 placeholder="Business Account ID"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
               />
             </div>
             <div className="space-y-1.5">
@@ -225,7 +225,7 @@ export default function WhatsAppSettingsPage() {
                 value={form.displayPhoneNumber}
                 onChange={(e) => handleChange("displayPhoneNumber", e.target.value)}
                 placeholder="+54 9 11 XXXX-XXXX"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
               />
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function WhatsAppSettingsPage() {
                 if (e.target.value === "") handleChange("accessToken", MASKED);
               }}
               placeholder={MASKED}
-              className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 font-mono focus-visible:ring-whatsapp"
+              className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 font-mono focus-visible:ring-whatsapp"
             />
           </div>
 
@@ -279,7 +279,7 @@ export default function WhatsAppSettingsPage() {
                 if (e.target.value === "") handleChange("appSecret", MASKED);
               }}
               placeholder={MASKED}
-              className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 font-mono focus-visible:ring-whatsapp"
+              className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 font-mono focus-visible:ring-whatsapp"
             />
           </div>
 
@@ -292,7 +292,7 @@ export default function WhatsAppSettingsPage() {
               value={form.webhookVerifyToken}
               onChange={(e) => handleChange("webhookVerifyToken", e.target.value)}
               placeholder="Tu token de verificación del webhook"
-              className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+              className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
             />
           </div>
         </div>
@@ -341,7 +341,7 @@ export default function WhatsAppSettingsPage() {
             onClick={handleTest}
             disabled={testing || saving}
             variant="outline"
-            className="bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white h-9 text-xs px-4 rounded-md flex items-center gap-2"
+            className="bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white h-9 text-xs px-4 rounded-md flex items-center gap-2"
           >
             {testing ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

@@ -193,7 +193,7 @@ export default function QuickRepliesSettingsPage() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-white dark:bg-[#111111] border border-[var(--border-color)] text-slate-900 dark:text-white rounded-md max-w-md">
+        <DialogContent className="bg-white dark:bg-[#111111] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
               {editingId ? "Editar Respuesta" : "Nueva Respuesta"}
@@ -207,7 +207,7 @@ export default function QuickRepliesSettingsPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value.replace(/\s+/g, '-').toLowerCase())}
                 placeholder="ejemplo-saludo"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
               />
             </div>
             
@@ -217,13 +217,13 @@ export default function QuickRepliesSettingsPage() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="¡Hola! ¿En qué podemos ayudarte?"
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-24 resize-none focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-24 resize-none focus-visible:ring-whatsapp"
               />
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpen(false)} className="bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 h-8 text-xs">
+            <Button variant="outline" onClick={() => setIsOpen(false)} className="bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 h-8 text-xs">
               Cancelar
             </Button>
             <Button 

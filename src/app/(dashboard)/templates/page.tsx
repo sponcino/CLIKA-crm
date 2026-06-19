@@ -186,7 +186,7 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="p-8 w-full h-full flex flex-col bg-[var(--bg-primary)] text-slate-900 dark:text-white overflow-y-auto scrollbar-thin font-sans antialiased">
+    <div className="p-8 w-full h-full flex flex-col bg-slate-50 dark:bg-[#0a0a0a] text-slate-900 dark:text-white overflow-y-auto scrollbar-thin font-sans antialiased">
       {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 max-w-5xl">
         <div className="flex items-center gap-3">
@@ -198,7 +198,7 @@ export default function TemplatesPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-[var(--bg-secondary)] p-1 border border-[#ffffff10] rounded-md">
+          <div className="flex items-center gap-1.5 bg-white dark:bg-[#111111] p-1 border border-[#ffffff10] rounded-md">
             <Button
               onClick={() => setActiveTab("templates")}
               className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${
@@ -220,7 +220,7 @@ export default function TemplatesPage() {
           <Button
             onClick={() => syncMutation.mutate()}
             disabled={syncMutation.isPending}
-            className="bg-[var(--bg-secondary)] hover:bg-slate-50 dark:bg-white/5 border border-[#ffffff10] text-slate-900 dark:text-white font-semibold rounded-md h-9 text-xs flex items-center gap-2 px-3 transition-all duration-150"
+            className="bg-white dark:bg-[#111111] hover:bg-slate-50 dark:bg-white/5 border border-[#ffffff10] text-slate-900 dark:text-white font-semibold rounded-md h-9 text-xs flex items-center gap-2 px-3 transition-all duration-150"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${syncMutation.isPending ? "animate-spin" : ""}`} />
             Sincronizar Meta
@@ -230,10 +230,10 @@ export default function TemplatesPage() {
 
       {/* TEMPLATES LIST TABLE */}
       {activeTab === "templates" ? (
-        <div className="border border-[#ffffff10] rounded-md overflow-hidden bg-[var(--bg-secondary)] max-w-5xl">
+        <div className="border border-[#ffffff10] rounded-md overflow-hidden bg-white dark:bg-[#111111] max-w-5xl">
           <Table>
-            <TableHeader className="bg-[var(--bg-primary)]">
-              <TableRow className="hover:bg-[var(--bg-primary)] border-b border-[#ffffff10]">
+            <TableHeader className="bg-slate-50 dark:bg-[#0a0a0a]">
+              <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-[#ffffff10]">
                 <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Nombre</TableHead>
                 <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Vista Previa de Contenido</TableHead>
                 <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Estado</TableHead>
@@ -296,10 +296,10 @@ export default function TemplatesPage() {
         </div>
       ) : (
         /* RECENT LOGS TABLE */
-        <div className="border border-[#ffffff10] rounded-md overflow-hidden bg-[var(--bg-secondary)] max-w-5xl">
+        <div className="border border-[#ffffff10] rounded-md overflow-hidden bg-white dark:bg-[#111111] max-w-5xl">
           <Table>
-            <TableHeader className="bg-[var(--bg-primary)]">
-              <TableRow className="hover:bg-[var(--bg-primary)] border-b border-[#ffffff10]">
+            <TableHeader className="bg-slate-50 dark:bg-[#0a0a0a]">
+              <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-[#ffffff10]">
                 <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Contacto</TableHead>
                 <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Plantilla</TableHead>
                 <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Estado</TableHead>
@@ -355,7 +355,7 @@ export default function TemplatesPage() {
 
       {/* DIALOG: PREVISUALIZAR */}
       <Dialog open={selectedPreview !== null} onOpenChange={(open) => !open && setSelectedPreview(null)}>
-        <DialogContent className="bg-[var(--bg-secondary)] border border-[#ffffff10] text-slate-900 dark:text-white rounded-md max-w-md">
+        <DialogContent className="bg-white dark:bg-[#111111] border border-[#ffffff10] text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Previsualizar Plantilla</DialogTitle>
           </DialogHeader>
@@ -367,7 +367,7 @@ export default function TemplatesPage() {
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">Cuerpo del mensaje</span>
-                <div className="p-3 bg-[var(--bg-card)] rounded-md border border-[#ffffff08] font-mono text-xs text-slate-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                <div className="p-3 bg-white dark:bg-[#111111] rounded-md border border-[#ffffff08] font-mono text-xs text-slate-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                   {selectedPreview.content}
                 </div>
               </div>
@@ -383,7 +383,7 @@ export default function TemplatesPage() {
 
       {/* DIALOG: ENVIAR PLANTILLA */}
       <Dialog open={selectedSend !== null} onOpenChange={(open) => !open && setSelectedSend(null)}>
-        <DialogContent className="bg-[var(--bg-secondary)] border border-[#ffffff10] text-slate-900 dark:text-white rounded-md max-w-md">
+        <DialogContent className="bg-white dark:bg-[#111111] border border-[#ffffff10] text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Enviar Mensaje de Plantilla</DialogTitle>
           </DialogHeader>
@@ -396,11 +396,11 @@ export default function TemplatesPage() {
                   placeholder="Buscar contacto..."
                   value={searchContact}
                   onChange={(e) => setSearchContact(e.target.value)}
-                  className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
+                  className="bg-white dark:bg-[#111111] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
                 />
 
                 {searchContact.trim() !== "" && contactsData?.data && (
-                  <div className="bg-[var(--bg-card)] border border-[#ffffff10] rounded-md max-h-32 overflow-y-auto scrollbar-thin text-xs divide-y divide-[#ffffff05]">
+                  <div className="bg-white dark:bg-[#111111] border border-[#ffffff10] rounded-md max-h-32 overflow-y-auto scrollbar-thin text-xs divide-y divide-[#ffffff05]">
                     {contactsData.data.slice(0, 5).map((c) => (
                       <div
                         key={c.id}
@@ -436,7 +436,7 @@ export default function TemplatesPage() {
                           placeholder={`Valor para variable ${v}`}
                           value={variables[v] || ""}
                           onChange={(e) => handleVarChange(v, e.target.value)}
-                          className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp text-xs h-8"
+                          className="bg-white dark:bg-[#111111] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp text-xs h-8"
                         />
                       </div>
                     ))}

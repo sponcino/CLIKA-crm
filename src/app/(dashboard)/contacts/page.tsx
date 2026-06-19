@@ -52,12 +52,12 @@ export default function ContactsPage() {
   })
 
   return (
-    <div className="p-8 w-full h-full flex flex-col bg-slate-50 dark:bg-[#0a0a0a] text-[var(--text-primary)] font-sans antialiased">
+    <div className="p-8 w-full h-full flex flex-col bg-slate-50 dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans antialiased">
       {/* Top bar */}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Contactos</h1>
-          <p className="text-xs text-gray-500 mt-0.5">{allContacts.length} contactos en total</p>
+          <p className="text-xs text-slate-700 dark:text-gray-400 mt-0.5">{allContacts.length} contactos en total</p>
         </div>
         <Button
           onClick={handleExport}
@@ -73,49 +73,49 @@ export default function ContactsPage() {
       {/* Search */}
       <div className="flex items-center gap-4 mb-6">
         <div className="relative w-80">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-700 dark:text-gray-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre, teléfono o email..."
-            className="pl-8 bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
+            className="pl-8 bg-white dark:bg-[#111111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="border border-[var(--border-color)] rounded-md flex-1 overflow-auto bg-[var(--bg-secondary)] scrollbar-thin">
+      <div className="border border-slate-200 dark:border-white/10 rounded-md flex-1 overflow-auto bg-white dark:bg-[#111111] scrollbar-thin">
         <Table>
           <TableHeader className="bg-slate-50 dark:bg-[#0a0a0a]">
-            <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-[var(--border-color)]">
-              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Nombre</TableHead>
-              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Teléfono</TableHead>
-              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Estado</TableHead>
-              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Lead Score</TableHead>
-              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Campaña / Anuncio</TableHead>
-              <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Último Mensaje</TableHead>
+            <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/10">
+              <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Nombre</TableHead>
+              <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Teléfono</TableHead>
+              <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Estado</TableHead>
+              <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Lead Score</TableHead>
+              <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Campaña / Anuncio</TableHead>
+              <TableHead className="text-slate-500 dark:text-gray-400 font-semibold h-10">Último Mensaje</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24 text-gray-500">Cargando contactos...</TableCell>
+                <TableCell colSpan={6} className="text-center h-24 text-slate-700 dark:text-gray-400">Cargando contactos...</TableCell>
               </TableRow>
             ) : filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24 text-gray-500">No se encontraron contactos.</TableCell>
+                <TableCell colSpan={6} className="text-center h-24 text-slate-700 dark:text-gray-400">No se encontraron contactos.</TableCell>
               </TableRow>
             ) : (
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               filtered.map((contact: any) => (
-                <TableRow key={contact.id} className="border-b border-[var(--border-color)] cursor-pointer hover:bg-black/5 dark:hover:bg-slate-50 dark:bg-white/5 bg-[var(--bg-secondary)] transition-all">
+                <TableRow key={contact.id} className="border-b border-slate-200 dark:border-white/10 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 bg-white dark:bg-[#111111] transition-all">
                   <TableCell className="py-3">
                     <div>
                       <p className="font-semibold text-slate-900 dark:text-white">
                         {contact.whatsappName || contact.fullName || "Desconocido"}
                       </p>
                       {contact.email && (
-                        <p className="text-[10px] text-gray-500 mt-0.5">{contact.email}</p>
+                        <p className="text-[10px] text-slate-700 dark:text-gray-400 mt-0.5">{contact.email}</p>
                       )}
                     </div>
                   </TableCell>

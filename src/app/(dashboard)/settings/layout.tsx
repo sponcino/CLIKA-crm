@@ -14,7 +14,7 @@ const settingsNav = [
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full">
-      <aside className="w-44 border-r border-[var(--border-color)] bg-slate-50 dark:bg-[#0a0a0a] shrink-0">
+      <aside className="w-44 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a0a0a] shrink-0">
         <div className="py-6 px-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-white/30 px-3 mb-3">Configuración</p>
           <nav className="space-y-[2px]">

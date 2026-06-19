@@ -130,8 +130,8 @@ const TEMPLATES = [
 ]
 
 // ─── Style constants ──────────────────────────────────────────────────────────
-const inputCls = "bg-[var(--bg-card)] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
-const textareaCls = "bg-[var(--bg-card)] border-[var(--border-color)] text-slate-900 dark:text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none"
+const inputCls = "bg-white dark:bg-[#111111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
+const textareaCls = "bg-white dark:bg-[#111111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none"
 const labelCls = "text-xs text-slate-500 dark:text-gray-400 font-medium"
 
 // ─── Toggle ───────────────────────────────────────────────────────────────────
@@ -215,13 +215,13 @@ function StepFormFields({
           <select
             value={form.nextStepId}
             onChange={(e) => set("nextStepId", e.target.value)}
-            className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] appearance-none"
+            className="w-full bg-white dark:bg-[#111111] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] appearance-none"
           >
-            <option value="" className="bg-[var(--bg-card)]">— Fin del flujo —</option>
+            <option value="" className="bg-white dark:bg-[#111111]">— Fin del flujo —</option>
             {steps
               .filter((s) => s.id !== editId)
               .map((s) => (
-                <option key={s.stepId} value={s.stepId} className="bg-[var(--bg-card)]">
+                <option key={s.stepId} value={s.stepId} className="bg-white dark:bg-[#111111]">
                   {s.name} ({s.stepId})
                 </option>
               ))}
@@ -481,10 +481,10 @@ export default function FunnelsPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full w-full bg-[var(--bg-primary)] text-slate-900 dark:text-white overflow-hidden">
+    <div className="flex h-full w-full bg-slate-50 dark:bg-[#0a0a0a] text-slate-900 dark:text-white overflow-hidden">
 
       {/* ══ LEFT PANEL: Funnel list ══ */}
-      <div className="w-[260px] border-r border-[#ffffff10] flex flex-col bg-[var(--bg-primary)] shrink-0">
+      <div className="w-[260px] border-r border-[#ffffff10] flex flex-col bg-slate-50 dark:bg-[#0a0a0a] shrink-0">
         <div className="px-4 py-3.5 border-b border-[#ffffff10] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <GitFork className="h-4 w-4 text-[#25D366]" />
@@ -507,7 +507,7 @@ export default function FunnelsPage() {
               onChange={(e) => setNewFunnelName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && newFunnelName.trim() && createFunnel.mutate(newFunnelName)}
               placeholder="Nombre del funnel..."
-              className="h-7 text-xs bg-[var(--bg-card)] border-[var(--border-color)] text-slate-900 dark:text-white"
+              className="h-7 text-xs bg-white dark:bg-[#111111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white"
             />
             <div className="flex gap-2">
               <button
@@ -578,7 +578,7 @@ export default function FunnelsPage() {
                         value={editFunnelName}
                         onChange={(e) => setEditFunnelName(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") handleSaveFunnelName(); if (e.key === "Escape") setEditingFunnelName(false) }}
-                        className="h-8 text-base font-bold bg-[var(--bg-card)] border-white/15 text-slate-900 dark:text-white max-w-xs"
+                        className="h-8 text-base font-bold bg-white dark:bg-[#111111] border-white/15 text-slate-900 dark:text-white max-w-xs"
                       />
                       <button onClick={handleSaveFunnelName} className="text-[#25D366] hover:opacity-80"><Check className="h-4 w-4" /></button>
                       <button onClick={() => setEditingFunnelName(false)} className="text-gray-500 hover:text-slate-900 dark:text-white"><X className="h-4 w-4" /></button>
@@ -604,7 +604,7 @@ export default function FunnelsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setShowTemplateModal(true)}
-                    className="h-8 px-3 text-xs bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5"
+                    className="h-8 px-3 text-xs bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5"
                   >
                     Usar Plantilla
                   </Button>
@@ -633,7 +633,7 @@ export default function FunnelsPage() {
               </div>
 
               {/* ── WhatsApp Status ── */}
-              <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md">
+              <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md">
                 <div className="p-4 flex items-center justify-between">
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Estado de WhatsApp</p>
                   <a
@@ -676,7 +676,7 @@ export default function FunnelsPage() {
               </div>
 
               {/* ── Ad Attribution ── */}
-              <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-4 flex items-center justify-between gap-4">
+              <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-4 flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-slate-900 dark:text-white">Atribución de Anuncios</p>
                   <p className="text-xs text-gray-500 mt-0.5">
@@ -690,7 +690,7 @@ export default function FunnelsPage() {
               </div>
 
               {/* ── Steps table ── */}
-              <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md overflow-hidden">
+              <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
                 {/* Table header */}
                 <div className="grid grid-cols-[48px_1fr_140px_160px_80px] gap-0 border-b border-[#ffffff08] px-4 py-2.5">
                   {["ORDEN", "PASO", "SIGUIENTE", "CRITERIO DE TRANSICIÓN", "ACCIONES"].map((h) => (
@@ -783,7 +783,7 @@ export default function FunnelsPage() {
                   className={`text-xs px-3 py-1.5 rounded border transition-all ${
                     selected.isActive
                       ? "border-[#25D366]/20 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20"
-                      : "border-[var(--border-color)] bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/10"
+                      : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/10"
                   }`}
                 >
                   {selected.isActive ? "Funnel activo" : "Funnel inactivo"}
@@ -804,7 +804,7 @@ export default function FunnelsPage() {
 
       {/* ══ Template Modal ══ */}
       <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
-        <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        <DialogContent className="bg-[#111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader className="shrink-0">
             <DialogTitle className="text-slate-900 dark:text-white text-base font-bold">Usar Plantilla</DialogTitle>
             <p className="text-xs text-gray-500 mt-0.5">
@@ -857,7 +857,7 @@ export default function FunnelsPage() {
             <Button
               variant="outline"
               onClick={() => setShowTemplateModal(false)}
-              className="flex-1 border-[var(--border-color)] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
+              className="flex-1 border-slate-200 dark:border-white/10 bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
             >
               Cancelar
             </Button>
@@ -873,7 +873,7 @@ export default function FunnelsPage() {
 
       {/* ══ Add / Edit Step Dialog ══ */}
       <Dialog open={showStepDialog} onOpenChange={setShowStepDialog}>
-        <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-[#111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-slate-900 dark:text-white text-base font-bold">
               {editingStep ? "Editar Paso" : "Agregar Paso"}
@@ -893,7 +893,7 @@ export default function FunnelsPage() {
             <Button
               variant="outline"
               onClick={() => setShowStepDialog(false)}
-              className="flex-1 border-[var(--border-color)] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
+              className="flex-1 border-slate-200 dark:border-white/10 bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
             >
               Cancelar
             </Button>

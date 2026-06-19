@@ -72,11 +72,11 @@ const EMPTY: FormState = {
 
 // ─── style helpers ─────────────────────────────────────────────────────────────
 const inputCls =
-  "bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20";
+  "bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20";
 const textareaCls =
-  "bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none";
+  "bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none";
 const selectCls =
-  "w-full bg-white dark:bg-[#1a1a1a] border border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] cursor-pointer appearance-none";
+  "w-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] cursor-pointer appearance-none";
 const labelCls = "text-xs text-slate-500 dark:text-gray-400 font-medium";
 const sectionLabelCls =
   "text-[10px] font-bold text-gray-500 uppercase tracking-widest";
@@ -292,7 +292,7 @@ export default function AIAgentSettingsPage() {
             size="sm"
             onClick={handleDiscard}
             disabled={!isDirty || saving}
-            className="h-8 px-3 text-xs bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 disabled:opacity-30"
+            className="h-8 px-3 text-xs bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 disabled:opacity-30"
           >
             Descartar
           </Button>
@@ -489,7 +489,7 @@ export default function AIAgentSettingsPage() {
                   {form.transferKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="inline-flex items-center gap-1 bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-white/70 text-xs px-2 py-0.5 rounded-full"
+                      className="inline-flex items-center gap-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full"
                     >
                       {kw}
                       <button
@@ -518,7 +518,7 @@ export default function AIAgentSettingsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => addKeyword(kwInput)}
-                    className="h-9 px-3 bg-transparent border-[var(--border-color)] text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 shrink-0"
+                    className="h-9 px-3 bg-transparent border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 shrink-0"
                   >
                     <Plus className="h-3.5 w-3.5" />
                   </Button>

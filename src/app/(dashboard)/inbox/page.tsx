@@ -537,12 +537,12 @@ export default function InboxPage() {
 
   // ── render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[var(--bg-primary)] text-sm text-[var(--text-primary)]">
+    <div className="flex h-full w-full overflow-hidden bg-slate-50 dark:bg-[#0a0a0a] text-sm text-slate-900 dark:text-white">
 
       {/* ══════════ LEFT: Conversation List ══════════ */}
-      <div className="w-80 border-r border-[var(--border-color)] flex flex-col bg-[var(--bg-primary)] shrink-0 overflow-hidden">
-        <div className="p-4 border-b border-[var(--border-color)] space-y-3">
-          <h2 className="font-bold text-lg tracking-tight text-[var(--text-primary)]">Mensajes</h2>
+      <div className="w-80 border-r border-slate-200 dark:border-white/10 flex flex-col bg-slate-50 dark:bg-[#0a0a0a] shrink-0 overflow-hidden">
+        <div className="p-4 border-b border-slate-200 dark:border-white/10 space-y-3">
+          <h2 className="font-bold text-lg tracking-tight text-slate-900 dark:text-white">Mensajes</h2>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
@@ -602,7 +602,7 @@ export default function InboxPage() {
         {activeConversation ? (
           <>
             {/* ── Header ── */}
-            <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 bg-[var(--bg-primary)] shrink-0 gap-2">
+            <div className="h-14 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-4 bg-slate-50 dark:bg-[#0a0a0a] shrink-0 gap-2">
 
               {/* Left: avatar + name */}
               <div className="flex items-center gap-3 min-w-0">
@@ -708,7 +708,7 @@ export default function InboxPage() {
                           value={newLabelName}
                           onChange={(e) => setNewLabelName(e.target.value)}
                           placeholder="Nueva etiqueta..."
-                          className="flex-1 bg-[var(--bg-card)] border border-slate-200 dark:border-[#ffffff10] rounded px-2 py-1 text-xs text-slate-900 dark:text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp"
+                          className="flex-1 bg-white dark:bg-[#111111] border border-slate-200 dark:border-[#ffffff10] rounded px-2 py-1 text-xs text-slate-900 dark:text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp"
                         />
                         <button
                           type="submit"
@@ -794,7 +794,7 @@ export default function InboxPage() {
 
             {/* Applied labels bar */}
             {convLabels.length > 0 && (
-              <div className="flex items-center gap-1.5 px-4 py-1.5 border-b border-slate-200 dark:border-[#ffffff08] bg-[var(--bg-primary)] flex-wrap shrink-0">
+              <div className="flex items-center gap-1.5 px-4 py-1.5 border-b border-slate-200 dark:border-[#ffffff08] bg-slate-50 dark:bg-[#0a0a0a] flex-wrap shrink-0">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {convLabels.map((cl: any) => (
                   <span
@@ -832,7 +832,7 @@ export default function InboxPage() {
                         <div className={`max-w-[70%] rounded-md p-3 shadow-md ${
                           isOutbound
                             ? "bg-[#1a3a2a] text-[#dcfce7] border border-whatsapp/15"
-                            : "bg-[var(--bg-card)] text-slate-900 dark:text-white border border-slate-200 dark:border-[#ffffff10]"
+                            : "bg-white dark:bg-[#111111] text-slate-900 dark:text-white border border-slate-200 dark:border-[#ffffff10]"
                         }`}>
                           {msg.mediaUrl ? (
                             <div className="mb-1">
@@ -909,7 +909,7 @@ export default function InboxPage() {
                     <div className="relative" ref={attachmentRef}>
                       <Button
                         onClick={() => setAttachmentOpen(!attachmentOpen)}
-                        className="h-10 w-10 p-0 shrink-0 bg-[var(--bg-card)] border border-slate-200 dark:border-[#ffffff10] hover:bg-[#ffffff10] text-slate-500 dark:text-gray-400"
+                        className="h-10 w-10 p-0 shrink-0 bg-white dark:bg-[#111111] border border-slate-200 dark:border-[#ffffff10] hover:bg-[#ffffff10] text-slate-500 dark:text-gray-400"
                         variant="outline"
                         disabled={uploading}
                       >
@@ -934,7 +934,7 @@ export default function InboxPage() {
                     </div>
                     <Input
                       placeholder="Escribe un mensaje..."
-                      className="flex-1 bg-[var(--bg-card)] border-0 text-slate-900 dark:text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
+                      className="flex-1 bg-white dark:bg-[#111111] border-0 text-slate-900 dark:text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
                       value={text}
                       onChange={(e) => setText(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -1028,10 +1028,10 @@ export default function InboxPage() {
                 <select
                   value={contact?.status ?? "NEW"}
                   onChange={(e) => updateContactMutation.mutate({ status: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] rounded-md px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-white/25 cursor-pointer"
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-md px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-white/25 cursor-pointer"
                 >
                   {LEAD_STATUS_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value} className="bg-[var(--bg-card)]">
+                    <option key={o.value} value={o.value} className="bg-white dark:bg-[#111111]">
                       {o.label}
                     </option>
                   ))}
@@ -1131,7 +1131,7 @@ export default function InboxPage() {
                 <div className="relative" ref={panelLabelRef}>
                   <button
                     onClick={() => setPanelLabelOpen((o) => !o)}
-                    className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors border border-[var(--border-color)] rounded px-2 py-1"
+                    className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors border border-slate-200 dark:border-white/10 rounded px-2 py-1"
                   >
                     <Plus className="h-2.5 w-2.5" />
                     Agregar etiqueta...
@@ -1224,7 +1224,7 @@ export default function InboxPage() {
                   size="sm"
                   onClick={() => archiveMutation.mutate()}
                   disabled={archiveMutation.isPending}
-                  className="w-full h-8 text-xs border-[var(--border-color)] bg-transparent text-white/50 hover:bg-slate-50 dark:bg-white/5 hover:text-white/80 transition-colors gap-1.5"
+                  className="w-full h-8 text-xs border-slate-200 dark:border-white/10 bg-transparent text-white/50 hover:bg-slate-50 dark:bg-white/5 hover:text-white/80 transition-colors gap-1.5"
                 >
                   <Archive className="h-3.5 w-3.5" />
                   {archiveMutation.isPending ? "Archivando..." : "Archivar conversación"}
@@ -1246,7 +1246,7 @@ export default function InboxPage() {
 
       {/* ── Delete confirmation dialog ── */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-sm">
+        <DialogContent className="bg-[#111] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-2">
               <Trash2 className="h-4 w-4 text-red-400" />
@@ -1260,7 +1260,7 @@ export default function InboxPage() {
             <Button
               variant="outline"
               onClick={() => setShowDeleteConfirm(false)}
-              className="flex-1 border-[var(--border-color)] bg-transparent text-white/60 hover:bg-slate-50 dark:bg-white/5"
+              className="flex-1 border-slate-200 dark:border-white/10 bg-transparent text-white/60 hover:bg-slate-50 dark:bg-white/5"
             >
               Cancelar
             </Button>

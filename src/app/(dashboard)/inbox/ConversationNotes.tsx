@@ -47,7 +47,7 @@ export function ConversationNotes({ conversationId, workspaceId }: { conversatio
       <div className="space-y-2">
         <Textarea 
           placeholder="Escribe una nota interna..." 
-          className="min-h-[60px] text-xs bg-[var(--bg-card)] border-[#ffffff10] text-slate-900 dark:text-white resize-none"
+          className="min-h-[60px] text-xs bg-white dark:bg-[#111111] border-[#ffffff10] text-slate-900 dark:text-white resize-none"
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
         />
@@ -65,12 +65,12 @@ export function ConversationNotes({ conversationId, workspaceId }: { conversatio
       
       <div className="space-y-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
         {notes.length === 0 ? (
-          <div className="p-3 bg-[var(--bg-card)] rounded-md text-xs text-gray-500 italic border border-[#ffffff08]">
+          <div className="p-3 bg-white dark:bg-[#111111] rounded-md text-xs text-gray-500 italic border border-[#ffffff08]">
             Sin notas disponibles.
           </div>
         ) : (
           notes.map((note: any) => (
-            <div key={note.id} className="p-2.5 bg-[var(--bg-card)] rounded-md border border-[#ffffff08] space-y-1">
+            <div key={note.id} className="p-2.5 bg-white dark:bg-[#111111] rounded-md border border-[#ffffff08] space-y-1">
               <p className="text-xs text-slate-600 dark:text-gray-300 whitespace-pre-wrap">{note.content}</p>
               <div className="flex justify-between items-center text-[9px] text-gray-500">
                 <span>{note.user?.name || "Usuario"}</span>

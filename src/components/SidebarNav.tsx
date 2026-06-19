@@ -28,7 +28,7 @@ export function SidebarNav() {
                 className={`flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-150 relative group ${
                   isActive
                     ? 'text-green-700 dark:text-white bg-green-50 dark:bg-white/10'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-white/5'
+                    : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {isActive && (

@@ -52,7 +52,7 @@ const CHART_COLORS = ["#25D366", "#6366f1", "#f59e0b", "#ef4444", "#06b6d4", "#e
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[var(--bg-card)] border border-[#ffffff15] rounded-md px-3 py-2 text-xs shadow-xl">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff15] rounded-md px-3 py-2 text-xs shadow-xl">
         <p className="text-slate-500 dark:text-gray-400 mb-1">{label}</p>
         {payload.map((p: { name: string; value: number; color: string }, i: number) => (
           <p key={i} style={{ color: p.color }} className="font-semibold">
@@ -75,7 +75,7 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, sub, accent = "#25D366" }: StatCardProps) {
   return (
-    <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-4 flex flex-col gap-3 hover:border-[#ffffff20] transition-all duration-150">
+    <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-4 flex flex-col gap-3 hover:border-[#ffffff20] transition-all duration-150">
       <div className="flex items-center justify-between">
         <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{label}</span>
         <span style={{ color: accent }} className="opacity-80">{icon}</span>
@@ -117,7 +117,7 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="p-6 h-full w-full overflow-y-auto scrollbar-thin bg-[var(--bg-primary)] text-slate-900 dark:text-white font-sans antialiased">
+    <div className="p-6 h-full w-full overflow-y-auto scrollbar-thin bg-slate-50 dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans antialiased">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 max-w-7xl">
         <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Period Selector */}
-        <div className="flex items-center gap-1 bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md p-1">
+        <div className="flex items-center gap-1 bg-white dark:bg-[#111111] border border-[#ffffff10] rounded-md p-1">
           {PERIOD_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -214,7 +214,7 @@ export default function ReportsPage() {
           {/* ROW 3: Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Line chart: Contacts per day */}
-            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <TrendingUp className="h-4 w-4 text-whatsapp" />
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">Contactos por Día</span>
@@ -251,7 +251,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Bar chart: Conversations per day */}
-            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <MessageSquare className="h-4 w-4 text-indigoAccent" />
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">Conversaciones por Día</span>
@@ -283,7 +283,7 @@ export default function ReportsPage() {
           {/* ROW 4: Leads by status + Top sources */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Donut: Leads by status */}
-            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <Users className="h-4 w-4 text-whatsapp" />
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">Leads por Estado</span>
@@ -332,7 +332,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Horizontal bar: Top lead sources */}
-            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <TrendingDown className="h-4 w-4 text-amber-400" />
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">Top Fuentes de Leads</span>

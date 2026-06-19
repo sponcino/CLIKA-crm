@@ -38,7 +38,7 @@ export function ConversationSnooze({ conversationId, snoozedUntil, workspaceId }
           {isSnoozed ? 'Pausado' : 'Pausar'}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-2 bg-[var(--bg-secondary)] border-[#ffffff15] text-slate-900 dark:text-white" align="end">
+      <PopoverContent className="w-48 p-2 bg-white dark:bg-[#111111] border-[#ffffff15] text-slate-900 dark:text-white" align="end">
         <div className="space-y-1">
           <h5 className="text-xs font-semibold px-2 pb-1 text-slate-500 dark:text-gray-400">Pausar conversación</h5>
           <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-7 hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => snoozeMutation.mutate(15)}>

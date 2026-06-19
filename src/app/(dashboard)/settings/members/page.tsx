@@ -151,7 +151,7 @@ export default function MembersSettingsPage() {
         <Button
           id="btn-invite-member"
           onClick={() => setInviteOpen(true)}
-          className="bg-white dark:bg-[#111111] hover:bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-slate-900 dark:text-white font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
+          className="bg-white dark:bg-[#111111] hover:bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
         >
           <UserPlus className="h-3.5 w-3.5" />
           Invitar miembro
@@ -203,7 +203,7 @@ export default function MembersSettingsPage() {
                     {/* Name + Avatar */}
                     <TableCell className="py-3">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-7 w-7 border border-[var(--border-color)] shrink-0">
+                        <Avatar className="h-7 w-7 border border-slate-200 dark:border-white/10 shrink-0">
                           <AvatarFallback className="bg-white dark:bg-[#1a1a1a] text-slate-600 dark:text-gray-300 text-[10px] font-bold">
                             {initials}
                           </AvatarFallback>
@@ -270,7 +270,7 @@ export default function MembersSettingsPage() {
       
       {/* Invite Dialog */}
       <Dialog open={inviteOpen} onOpenChange={(open) => !open && handleCloseInvite()}>
-        <DialogContent className="bg-white dark:bg-[#111111] border border-[var(--border-color)] text-slate-900 dark:text-white rounded-md max-w-md">
+        <DialogContent className="bg-white dark:bg-[#111111] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Invitar Miembro</DialogTitle>
           </DialogHeader>
@@ -288,7 +288,7 @@ export default function MembersSettingsPage() {
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
                         placeholder="usuario@empresa.com"
-                        className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+                        className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
                     />
                 </div>
                 
@@ -300,7 +300,7 @@ export default function MembersSettingsPage() {
                         id="inviteRole"
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value)}
-                        className="w-full bg-white dark:bg-[#1a1a1a] border border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none"
+                        className="w-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none"
                     >
                         <option value="ADMIN">Admin</option>
                         <option value="MANAGER">Manager</option>
@@ -339,7 +339,7 @@ export default function MembersSettingsPage() {
           <DialogFooter className="mt-2">
             {!tempPassword ? (
                 <>
-                <Button variant="outline" onClick={handleCloseInvite} className="bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 h-8 text-xs">
+                <Button variant="outline" onClick={handleCloseInvite} className="bg-transparent border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 h-8 text-xs">
                     Cancelar
                 </Button>
                 <Button 

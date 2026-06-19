@@ -170,7 +170,7 @@ export default function KanbanPage() {
   }
 
   const renderContactCard = (contact: any) => (
-    <div className="bg-[var(--bg-secondary)] p-3 rounded-md border border-[#ffffff10] shadow-sm mb-2 text-xs hover:border-[#ffffff20] transition-colors">
+    <div className="bg-white dark:bg-[#111111] p-3 rounded-md border border-[#ffffff10] shadow-sm mb-2 text-xs hover:border-[#ffffff20] transition-colors">
       <div className="font-semibold text-slate-900 dark:text-white mb-1 truncate">{contact.whatsappName || contact.fullName || "Sin nombre"}</div>
       <div className="text-slate-500 dark:text-gray-400 mb-2 font-mono">{contact.whatsappPhone}</div>
       <div className="flex items-center justify-between">
@@ -187,7 +187,7 @@ export default function KanbanPage() {
   if (isLoading) return <div className="p-8 text-center text-slate-500 dark:text-gray-400">Cargando Kanban...</div>;
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] bg-[var(--bg-primary)] overflow-hidden">
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] bg-slate-50 dark:bg-[#0a0a0a] overflow-hidden">
       <div className="p-6 pb-4 border-b border-[#ffffff10] shrink-0">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Kanban de Contactos</h1>
         <p className="text-gray-500 text-sm mt-1">Arrastra los contactos para cambiar su estado en el embudo de ventas.</p>

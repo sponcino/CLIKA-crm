@@ -14,17 +14,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-whatsapp/30">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#0a0a0a] text-slate-900 dark:text-white font-sans antialiased selection:bg-whatsapp/30">
       {/* Sidebar — always dark regardless of theme */}
-      <aside className="w-[220px] bg-[var(--sidebar-bg)] border-r border-[var(--border-color)] hidden md:flex flex-col flex-shrink-0">
-        <div className="h-12 flex items-center px-4 font-bold text-lg tracking-tight border-b border-[var(--border-color)] text-[var(--sidebar-text)]">
+      <aside className="w-[220px] bg-white dark:bg-[#0a0a0a] border-r border-slate-200 dark:border-white/10 hidden md:flex flex-col flex-shrink-0">
+        <div className="h-12 flex items-center px-4 font-bold text-lg tracking-tight border-b border-slate-200 dark:border-white/10 text-slate-700 dark:text-white">
           CLIKA<span className="h-1.5 w-1.5 rounded-full bg-whatsapp ml-1 self-center"></span>
         </div>
 
         <SidebarNav />
 
         {/* Bottom Panel */}
-        <div className="p-3 border-t border-[var(--border-color)] bg-black/20 flex flex-col gap-2">
+        <div className="p-3 border-t border-slate-200 dark:border-white/10 bg-black/20 flex flex-col gap-2">
           <div className="text-[11px] text-gray-500 font-medium px-2 uppercase tracking-wider truncate">
             Demo Workspace
           </div>
@@ -54,22 +54,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <header className="h-12 flex-shrink-0 bg-[var(--bg-primary)] border-b border-[var(--border-color)] flex items-center justify-between px-4">
+        <header className="h-12 flex-shrink-0 bg-slate-50 dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <GlobalSearch />
-            <div className="text-xs font-semibold text-[var(--text-secondary)]">
-              Workspace: <span className="text-[var(--text-primary)]">Demo Workspace</span>
+            <div className="text-xs font-semibold text-slate-500 dark:text-gray-400">
+              Workspace: <span className="text-slate-900 dark:text-white">Demo Workspace</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6 border border-[var(--border-color)]">
+              <Avatar className="h-6 w-6 border border-slate-200 dark:border-white/10">
                 <AvatarFallback className="bg-whatsapp/10 text-whatsapp text-[10px] font-semibold">
                   {session.user.name?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-xs font-medium text-[var(--text-secondary)] hidden sm:block">
+              <span className="text-xs font-medium text-slate-500 dark:text-gray-400 hidden sm:block">
                 {session.user.name}
               </span>
             </div>
@@ -77,7 +77,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-hidden relative bg-[var(--bg-primary)]">
+        <main className="flex-1 overflow-hidden relative bg-slate-50 dark:bg-[#0a0a0a]">
           {children}
         </main>
       </div>

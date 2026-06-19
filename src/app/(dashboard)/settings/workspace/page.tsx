@@ -92,7 +92,7 @@ export default function WorkspaceSettingsPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Mi Empresa S.A."
-              className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
+              className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
             />
           </div>
 
@@ -105,13 +105,13 @@ export default function WorkspaceSettingsPage() {
                 id="workspaceId"
                 value={id}
                 readOnly
-                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-500 dark:text-gray-400 font-mono text-xs h-9 focus-visible:ring-0 select-all"
+                className="bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 font-mono text-xs h-9 focus-visible:ring-0 select-all"
               />
               <Button
                 variant="outline"
                 size="icon"
                 onClick={handleCopyId}
-                className="h-9 w-9 bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 shrink-0"
+                className="h-9 w-9 bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 shrink-0"
               >
                 <Copy className="h-4 w-4" />
               </Button>

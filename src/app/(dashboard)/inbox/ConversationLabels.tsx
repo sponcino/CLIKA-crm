@@ -109,7 +109,7 @@ export function ConversationLabels({ conversationId, workspaceId }: { conversati
               <Plus className="h-3.5 w-3.5" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-56 p-3 bg-[var(--bg-secondary)] border-[#ffffff15] text-slate-900 dark:text-white" align="end">
+          <PopoverContent className="w-56 p-3 bg-white dark:bg-[#111111] border-[#ffffff15] text-slate-900 dark:text-white" align="end">
             <div className="space-y-3">
               <h5 className="text-xs font-semibold">Etiquetas disponibles</h5>
               <div className="flex flex-wrap gap-1.5">
@@ -132,7 +132,7 @@ export function ConversationLabels({ conversationId, workspaceId }: { conversati
                   placeholder="Nueva etiqueta..." 
                   value={newLabelName}
                   onChange={(e) => setNewLabelName(e.target.value)}
-                  className="h-7 text-xs bg-[var(--bg-card)] border-[#ffffff10]"
+                  className="h-7 text-xs bg-white dark:bg-[#111111] border-[#ffffff10]"
                 />
                 <Button type="submit" size="sm" className="h-7 w-7 p-0 bg-whatsapp hover:bg-whatsapp/90 text-black shrink-0" disabled={createLabelMutation.isPending}>
                   <Plus className="h-3.5 w-3.5" />

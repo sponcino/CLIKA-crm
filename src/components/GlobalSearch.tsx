@@ -48,7 +48,7 @@ export function GlobalSearch() {
     <>
       <button 
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 text-xs text-gray-500 bg-[var(--bg-card)] hover:bg-[#222] border border-[#ffffff10] px-3 py-1.5 rounded-md transition-colors"
+        className="flex items-center gap-2 text-xs text-gray-500 bg-white dark:bg-[#111111] hover:bg-[#222] border border-[#ffffff10] px-3 py-1.5 rounded-md transition-colors"
       >
         <Search className="h-3.5 w-3.5" />
         <span className="hidden sm:inline-block w-40 text-left">Buscar contactos, mensajes...</span>
@@ -58,8 +58,8 @@ export function GlobalSearch() {
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="p-0 border-[var(--border-color)] bg-[#111] max-w-2xl overflow-hidden shadow-2xl gap-0">
-          <div className="flex items-center px-4 py-3 border-b border-white/5 bg-[var(--bg-primary)]">
+        <DialogContent className="p-0 border-slate-200 dark:border-white/10 bg-[#111] max-w-2xl overflow-hidden shadow-2xl gap-0">
+          <div className="flex items-center px-4 py-3 border-b border-white/5 bg-slate-50 dark:bg-[#0a0a0a]">
             <Search className="h-5 w-5 text-slate-500 dark:text-gray-400 mr-3" />
             <Input
               className="flex-1 bg-transparent border-0 shadow-none text-slate-900 dark:text-white focus-visible:ring-0 text-base p-0 placeholder-gray-600 h-auto"
