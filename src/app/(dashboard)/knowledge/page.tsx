@@ -25,7 +25,7 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  General: "bg-gray-800 text-gray-300 border-gray-700",
+  General: "bg-gray-800 text-slate-600 dark:text-gray-300 border-gray-700",
   Productos: "bg-blue-950/60 text-blue-400 border-blue-800/40",
   Servicios: "bg-indigo-950/60 text-indigo-400 border-indigo-800/40",
   Precios: "bg-amber-950/60 text-amber-400 border-amber-800/40",
@@ -377,14 +377,14 @@ export default function KnowledgePage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full w-full bg-[#0a0a0a] text-white overflow-hidden">
+    <div className="flex h-full w-full bg-[var(--bg-primary)] text-slate-900 dark:text-white overflow-hidden">
 
       {/* ══ LEFT PANEL ══ */}
       <div className="w-[280px] shrink-0 bg-[#0c0c0c] border-r border-[#ffffff10] flex flex-col">
         <div className="h-12 flex items-center justify-between px-4 border-b border-[#ffffff0d] shrink-0">
           <div className="flex items-center gap-2">
             <BookOpen className="h-4 w-4 text-whatsapp" />
-            <span className="text-sm font-bold text-white tracking-tight">Base de Conocimiento</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Base de Conocimiento</span>
           </div>
           <Button
             onClick={handleNewDoc}
@@ -399,7 +399,7 @@ export default function KnowledgePage() {
         <div className="px-3 py-2 border-b border-[#ffffff08]">
           <button
             onClick={() => { setSearchOpen(true); setSearchQuery(""); setSearchResults([]); setSearchDone(false); }}
-            className="w-full flex items-center gap-2 px-3 py-2 bg-[#111111] border border-[#ffffff10] rounded-md text-xs text-gray-500 hover:border-[#ffffff20] hover:text-gray-300 transition-all"
+            className="w-full flex items-center gap-2 px-3 py-2 bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md text-xs text-gray-500 hover:border-[#ffffff20] hover:text-slate-600 dark:text-gray-300 transition-all"
           >
             <Search className="h-3.5 w-3.5" />
             Probar búsqueda semántica...
@@ -430,10 +430,10 @@ export default function KnowledgePage() {
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-xs font-semibold text-white truncate leading-tight flex-1">
+                    <span className="text-xs font-semibold text-slate-900 dark:text-white truncate leading-tight flex-1">
                       {doc.title}
                     </span>
-                    <ChevronRight className="h-3 w-3 text-gray-600 shrink-0 mt-0.5 group-hover:text-gray-400" />
+                    <ChevronRight className="h-3 w-3 text-gray-600 shrink-0 mt-0.5 group-hover:text-slate-500 dark:text-gray-400" />
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
@@ -479,11 +479,11 @@ export default function KnowledgePage() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {!selectedId && !isCreating ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-8">
-            <div className="h-14 w-14 rounded-md bg-[#111111] border border-[#ffffff0d] flex items-center justify-center">
+            <div className="h-14 w-14 rounded-md bg-[var(--bg-secondary)] border border-[#ffffff0d] flex items-center justify-center">
               <BookOpen className="h-7 w-7 text-gray-600" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-white">Selecciona un documento</h2>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Selecciona un documento</h2>
               <p className="text-xs text-gray-500 mt-1.5">Elige un documento de la lista o crea uno nuevo.</p>
             </div>
             <Button
@@ -499,7 +499,7 @@ export default function KnowledgePage() {
             {/* Editor toolbar */}
             <div className="h-12 border-b border-[#ffffff0d] flex items-center justify-between px-5 shrink-0 bg-[#0c0c0c]">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-white truncate max-w-[300px]">
+                <span className="text-xs font-semibold text-slate-900 dark:text-white truncate max-w-[300px]">
                   {isCreating ? "Nuevo documento" : (selectedDocSummary?.title || "Editar documento")}
                 </span>
                 {isDirty && (
@@ -546,7 +546,7 @@ export default function KnowledgePage() {
                         <button
                           key={tpl.label}
                           onClick={() => applyTemplate(tpl)}
-                          className="text-[10px] px-2.5 py-1.5 rounded border border-[#ffffff12] bg-[#111111] text-gray-400 hover:border-whatsapp/40 hover:text-whatsapp hover:bg-whatsapp/5 transition-all"
+                          className="text-[10px] px-2.5 py-1.5 rounded border border-[#ffffff12] bg-[var(--bg-secondary)] text-slate-500 dark:text-gray-400 hover:border-whatsapp/40 hover:text-whatsapp hover:bg-whatsapp/5 transition-all"
                         >
                           {tpl.label}
                         </button>
@@ -564,7 +564,7 @@ export default function KnowledgePage() {
                     value={editTitle}
                     onChange={(e) => { setEditTitle(e.target.value); markDirty(); }}
                     placeholder="Ej. Preguntas frecuentes sobre precios"
-                    className="bg-[#111111] border-[#ffffff12] text-white text-sm font-semibold focus-visible:ring-whatsapp h-10"
+                    className="bg-[var(--bg-secondary)] border-[#ffffff12] text-slate-900 dark:text-white text-sm font-semibold focus-visible:ring-whatsapp h-10"
                   />
                 </div>
 
@@ -575,10 +575,10 @@ export default function KnowledgePage() {
                     <select
                       value={editCategory}
                       onChange={(e) => { setEditCategory(e.target.value); markDirty(); }}
-                      className="w-full h-9 bg-[#111111] border border-[#ffffff12] text-white text-sm rounded-md px-3 focus:ring-1 focus:ring-whatsapp outline-none cursor-pointer"
+                      className="w-full h-9 bg-[var(--bg-secondary)] border border-[#ffffff12] text-slate-900 dark:text-white text-sm rounded-md px-3 focus:ring-1 focus:ring-whatsapp outline-none cursor-pointer"
                     >
                       {CATEGORIES.map((c) => (
-                        <option key={c} value={c} className="bg-[#111111]">{c}</option>
+                        <option key={c} value={c} className="bg-[var(--bg-secondary)]">{c}</option>
                       ))}
                     </select>
                   </div>
@@ -594,7 +594,7 @@ export default function KnowledgePage() {
                     />
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="h-9 px-3 flex items-center gap-1.5 text-xs text-gray-400 border border-[#ffffff12] bg-[#111111] rounded-md hover:border-white/20 hover:text-white transition-all"
+                      className="h-9 px-3 flex items-center gap-1.5 text-xs text-slate-500 dark:text-gray-400 border border-[#ffffff12] bg-[var(--bg-secondary)] rounded-md hover:border-white/20 hover:text-slate-900 dark:text-white transition-all"
                     >
                       <Upload className="h-3.5 w-3.5" />
                       .txt / .md
@@ -610,7 +610,7 @@ export default function KnowledgePage() {
                           onCheckedChange={(v) => { setEditIsActive(v); markDirty(); }}
                           className="data-[state=checked]:bg-whatsapp"
                         />
-                        <span className="ml-2 text-xs text-gray-400">{editIsActive ? "Activo" : "Inactivo"}</span>
+                        <span className="ml-2 text-xs text-slate-500 dark:text-gray-400">{editIsActive ? "Activo" : "Inactivo"}</span>
                       </div>
                     </div>
                   )}
@@ -631,7 +631,7 @@ export default function KnowledgePage() {
                       "Escribe el contenido aquí...\n\nUsa líneas en blanco para separar párrafos (cada uno se convierte en un chunk).\n\nEjemplo:\nNuestros precios comienzan desde $99/mes.\n\nEl plan profesional incluye soporte prioritario."
                     }
                     rows={16}
-                    className="w-full bg-[#111111] border border-[#ffffff12] text-gray-200 rounded-md text-sm p-4 font-mono leading-relaxed focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none resize-none scrollbar-thin"
+                    className="w-full bg-[var(--bg-secondary)] border border-[#ffffff12] text-gray-200 rounded-md text-sm p-4 font-mono leading-relaxed focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none resize-none scrollbar-thin"
                   />
                 </div>
 
@@ -657,7 +657,7 @@ export default function KnowledgePage() {
                               <span className="h-1.5 w-1.5 rounded-full bg-gray-600" title="Sin embedding" />
                             )}
                           </div>
-                          <p className="text-[11px] text-gray-400 font-mono leading-relaxed line-clamp-2 flex-1">
+                          <p className="text-[11px] text-slate-500 dark:text-gray-400 font-mono leading-relaxed line-clamp-2 flex-1">
                             {chunk.content.slice(0, 100)}{chunk.content.length > 100 ? "…" : ""}
                           </p>
                         </div>
@@ -673,9 +673,9 @@ export default function KnowledgePage() {
 
       {/* ══ SEARCH DIALOG ══ */}
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="bg-[#111111] border border-[#ffffff10] text-white rounded-md max-w-lg">
+        <DialogContent className="bg-[var(--bg-secondary)] border border-[#ffffff10] text-slate-900 dark:text-white rounded-md max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               <Search className="h-4 w-4 text-whatsapp" />
               Probar búsqueda semántica
             </DialogTitle>
@@ -688,7 +688,7 @@ export default function KnowledgePage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="Escribe una consulta..."
-                className="bg-[#1a1a1a] border-[#ffffff15] text-white focus-visible:ring-whatsapp flex-1"
+                className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp flex-1"
                 autoFocus
               />
               <Button
@@ -709,7 +709,7 @@ export default function KnowledgePage() {
                   <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold ${
                     searchResults[0]?.searchType === "vector"
                       ? "bg-[#6366f1]/10 text-[#6366f1] border-[#6366f1]/20"
-                      : "bg-white/5 text-gray-500 border-white/10"
+                      : "bg-slate-50 dark:bg-white/5 text-gray-500 border-[var(--border-color)]"
                   }`}>
                     {searchResults[0]?.searchType === "vector" ? "🔮 Vector search" : "📝 Text search"}
                   </span>
@@ -718,10 +718,10 @@ export default function KnowledgePage() {
                   {searchResults.map((result) => (
                     <div
                       key={result.chunkId}
-                      className="bg-[#1a1a1a] border border-[#ffffff08] rounded-md p-3 space-y-2"
+                      className="bg-[var(--bg-card)] border border-[#ffffff08] rounded-md p-3 space-y-2"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-white truncate">{result.documentTitle}</span>
+                        <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">{result.documentTitle}</span>
                         <div className="flex items-center gap-1.5 shrink-0">
                           <Badge className={`text-[9px] font-bold px-1.5 py-0 rounded-sm border ${CATEGORY_COLORS[result.category] ?? CATEGORY_COLORS["General"]}`}>
                             {result.category}
@@ -729,7 +729,7 @@ export default function KnowledgePage() {
                           <SimilarityBadge score={result.score} />
                         </div>
                       </div>
-                      <p className="text-[11px] text-gray-400 leading-relaxed font-mono line-clamp-3">
+                      <p className="text-[11px] text-slate-500 dark:text-gray-400 leading-relaxed font-mono line-clamp-3">
                         {result.content}
                       </p>
                     </div>

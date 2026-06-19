@@ -72,19 +72,19 @@ const EMPTY: FormState = {
 
 // ─── style helpers ─────────────────────────────────────────────────────────────
 const inputCls =
-  "bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20";
+  "bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20";
 const textareaCls =
-  "bg-[#1a1a1a] border-white/10 text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none";
+  "bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none";
 const selectCls =
-  "w-full bg-[#1a1a1a] border border-white/10 text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] cursor-pointer appearance-none";
-const labelCls = "text-xs text-gray-400 font-medium";
+  "w-full bg-white dark:bg-[#1a1a1a] border border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] cursor-pointer appearance-none";
+const labelCls = "text-xs text-slate-500 dark:text-gray-400 font-medium";
 const sectionLabelCls =
   "text-[10px] font-bold text-gray-500 uppercase tracking-widest";
 
 // ─── subcomponents ────────────────────────────────────────────────────────────
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-[#111111] border border-[#ffffff0d] rounded-md divide-y divide-[#ffffff08]">
+    <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md divide-y divide-[#ffffff08]">
       {children}
     </div>
   );
@@ -274,7 +274,7 @@ export default function AIAgentSettingsPage() {
         <div className="flex items-center gap-3">
           <Bot className="h-5 w-5 text-[#25D366]" />
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">Agente de IA</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Agente de IA</h1>
             <p className="text-gray-500 text-xs mt-0.5">
               Configura el comportamiento y cerebro de tu asistente virtual.
             </p>
@@ -292,7 +292,7 @@ export default function AIAgentSettingsPage() {
             size="sm"
             onClick={handleDiscard}
             disabled={!isDirty || saving}
-            className="h-8 px-3 text-xs bg-transparent border-white/10 text-gray-300 hover:text-white hover:bg-white/5 disabled:opacity-30"
+            className="h-8 px-3 text-xs bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 disabled:opacity-30"
           >
             Descartar
           </Button>
@@ -320,7 +320,7 @@ export default function AIAgentSettingsPage() {
             className={`px-4 py-2.5 text-xs font-semibold border-b-2 -mb-px transition-colors ${
               tab === id
                 ? "border-[#25D366] text-[#25D366]"
-                : "border-transparent text-gray-500 hover:text-gray-300"
+                : "border-transparent text-gray-500 hover:text-slate-600 dark:text-gray-300"
             }`}
           >
             {label}
@@ -371,9 +371,9 @@ export default function AIAgentSettingsPage() {
                     onChange={(e) => set("language", e.target.value)}
                     className={selectCls}
                   >
-                    <option value="es" className="bg-[#1a1a1a]">Español</option>
-                    <option value="en" className="bg-[#1a1a1a]">Inglés</option>
-                    <option value="pt" className="bg-[#1a1a1a]">Portugués</option>
+                    <option value="es" className="bg-white dark:bg-[#1a1a1a]">Español</option>
+                    <option value="en" className="bg-white dark:bg-[#1a1a1a]">Inglés</option>
+                    <option value="pt" className="bg-white dark:bg-[#1a1a1a]">Portugués</option>
                   </select>
                 </Field>
                 <Field label="Tono">
@@ -382,10 +382,10 @@ export default function AIAgentSettingsPage() {
                     onChange={(e) => set("tone", e.target.value)}
                     className={selectCls}
                   >
-                    <option value="professional" className="bg-[#1a1a1a]">Profesional y formal</option>
-                    <option value="friendly"     className="bg-[#1a1a1a]">Amigable y cercano</option>
-                    <option value="direct"       className="bg-[#1a1a1a]">Directo y conciso</option>
-                    <option value="enthusiastic" className="bg-[#1a1a1a]">Entusiasta y persuasivo</option>
+                    <option value="professional" className="bg-white dark:bg-[#1a1a1a]">Profesional y formal</option>
+                    <option value="friendly"     className="bg-white dark:bg-[#1a1a1a]">Amigable y cercano</option>
+                    <option value="direct"       className="bg-white dark:bg-[#1a1a1a]">Directo y conciso</option>
+                    <option value="enthusiastic" className="bg-white dark:bg-[#1a1a1a]">Entusiasta y persuasivo</option>
                   </select>
                 </Field>
               </div>
@@ -409,15 +409,15 @@ export default function AIAgentSettingsPage() {
                     onChange={(e) => set("companyType", e.target.value)}
                     className={selectCls}
                   >
-                    <option value=""              className="bg-[#1a1a1a]">Seleccionar...</option>
-                    <option value="servicios"     className="bg-[#1a1a1a]">Servicios Profesionales</option>
-                    <option value="inmobiliaria"  className="bg-[#1a1a1a]">Inmobiliaria</option>
-                    <option value="ecommerce"     className="bg-[#1a1a1a]">E-commerce</option>
-                    <option value="salud"         className="bg-[#1a1a1a]">Salud / Clínica</option>
-                    <option value="restaurante"   className="bg-[#1a1a1a]">Restaurante</option>
-                    <option value="educacion"     className="bg-[#1a1a1a]">Educación</option>
-                    <option value="automotriz"    className="bg-[#1a1a1a]">Automotriz</option>
-                    <option value="otro"          className="bg-[#1a1a1a]">Otro</option>
+                    <option value=""              className="bg-white dark:bg-[#1a1a1a]">Seleccionar...</option>
+                    <option value="servicios"     className="bg-white dark:bg-[#1a1a1a]">Servicios Profesionales</option>
+                    <option value="inmobiliaria"  className="bg-white dark:bg-[#1a1a1a]">Inmobiliaria</option>
+                    <option value="ecommerce"     className="bg-white dark:bg-[#1a1a1a]">E-commerce</option>
+                    <option value="salud"         className="bg-white dark:bg-[#1a1a1a]">Salud / Clínica</option>
+                    <option value="restaurante"   className="bg-white dark:bg-[#1a1a1a]">Restaurante</option>
+                    <option value="educacion"     className="bg-white dark:bg-[#1a1a1a]">Educación</option>
+                    <option value="automotriz"    className="bg-white dark:bg-[#1a1a1a]">Automotriz</option>
+                    <option value="otro"          className="bg-white dark:bg-[#1a1a1a]">Otro</option>
                   </select>
                 </Field>
               </div>
@@ -489,13 +489,13 @@ export default function AIAgentSettingsPage() {
                   {form.transferKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="inline-flex items-center gap-1 bg-white/5 border border-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full"
+                      className="inline-flex items-center gap-1 bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-white/70 text-xs px-2 py-0.5 rounded-full"
                     >
                       {kw}
                       <button
                         type="button"
                         onClick={() => removeKeyword(kw)}
-                        className="hover:text-white transition-colors"
+                        className="hover:text-slate-900 dark:text-white transition-colors"
                       >
                         <X className="h-2.5 w-2.5" />
                       </button>
@@ -518,7 +518,7 @@ export default function AIAgentSettingsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => addKeyword(kwInput)}
-                    className="h-9 px-3 bg-transparent border-white/10 text-gray-400 hover:text-white hover:bg-white/5 shrink-0"
+                    className="h-9 px-3 bg-transparent border-[var(--border-color)] text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5 shrink-0"
                   >
                     <Plus className="h-3.5 w-3.5" />
                   </Button>
@@ -543,15 +543,15 @@ export default function AIAgentSettingsPage() {
                   onChange={(e) => set("companyType", e.target.value)}
                   className={selectCls}
                 >
-                  <option value=""              className="bg-[#1a1a1a]">Seleccionar...</option>
-                  <option value="servicios"     className="bg-[#1a1a1a]">Servicios Profesionales</option>
-                  <option value="inmobiliaria"  className="bg-[#1a1a1a]">Inmobiliaria</option>
-                  <option value="ecommerce"     className="bg-[#1a1a1a]">E-commerce</option>
-                  <option value="salud"         className="bg-[#1a1a1a]">Salud / Clínica</option>
-                  <option value="restaurante"   className="bg-[#1a1a1a]">Restaurante</option>
-                  <option value="educacion"     className="bg-[#1a1a1a]">Educación</option>
-                  <option value="automotriz"    className="bg-[#1a1a1a]">Automotriz</option>
-                  <option value="otro"          className="bg-[#1a1a1a]">Otro</option>
+                  <option value=""              className="bg-white dark:bg-[#1a1a1a]">Seleccionar...</option>
+                  <option value="servicios"     className="bg-white dark:bg-[#1a1a1a]">Servicios Profesionales</option>
+                  <option value="inmobiliaria"  className="bg-white dark:bg-[#1a1a1a]">Inmobiliaria</option>
+                  <option value="ecommerce"     className="bg-white dark:bg-[#1a1a1a]">E-commerce</option>
+                  <option value="salud"         className="bg-white dark:bg-[#1a1a1a]">Salud / Clínica</option>
+                  <option value="restaurante"   className="bg-white dark:bg-[#1a1a1a]">Restaurante</option>
+                  <option value="educacion"     className="bg-white dark:bg-[#1a1a1a]">Educación</option>
+                  <option value="automotriz"    className="bg-white dark:bg-[#1a1a1a]">Automotriz</option>
+                  <option value="otro"          className="bg-white dark:bg-[#1a1a1a]">Otro</option>
                 </select>
               </Field>
             </CardSection>
@@ -629,7 +629,7 @@ export default function AIAgentSettingsPage() {
               {/* Global API key toggle */}
               <div className="flex items-center justify-between py-1">
                 <div>
-                  <p className="text-sm text-white font-medium">Usar API Key global del sistema</p>
+                  <p className="text-sm text-slate-900 dark:text-white font-medium">Usar API Key global del sistema</p>
                   <p className="text-[11px] text-gray-500 mt-0.5">
                     Desactivar para usar una API Key propia
                   </p>
@@ -658,15 +658,15 @@ export default function AIAgentSettingsPage() {
                   onChange={(e) => set("modelName", e.target.value)}
                   className={selectCls}
                 >
-                  <optgroup label="Anthropic" className="bg-[#1a1a1a]">
-                    <option value="claude-sonnet-4-6"           className="bg-[#1a1a1a]">claude-sonnet-4-6 (Recomendado)</option>
-                    <option value="claude-opus-4-8"             className="bg-[#1a1a1a]">claude-opus-4-8 (Mayor calidad)</option>
-                    <option value="claude-haiku-4-5-20251001"   className="bg-[#1a1a1a]">claude-haiku-4-5 (Más rápido)</option>
-                    <option value="claude-sonnet-4-20250514"    className="bg-[#1a1a1a]">claude-sonnet-4-20250514</option>
+                  <optgroup label="Anthropic" className="bg-white dark:bg-[#1a1a1a]">
+                    <option value="claude-sonnet-4-6"           className="bg-white dark:bg-[#1a1a1a]">claude-sonnet-4-6 (Recomendado)</option>
+                    <option value="claude-opus-4-8"             className="bg-white dark:bg-[#1a1a1a]">claude-opus-4-8 (Mayor calidad)</option>
+                    <option value="claude-haiku-4-5-20251001"   className="bg-white dark:bg-[#1a1a1a]">claude-haiku-4-5 (Más rápido)</option>
+                    <option value="claude-sonnet-4-20250514"    className="bg-white dark:bg-[#1a1a1a]">claude-sonnet-4-20250514</option>
                   </optgroup>
-                  <optgroup label="OpenAI" className="bg-[#1a1a1a]">
-                    <option value="gpt-4o"      className="bg-[#1a1a1a]">gpt-4o</option>
-                    <option value="gpt-4o-mini" className="bg-[#1a1a1a]">gpt-4o-mini</option>
+                  <optgroup label="OpenAI" className="bg-white dark:bg-[#1a1a1a]">
+                    <option value="gpt-4o"      className="bg-white dark:bg-[#1a1a1a]">gpt-4o</option>
+                    <option value="gpt-4o-mini" className="bg-white dark:bg-[#1a1a1a]">gpt-4o-mini</option>
                   </optgroup>
                 </select>
               </Field>

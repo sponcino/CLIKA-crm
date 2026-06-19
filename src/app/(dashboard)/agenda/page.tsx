@@ -212,30 +212,30 @@ export default function AgendaPage() {
   const visibleAppointments = getVisibleAppointments();
 
   return (
-    <div className="flex h-full w-full bg-[#0a0a0a] text-gray-200">
+    <div className="flex h-full w-full bg-[var(--bg-primary)] text-gray-200">
       {/* MAIN CALENDAR PANEL */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#0a0a0a] p-6 border-r border-[#ffffff10] overflow-y-auto scrollbar-thin">
+      <div className="flex-1 flex flex-col min-w-0 bg-[var(--bg-primary)] p-6 border-r border-[#ffffff10] overflow-y-auto scrollbar-thin">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <CalendarIcon className="h-6 w-6 text-whatsapp" />
-            <h1 className="text-xl font-bold text-white tracking-tight">Agenda</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Agenda</h1>
             
-            <div className="flex items-center gap-1.5 ml-4 bg-[#111111] p-1 border border-[#ffffff10] rounded-md">
+            <div className="flex items-center gap-1.5 ml-4 bg-[var(--bg-secondary)] p-1 border border-[#ffffff10] rounded-md">
               <Button 
                 onClick={() => setView("day")} 
-                className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${view === "day" ? "bg-white/10 text-white" : "bg-transparent text-gray-400 hover:text-white"}`}
+                className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${view === "day" ? "bg-white/10 text-slate-900 dark:text-white" : "bg-transparent text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white"}`}
               >
                 Día
               </Button>
               <Button 
                 onClick={() => setView("week")} 
-                className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${view === "week" ? "bg-white/10 text-white" : "bg-transparent text-gray-400 hover:text-white"}`}
+                className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${view === "week" ? "bg-white/10 text-slate-900 dark:text-white" : "bg-transparent text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white"}`}
               >
                 Semana
               </Button>
               <Button 
                 onClick={() => setView("month")} 
-                className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${view === "month" ? "bg-white/10 text-white" : "bg-transparent text-gray-400 hover:text-white"}`}
+                className={`h-7 text-xs px-3 rounded-sm border-0 font-medium ${view === "month" ? "bg-white/10 text-slate-900 dark:text-white" : "bg-transparent text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white"}`}
               >
                 Mes
               </Button>
@@ -243,16 +243,16 @@ export default function AgendaPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-[#111111] border border-[#ffffff10] rounded-md px-1.5 py-0.5">
-              <Button onClick={handlePrev} variant="ghost" className="h-7 w-7 p-0 text-gray-400 hover:text-white">
+            <div className="flex items-center gap-1 bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md px-1.5 py-0.5">
+              <Button onClick={handlePrev} variant="ghost" className="h-7 w-7 p-0 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-xs font-semibold px-2 text-white">
+              <span className="text-xs font-semibold px-2 text-slate-900 dark:text-white">
                 {view === "day" && format(currentDate, "EEEE, d 'de' MMMM", { locale: es })}
                 {view === "week" && `Semana ${format(currentDate, "w, yyyy")}`}
                 {view === "month" && format(currentDate, "MMMM 'de' yyyy", { locale: es })}
               </span>
-              <Button onClick={handleNext} variant="ghost" className="h-7 w-7 p-0 text-gray-400 hover:text-white">
+              <Button onClick={handleNext} variant="ghost" className="h-7 w-7 p-0 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white">
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -278,12 +278,12 @@ export default function AgendaPage() {
                   const dayDate = addDays(startOfWeek(currentDate, { weekStartsOn: 1 }), i);
                   const dayAppointments = visibleAppointments.filter((a) => isSameDay(parseISO(a.startTime), dayDate));
                   return (
-                    <div key={i} className="min-h-[250px] bg-[#111111] border border-[#ffffff10] rounded-md p-2 flex flex-col">
+                    <div key={i} className="min-h-[250px] bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md p-2 flex flex-col">
                       <div className="text-center pb-2 border-b border-[#ffffff08] mb-2">
                         <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">
                           {format(dayDate, "eee", { locale: es })}
                         </span>
-                        <span className="text-sm font-extrabold text-white block">
+                        <span className="text-sm font-extrabold text-slate-900 dark:text-white block">
                           {format(dayDate, "d")}
                         </span>
                       </div>
@@ -314,8 +314,8 @@ export default function AgendaPage() {
             )}
 
             {view === "day" && (
-              <div className="bg-[#111111] border border-[#ffffff10] rounded-md p-4 space-y-2">
-                <h3 className="font-semibold text-sm text-white mb-2">Citas para el día</h3>
+              <div className="bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md p-4 space-y-2">
+                <h3 className="font-semibold text-sm text-slate-900 dark:text-white mb-2">Citas para el día</h3>
                 {visibleAppointments.length === 0 ? (
                   <div className="text-center py-10 text-gray-500 italic text-xs">No hay citas agendadas para hoy.</div>
                 ) : (
@@ -327,7 +327,7 @@ export default function AgendaPage() {
                         className={`p-3 rounded-md border cursor-pointer transition-all duration-150 flex items-center justify-between ${getStatusColor(app.status, app.rescheduledCount)}`}
                       >
                         <div className="space-y-1">
-                          <h4 className="font-semibold text-sm text-white leading-none">{app.title}</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 dark:text-white leading-none">{app.title}</h4>
                           <p className="text-xs opacity-75">{app.contact.whatsappName || app.contact.fullName || app.contact.whatsappPhone}</p>
                         </div>
                         <div className="text-right text-xs">
@@ -347,8 +347,8 @@ export default function AgendaPage() {
                   const dayDate = addDays(startOfMonth(currentDate), i);
                   const dayAppointments = visibleAppointments.filter((a) => isSameDay(parseISO(a.startTime), dayDate));
                   return (
-                    <div key={i} className="min-h-[80px] bg-[#111111] border border-[#ffffff10] rounded-md p-2 flex flex-col text-left">
-                      <span className="text-xs font-bold text-gray-400 block mb-1">
+                    <div key={i} className="min-h-[80px] bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md p-2 flex flex-col text-left">
+                      <span className="text-xs font-bold text-slate-500 dark:text-gray-400 block mb-1">
                         {format(dayDate, "d")}
                       </span>
                       <div className="flex-1 overflow-hidden space-y-1">
@@ -381,7 +381,7 @@ export default function AgendaPage() {
           
           <div className="space-y-3">
             {upcomingAppointments.length === 0 ? (
-              <div className="p-3 bg-[#111111] border border-[#ffffff05] rounded-md text-xs text-gray-500 text-center italic">
+              <div className="p-3 bg-[var(--bg-secondary)] border border-[#ffffff05] rounded-md text-xs text-gray-500 text-center italic">
                 Sin citas futuras.
               </div>
             ) : (
@@ -389,10 +389,10 @@ export default function AgendaPage() {
                 <div 
                   key={app.id} 
                   onClick={() => setActiveAppointment(app)}
-                  className="p-3 bg-[#111111] border border-[#ffffff08] rounded-md hover:bg-white/5 cursor-pointer transition-all duration-150 text-left space-y-1.5"
+                  className="p-3 bg-[var(--bg-secondary)] border border-[#ffffff08] rounded-md hover:bg-slate-50 dark:bg-white/5 cursor-pointer transition-all duration-150 text-left space-y-1.5"
                 >
-                  <h4 className="font-semibold text-xs text-white truncate leading-none">{app.title}</h4>
-                  <p className="text-[10px] text-gray-400 truncate">{app.contact.whatsappName || app.contact.whatsappPhone}</p>
+                  <h4 className="font-semibold text-xs text-slate-900 dark:text-white truncate leading-none">{app.title}</h4>
+                  <p className="text-[10px] text-slate-500 dark:text-gray-400 truncate">{app.contact.whatsappName || app.contact.whatsappPhone}</p>
                   <div className="flex items-center gap-1.5 text-[9px] text-gray-500">
                     <Clock className="h-3 w-3" />
                     <span>{format(parseISO(app.startTime), "d MMM, HH:mm", { locale: es })}</span>
@@ -406,23 +406,23 @@ export default function AgendaPage() {
 
       {/* MODAL: Nueva Cita */}
       <Dialog open={isNewDialogOpen} onOpenChange={setIsNewDialogOpen}>
-        <DialogContent className="bg-[#111111] border border-[#ffffff10] text-white rounded-md max-w-md">
+        <DialogContent className="bg-[var(--bg-secondary)] border border-[#ffffff10] text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-white tracking-tight">Nueva Cita</DialogTitle>
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Nueva Cita</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Contacto</Label>
+              <Label className="text-xs font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-wider">Contacto</Label>
               <Input
                 placeholder="Buscar por nombre o teléfono..."
                 value={searchContact}
                 onChange={(e) => setSearchContact(e.target.value)}
-                className="bg-[#1a1a1a] border-[#ffffff15] text-white focus-visible:ring-whatsapp"
+                className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
               />
               
               {/* Autocomplete List */}
               {searchContact.trim() !== "" && contactsData?.data && (
-                <div className="bg-[#1a1a1a] border border-[#ffffff10] rounded-md max-h-32 overflow-y-auto scrollbar-thin text-xs divide-y divide-[#ffffff05]">
+                <div className="bg-[var(--bg-card)] border border-[#ffffff10] rounded-md max-h-32 overflow-y-auto scrollbar-thin text-xs divide-y divide-[#ffffff05]">
                   {contactsData.data.slice(0, 5).map((contact) => (
                     <div
                       key={contact.id}
@@ -430,7 +430,7 @@ export default function AgendaPage() {
                         setSelectedContact(contact);
                         setSearchContact("");
                       }}
-                      className="p-2 hover:bg-white/5 cursor-pointer transition-colors"
+                      className="p-2 hover:bg-slate-50 dark:bg-white/5 cursor-pointer transition-colors"
                     >
                       {contact.whatsappName || contact.fullName} ({contact.whatsappPhone})
                     </div>
@@ -441,64 +441,64 @@ export default function AgendaPage() {
               {selectedContact && (
                 <div className="mt-2 p-2 bg-whatsapp/10 border border-whatsapp/20 rounded-md flex items-center justify-between text-xs text-whatsapp">
                   <span>Seleccionado: <b>{selectedContact.whatsappName || selectedContact.fullName}</b></span>
-                  <Button variant="ghost" className="h-5 px-1 hover:text-white" onClick={() => setSelectedContact(null)}>Remover</Button>
+                  <Button variant="ghost" className="h-5 px-1 hover:text-slate-900 dark:text-white" onClick={() => setSelectedContact(null)}>Remover</Button>
                 </div>
               )}
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Asunto / Título</Label>
+              <Label className="text-xs font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-wider">Asunto / Título</Label>
               <Input
                 placeholder="Ej. Demostración de producto"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="bg-[#1a1a1a] border-[#ffffff15] text-white focus-visible:ring-whatsapp"
+                className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
               />
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Fecha</Label>
+              <Label className="text-xs font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-wider">Fecha</Label>
               <Input
                 type="date"
                 value={newDate}
                 onChange={(e) => setNewDate(e.target.value)}
-                className="bg-[#1a1a1a] border-[#ffffff15] text-white focus-visible:ring-whatsapp"
+                className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <Label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Hora Inicio</Label>
+                <Label className="text-xs font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-wider">Hora Inicio</Label>
                 <Input
                   type="time"
                   value={newStartTime}
                   onChange={(e) => setNewStartTime(e.target.value)}
-                  className="bg-[#1a1a1a] border-[#ffffff15] text-white focus-visible:ring-whatsapp"
+                  className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Hora Fin</Label>
+                <Label className="text-xs font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-wider">Hora Fin</Label>
                 <Input
                   type="time"
                   value={newEndTime}
                   onChange={(e) => setNewEndTime(e.target.value)}
-                  className="bg-[#1a1a1a] border-[#ffffff15] text-white focus-visible:ring-whatsapp"
+                  className="bg-[var(--bg-card)] border-[#ffffff15] text-slate-900 dark:text-white focus-visible:ring-whatsapp"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Notas</Label>
+              <Label className="text-xs font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-wider">Notas</Label>
               <textarea
                 placeholder="Detalles sobre la cita..."
                 value={newNotes}
                 onChange={(e) => setNewNotes(e.target.value)}
-                className="w-full bg-[#1a1a1a] border border-[#ffffff15] text-white rounded-md text-sm p-2 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none min-h-[60px]"
+                className="w-full bg-[var(--bg-card)] border border-[#ffffff15] text-slate-900 dark:text-white rounded-md text-sm p-2 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none min-h-[60px]"
               />
             </div>
           </div>
           <DialogFooter className="mt-2">
-            <Button variant="outline" onClick={() => setIsNewDialogOpen(false)} className="bg-transparent border-[#ffffff15] text-gray-300 hover:bg-white/5 hover:text-white rounded-md h-8 text-xs">
+            <Button variant="outline" onClick={() => setIsNewDialogOpen(false)} className="bg-transparent border-[#ffffff15] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white rounded-md h-8 text-xs">
               Cancelar
             </Button>
             <Button 
@@ -514,17 +514,17 @@ export default function AgendaPage() {
 
       {/* SHEET: Detalles de Cita */}
       <Sheet open={activeAppointment !== null} onOpenChange={(open) => !open && setActiveAppointment(null)}>
-        <SheetContent className="bg-[#111111] border-l border-[#ffffff10] text-white max-w-sm">
+        <SheetContent className="bg-[var(--bg-secondary)] border-l border-[#ffffff10] text-slate-900 dark:text-white max-w-sm">
           {activeAppointment && (
             <div className="space-y-6">
               <SheetHeader>
-                <SheetTitle className="text-white text-lg font-bold tracking-tight">Detalles de la Cita</SheetTitle>
+                <SheetTitle className="text-slate-900 dark:text-white text-lg font-bold tracking-tight">Detalles de la Cita</SheetTitle>
               </SheetHeader>
 
               <div className="space-y-4">
                 <div className="space-y-1 text-left">
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">Asunto</span>
-                  <span className="text-sm font-semibold text-white block">{activeAppointment.title}</span>
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white block">{activeAppointment.title}</span>
                 </div>
 
                 <div className="space-y-1 text-left">
@@ -532,17 +532,17 @@ export default function AgendaPage() {
                   <div className="flex items-center gap-2 mt-1">
                     <UserIcon className="h-4 w-4 text-whatsapp" />
                     <div>
-                      <span className="text-xs font-semibold block text-white">
+                      <span className="text-xs font-semibold block text-slate-900 dark:text-white">
                         {activeAppointment.contact.whatsappName || activeAppointment.contact.fullName || "Desconocido"}
                       </span>
-                      <span className="text-[10px] text-gray-400 block">{activeAppointment.contact.whatsappPhone}</span>
+                      <span className="text-[10px] text-slate-500 dark:text-gray-400 block">{activeAppointment.contact.whatsappPhone}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-1 text-left">
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">Horario</span>
-                  <div className="flex items-center gap-2 mt-1 text-xs font-medium text-gray-300">
+                  <div className="flex items-center gap-2 mt-1 text-xs font-medium text-slate-600 dark:text-gray-300">
                     <Clock className="h-4 w-4 text-indigoAccent" />
                     <span>
                       {format(parseISO(activeAppointment.startTime), "EEEE, d 'de' MMMM", { locale: es })}
@@ -565,7 +565,7 @@ export default function AgendaPage() {
 
                 <div className="space-y-1 text-left">
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">Notas</span>
-                  <div className="p-3 bg-[#1a1a1a] rounded-md text-xs text-gray-300 border border-[#ffffff08] mt-1">
+                  <div className="p-3 bg-[var(--bg-card)] rounded-md text-xs text-slate-600 dark:text-gray-300 border border-[#ffffff08] mt-1">
                     {activeAppointment.notes || <i className="text-gray-500">Sin notas adicionales.</i>}
                   </div>
                 </div>
@@ -576,7 +576,7 @@ export default function AgendaPage() {
                   <Button 
                     onClick={() => completeMutation.mutate(activeAppointment.id)} 
                     disabled={completeMutation.isPending}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md h-8 text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-slate-900 dark:text-white font-semibold rounded-md h-8 text-xs flex items-center justify-center gap-1.5"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Completar
@@ -584,7 +584,7 @@ export default function AgendaPage() {
                   <Button 
                     onClick={() => cancelMutation.mutate(activeAppointment.id)} 
                     disabled={cancelMutation.isPending}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md h-8 text-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-slate-900 dark:text-white font-semibold rounded-md h-8 text-xs flex items-center justify-center gap-1.5"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Cancelar

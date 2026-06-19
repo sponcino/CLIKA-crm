@@ -109,13 +109,13 @@ export default function ApiKeysPage() {
     <div className="max-w-3xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-white flex items-center gap-2">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <Key className="w-5 h-5 text-white/50" />
             API Keys
           </h1>
           <p className="text-sm text-white/40 mt-1">
             Usadas para integrar servicios externos como n8n. Autenticá con{" "}
-            <code className="text-white/60 bg-white/5 px-1 rounded text-xs">X-API-Key</code>.
+            <code className="text-white/60 bg-slate-50 dark:bg-white/5 px-1 rounded text-xs">X-API-Key</code>.
           </p>
         </div>
 
@@ -126,9 +126,9 @@ export default function ApiKeysPage() {
               Nueva API Key
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#111] border-white/10 text-white max-w-md">
+          <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white">Generar nueva API Key</DialogTitle>
+              <DialogTitle className="text-slate-900 dark:text-white">Generar nueva API Key</DialogTitle>
             </DialogHeader>
 
             {!createdKey ? (
@@ -140,7 +140,7 @@ export default function ApiKeysPage() {
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                    className="bg-slate-50 dark:bg-white/5 border-[var(--border-color)] text-slate-900 dark:text-white placeholder:text-white/30 focus:border-white/30"
                   />
                 </div>
                 <Button
@@ -165,13 +165,13 @@ export default function ApiKeysPage() {
                     <Input
                       readOnly
                       value={createdKey}
-                      className="bg-white/5 border-white/10 text-white/80 font-mono text-xs"
+                      className="bg-slate-50 dark:bg-white/5 border-[var(--border-color)] text-white/80 font-mono text-xs"
                     />
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => handleCopy(createdKey)}
-                      className="shrink-0 border-white/10 bg-white/5 hover:bg-white/10 text-white"
+                      className="shrink-0 border-[var(--border-color)] bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white"
                     >
                       {copied ? (
                         <CheckCircle2 className="w-4 h-4 text-green-400" />
@@ -183,7 +183,7 @@ export default function ApiKeysPage() {
                 </div>
                 <Button
                   onClick={() => handleDialogOpenChange(false)}
-                  className="w-full bg-white/10 hover:bg-white/20 text-white"
+                  className="w-full bg-white/10 hover:bg-white/20 text-slate-900 dark:text-white"
                 >
                   Listo, ya la guardé
                 </Button>
@@ -196,7 +196,7 @@ export default function ApiKeysPage() {
       {loading ? (
         <div className="text-white/30 text-sm">Cargando...</div>
       ) : activeKeys.length === 0 ? (
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
+        <div className="rounded-xl border border-[var(--border-color)] bg-white/[0.02] p-8 text-center">
           <Key className="w-8 h-8 text-white/20 mx-auto mb-3" />
           <p className="text-white/40 text-sm">No hay API Keys activas</p>
           <p className="text-white/25 text-xs mt-1">
@@ -204,10 +204,10 @@ export default function ApiKeysPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/10 overflow-hidden">
+        <div className="rounded-xl border border-[var(--border-color)] overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-white/10 hover:bg-transparent">
+              <TableRow className="border-[var(--border-color)] hover:bg-transparent">
                 <TableHead className="text-white/40 font-normal">Nombre</TableHead>
                 <TableHead className="text-white/40 font-normal">Prefijo</TableHead>
                 <TableHead className="text-white/40 font-normal">Último uso</TableHead>
@@ -218,9 +218,9 @@ export default function ApiKeysPage() {
             <TableBody>
               {activeKeys.map((k) => (
                 <TableRow key={k.id} className="border-white/5 hover:bg-white/[0.02]">
-                  <TableCell className="text-white text-sm font-medium">{k.name}</TableCell>
+                  <TableCell className="text-slate-900 dark:text-white text-sm font-medium">{k.name}</TableCell>
                   <TableCell>
-                    <code className="text-white/60 bg-white/5 px-2 py-0.5 rounded text-xs font-mono">
+                    <code className="text-white/60 bg-slate-50 dark:bg-white/5 px-2 py-0.5 rounded text-xs font-mono">
                       {k.keyPrefix}...
                     </code>
                   </TableCell>
@@ -271,7 +271,7 @@ export default function ApiKeysPage() {
                       <code className="text-white/20 text-xs font-mono">{k.keyPrefix}...</code>
                     </TableCell>
                     <TableCell>
-                      <Badge className="bg-white/5 text-white/30 border-white/10 text-xs">
+                      <Badge className="bg-slate-50 dark:bg-white/5 text-white/30 border-[var(--border-color)] text-xs">
                         Revocada
                       </Badge>
                     </TableCell>
@@ -283,10 +283,10 @@ export default function ApiKeysPage() {
         </details>
       )}
 
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+      <div className="rounded-xl border border-[var(--border-color)] bg-white/[0.02] p-4 space-y-2">
         <p className="text-xs font-medium text-white/50 uppercase tracking-wider">Cómo usar</p>
         <p className="text-sm text-white/40">
-          Agregá el header <code className="text-white/60 bg-white/5 px-1 rounded">X-API-Key: &lt;tu-key&gt;</code> en tus requests.
+          Agregá el header <code className="text-white/60 bg-slate-50 dark:bg-white/5 px-1 rounded">X-API-Key: &lt;tu-key&gt;</code> en tus requests.
         </p>
         <div className="bg-black/40 rounded-lg p-3 font-mono text-xs text-white/50 space-y-1">
           <p className="text-white/30"># Enviar mensaje desde n8n / HTTP Request</p>

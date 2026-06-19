@@ -52,8 +52,8 @@ const CHART_COLORS = ["#25D366", "#6366f1", "#f59e0b", "#ef4444", "#06b6d4", "#e
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#1a1a1a] border border-[#ffffff15] rounded-md px-3 py-2 text-xs shadow-xl">
-        <p className="text-gray-400 mb-1">{label}</p>
+      <div className="bg-[var(--bg-card)] border border-[#ffffff15] rounded-md px-3 py-2 text-xs shadow-xl">
+        <p className="text-slate-500 dark:text-gray-400 mb-1">{label}</p>
         {payload.map((p: { name: string; value: number; color: string }, i: number) => (
           <p key={i} style={{ color: p.color }} className="font-semibold">
             {p.name}: {p.value}
@@ -75,13 +75,13 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, sub, accent = "#25D366" }: StatCardProps) {
   return (
-    <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-4 flex flex-col gap-3 hover:border-[#ffffff20] transition-all duration-150">
+    <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-4 flex flex-col gap-3 hover:border-[#ffffff20] transition-all duration-150">
       <div className="flex items-center justify-between">
         <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{label}</span>
         <span style={{ color: accent }} className="opacity-80">{icon}</span>
       </div>
       <div>
-        <span className="text-2xl font-extrabold text-white tracking-tight">{value}</span>
+        <span className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{value}</span>
         {sub && <p className="text-[11px] text-gray-500 mt-0.5">{sub}</p>}
       </div>
     </div>
@@ -117,19 +117,19 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="p-6 h-full w-full overflow-y-auto scrollbar-thin bg-[#0a0a0a] text-white font-sans antialiased">
+    <div className="p-6 h-full w-full overflow-y-auto scrollbar-thin bg-[var(--bg-primary)] text-slate-900 dark:text-white font-sans antialiased">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 max-w-7xl">
         <div className="flex items-center gap-3">
           <BarChart2 className="h-6 w-6 text-whatsapp" />
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white leading-none">Reportes</h1>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">Reportes</h1>
             <p className="text-gray-500 text-xs mt-1.5">Métricas del workspace para el período seleccionado.</p>
           </div>
         </div>
 
         {/* Period Selector */}
-        <div className="flex items-center gap-1 bg-[#111111] border border-[#ffffff10] rounded-md p-1">
+        <div className="flex items-center gap-1 bg-[var(--bg-secondary)] border border-[#ffffff10] rounded-md p-1">
           {PERIOD_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -137,8 +137,8 @@ export default function ReportsPage() {
               onClick={() => setPeriod(opt.value)}
               className={`h-7 px-4 rounded-sm text-xs font-semibold transition-all duration-150 ${
                 period === opt.value
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-white/10 text-slate-900 dark:text-white"
+                  : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white"
               }`}
             >
               {opt.label}
@@ -214,10 +214,10 @@ export default function ReportsPage() {
           {/* ROW 3: Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Line chart: Contacts per day */}
-            <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <TrendingUp className="h-4 w-4 text-whatsapp" />
-                <span className="text-sm font-semibold text-white">Contactos por Día</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-white">Contactos por Día</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={data?.contactsPerDay || []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -251,10 +251,10 @@ export default function ReportsPage() {
             </div>
 
             {/* Bar chart: Conversations per day */}
-            <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <MessageSquare className="h-4 w-4 text-indigoAccent" />
-                <span className="text-sm font-semibold text-white">Conversaciones por Día</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-white">Conversaciones por Día</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={data?.conversationsPerDay || []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -283,10 +283,10 @@ export default function ReportsPage() {
           {/* ROW 4: Leads by status + Top sources */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Donut: Leads by status */}
-            <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <Users className="h-4 w-4 text-whatsapp" />
-                <span className="text-sm font-semibold text-white">Leads por Estado</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-white">Leads por Estado</span>
               </div>
               {!data?.leadsByStatus?.length ? (
                 <div className="flex items-center justify-center h-48 text-gray-600 text-xs italic">
@@ -321,9 +321,9 @@ export default function ReportsPage() {
                             className="h-2 w-2 rounded-full shrink-0"
                             style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                           />
-                          <span className="text-gray-400">{LEAD_STATUS_LABELS[item.status] || item.status}</span>
+                          <span className="text-slate-500 dark:text-gray-400">{LEAD_STATUS_LABELS[item.status] || item.status}</span>
                         </div>
-                        <span className="font-bold text-white">{item.count}</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{item.count}</span>
                       </div>
                     ))}
                   </div>
@@ -332,10 +332,10 @@ export default function ReportsPage() {
             </div>
 
             {/* Horizontal bar: Top lead sources */}
-            <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-5">
+            <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-5">
               <div className="flex items-center gap-2 mb-5">
                 <TrendingDown className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-semibold text-white">Top Fuentes de Leads</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-white">Top Fuentes de Leads</span>
               </div>
               {!data?.topLeadSources?.length ? (
                 <div className="flex items-center justify-center h-48 text-gray-600 text-xs italic">

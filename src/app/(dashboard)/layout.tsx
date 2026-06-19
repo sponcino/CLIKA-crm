@@ -24,7 +24,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <SidebarNav />
 
         {/* Bottom Panel */}
-        <div className="p-3 border-t border-white/10 bg-black/20 flex flex-col gap-2">
+        <div className="p-3 border-t border-[var(--border-color)] bg-black/20 flex flex-col gap-2">
           <div className="text-[11px] text-gray-500 font-medium px-2 uppercase tracking-wider truncate">
             Demo Workspace
           </div>
@@ -35,7 +35,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   {session.user.name?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-xs font-medium text-gray-300 truncate max-w-[100px]">
+              <span className="text-xs font-medium text-slate-600 dark:text-gray-300 truncate max-w-[100px]">
                 {session.user.name}
               </span>
             </div>
@@ -43,7 +43,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               "use server"
               await signOut()
             }}>
-              <button className="text-gray-500 hover:text-white transition-colors p-1 rounded-md hover:bg-white/5">
+              <button className="text-gray-500 hover:text-slate-900 dark:text-white transition-colors p-1 rounded-md hover:bg-slate-50 dark:bg-white/5">
                 <LogOut className="h-4 w-4" />
               </button>
             </form>

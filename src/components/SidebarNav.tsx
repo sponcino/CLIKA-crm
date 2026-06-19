@@ -27,15 +27,15 @@ export function SidebarNav() {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-150 relative group ${
                   isActive
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-green-700 dark:text-white bg-green-50 dark:bg-white/10'
+                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-white/5'
                 }`}
               >
                 {isActive && (
-                  <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#25D366]" />
+                  <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-green-500 dark:bg-[#25D366]" />
                 )}
                 <item.icon className={`h-4 w-4 transition-colors ${
-                  isActive ? 'text-[#25D366]' : 'text-gray-400 group-hover:text-gray-200'
+                  isActive ? 'text-green-500 dark:text-[#25D366]' : 'text-slate-500 dark:text-gray-400 group-hover:text-slate-700 dark:group-hover:text-gray-200'
                 }`} />
                 <span>{item.name}</span>
               </Link>

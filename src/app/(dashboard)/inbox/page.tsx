@@ -35,11 +35,11 @@ const LABEL_COLORS: Record<string, string> = {
 }
 const COLOR_KEYS = Object.keys(LABEL_COLORS)
 const labelColor = (c?: string | null) =>
-  LABEL_COLORS[c ?? ""] ?? "bg-gray-500/10 text-gray-400 border-gray-500/20"
+  LABEL_COLORS[c ?? ""] ?? "bg-gray-500/10 text-slate-500 dark:text-gray-400 border-gray-500/20"
 
 // ─── lead status helpers ───────────────────────────────────────────────────────
 const LEAD_STATUS_OPTIONS = [
-  { value: "NEW",                   label: "Nuevo",               color: "text-gray-400" },
+  { value: "NEW",                   label: "Nuevo",               color: "text-slate-500 dark:text-gray-400" },
   { value: "CONTACTED",             label: "Contactado",          color: "text-blue-400" },
   { value: "QUALIFIED",             label: "Calificado",          color: "text-indigo-400" },
   { value: "INTERESTED",            label: "Interesado",          color: "text-purple-400" },
@@ -56,7 +56,7 @@ function Section({
   title, open, onToggle, children,
 }: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
-    <div className="border-b border-[#ffffff08]">
+    <div className="border-b border-slate-200 dark:border-[#ffffff08]">
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-bold text-white/40 uppercase tracking-widest hover:text-white/60 transition-colors"
@@ -514,7 +514,7 @@ export default function InboxPage() {
                 if (e.key === "Enter") commitEdit(field)
                 if (e.key === "Escape") setEditingField(null)
               }}
-              className="flex-1 bg-white/5 border border-white/15 rounded px-2 py-0.5 text-xs text-white outline-none focus:border-white/30"
+              className="flex-1 bg-slate-50 dark:bg-white/5 border border-white/15 rounded px-2 py-0.5 text-xs text-slate-900 dark:text-white outline-none focus:border-white/30"
             />
             <button onClick={() => commitEdit(field)} className="text-green-400 hover:text-green-300">
               <Check className="h-3 w-3" />
@@ -525,7 +525,7 @@ export default function InboxPage() {
             onClick={() => startEdit(field, value ?? "")}
             className="flex items-center gap-1 group flex-1 text-right justify-end"
           >
-            <span className={`text-[11px] font-medium truncate ${value ? "text-white" : "text-white/25"}`}>
+            <span className={`text-[11px] font-medium truncate ${value ? "text-slate-900 dark:text-white" : "text-white/25"}`}>
               {value || "—"}
             </span>
             <Pencil className="h-2.5 w-2.5 text-white/0 group-hover:text-white/30 transition-colors shrink-0" />
@@ -547,7 +547,7 @@ export default function InboxPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Buscar contacto..."
-              className="pl-8 bg-[#111111] border-[#ffffff10] text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
+              className="pl-8 bg-[var(--bg-surface)] border-slate-200 dark:border-[#ffffff10] text-slate-900 dark:text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp focus-visible:border-whatsapp rounded-md transition-all"
             />
           </div>
         </div>
@@ -562,28 +562,28 @@ export default function InboxPage() {
               <div
                 key={conv.id}
                 onClick={() => setActiveConversation(conv.id)}
-                className={`p-4 cursor-pointer hover:bg-[#ffffff06] transition-all relative ${
-                  activeConversationId === conv.id ? "bg-[#ffffff10]" : ""
+                className={`p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#ffffff06] transition-all relative ${
+                  activeConversationId === conv.id ? "bg-green-50 dark:bg-[#ffffff10]" : ""
                 }`}
               >
                 <div className="flex justify-between items-start mb-1 gap-2">
-                  <span className="font-semibold text-white truncate">
+                  <span className="font-semibold text-slate-900 dark:text-white truncate">
                     {conv.contact?.whatsappName || conv.contact?.whatsappPhone}
                   </span>
                   <div className="flex items-center gap-1.5 shrink-0">
                     {conv.contact?.aiEnabled && (
-                      <span className="bg-[#6366f1] text-[10px] text-white font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+                      <span className="bg-[#6366f1] text-[10px] text-slate-900 dark:text-white font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
                         IA
                       </span>
                     )}
                     {conv.requiresTemplate ? (
                       <div className="h-2 w-2 rounded-full bg-amber-500" title="Requiere Plantilla" />
                     ) : (
-                      <div className="h-2 w-2 rounded-full bg-whatsapp" title="Activo" />
+                      <div className="h-2 w-2 rounded-full bg-green-500 dark:bg-whatsapp" title="Activo" />
                     )}
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-xs text-gray-400">
+                <div className="flex justify-between items-center text-xs text-slate-500 dark:text-gray-400">
                   <span className="truncate max-w-[170px] text-gray-500">{conv.contact?.whatsappPhone}</span>
                   <span className="text-[10px] text-gray-500 font-medium">
                     {conv.updatedAt
@@ -598,7 +598,7 @@ export default function InboxPage() {
       </div>
 
       {/* ══════════ CENTER: Chat Panel ══════════ */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[var(--bg-secondary)]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[var(--bg-surface)]">
         {activeConversation ? (
           <>
             {/* ── Header ── */}
@@ -606,13 +606,13 @@ export default function InboxPage() {
 
               {/* Left: avatar + name */}
               <div className="flex items-center gap-3 min-w-0">
-                <Avatar className="h-7 w-7 border border-[#ffffff15] shrink-0">
-                  <AvatarFallback className="bg-whatsapp/10 text-whatsapp text-xs font-semibold">
+                <Avatar className="h-7 w-7 border border-slate-200 dark:border-[#ffffff15] shrink-0">
+                  <AvatarFallback className="bg-green-500 dark:bg-whatsapp/10 text-whatsapp text-xs font-semibold">
                     {activeConversation.contact?.whatsappName?.charAt(0) ?? "C"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-white leading-none truncate text-sm">
+                  <h3 className="font-semibold text-slate-900 dark:text-white leading-none truncate text-sm">
                     {activeConversation.contact?.whatsappName || activeConversation.contact?.whatsappPhone}
                   </h3>
                   <p className="text-[10px] text-gray-500 mt-0.5 truncate">
@@ -632,7 +632,7 @@ export default function InboxPage() {
                   className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border transition-all disabled:opacity-50 ${
                     activeConversation.aiActive
                       ? "bg-[#6366f1]/10 text-[#6366f1] border-[#6366f1]/20 hover:bg-[#6366f1]/20"
-                      : "bg-gray-500/10 text-gray-400 border-gray-500/20 hover:bg-gray-500/20"
+                      : "bg-gray-500/10 text-slate-500 dark:text-gray-400 border-gray-500/20 hover:bg-gray-500/20"
                   }`}
                 >
                   <Bot className="h-3.5 w-3.5" />
@@ -646,14 +646,14 @@ export default function InboxPage() {
                   <button
                     onClick={() => setLabelOpen((o) => !o)}
                     title="Etiquetas"
-                    className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border border-[#ffffff15] bg-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                    className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border border-slate-200 dark:border-[#ffffff15] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white transition-all"
                   >
                     <Tag className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Etiqueta</span>
                   </button>
 
                   {labelOpen && (
-                    <div className="absolute right-0 top-full mt-1 z-50 w-60 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl p-3 space-y-3">
+                    <div className="absolute right-0 top-full mt-1 z-50 w-60 rounded-lg border border-slate-200 dark:border-[#ffffff15] bg-[var(--bg-surface)] shadow-2xl p-3 space-y-3">
                       <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Etiquetas</p>
 
                       {convLabels.length > 0 && (
@@ -702,18 +702,18 @@ export default function InboxPage() {
                           e.preventDefault()
                           if (newLabelName.trim()) createLabelMutation.mutate()
                         }}
-                        className="flex gap-2 pt-2 border-t border-[#ffffff10]"
+                        className="flex gap-2 pt-2 border-t border-slate-200 dark:border-[#ffffff10]"
                       >
                         <input
                           value={newLabelName}
                           onChange={(e) => setNewLabelName(e.target.value)}
                           placeholder="Nueva etiqueta..."
-                          className="flex-1 bg-[#1a1a1a] border border-[#ffffff10] rounded px-2 py-1 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp"
+                          className="flex-1 bg-[var(--bg-card)] border border-slate-200 dark:border-[#ffffff10] rounded px-2 py-1 text-xs text-slate-900 dark:text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp"
                         />
                         <button
                           type="submit"
                           disabled={createLabelMutation.isPending || !newLabelName.trim()}
-                          className="px-2 py-1 bg-whatsapp hover:bg-whatsapp/90 text-black text-xs rounded font-bold disabled:opacity-50 transition-all"
+                          className="px-2 py-1 bg-green-500 dark:bg-whatsapp hover:bg-green-500 dark:bg-whatsapp/90 text-black text-xs rounded font-bold disabled:opacity-50 transition-all"
                         >
                           +
                         </button>
@@ -730,7 +730,7 @@ export default function InboxPage() {
                     className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border transition-all ${
                       isSnoozed
                         ? "bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20"
-                        : "bg-transparent text-gray-300 border-[#ffffff15] hover:bg-white/5 hover:text-white"
+                        : "bg-transparent text-slate-600 dark:text-gray-300 border-slate-200 dark:border-[#ffffff15] hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white"
                     }`}
                   >
                     <Clock className="h-3.5 w-3.5" />
@@ -738,7 +738,7 @@ export default function InboxPage() {
                   </button>
 
                   {snoozeOpen && (
-                    <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl py-1">
+                    <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-lg border border-slate-200 dark:border-[#ffffff15] bg-[var(--bg-surface)] shadow-2xl py-1">
                       <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                         Pausar por
                       </p>
@@ -751,14 +751,14 @@ export default function InboxPage() {
                         <button
                           key={minutes}
                           onClick={() => snoozeMutation.mutate(minutes)}
-                          className="w-full text-left px-3 py-1.5 text-xs text-gray-200 hover:bg-white/5 hover:text-white transition-colors"
+                          className="w-full text-left px-3 py-1.5 text-xs text-gray-200 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white transition-colors"
                         >
                           {label}
                         </button>
                       ))}
                       {isSnoozed && (
                         <>
-                          <div className="border-t border-[#ffffff10] my-1" />
+                          <div className="border-t border-slate-200 dark:border-[#ffffff10] my-1" />
                           <button
                             onClick={() => snoozeMutation.mutate(null)}
                             className="w-full text-left px-3 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
@@ -775,7 +775,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => setRightPanelOpen((o) => !o)}
                   title={rightPanelOpen ? "Ocultar panel" : "Ver detalles"}
-                  className="flex items-center justify-center h-7 w-7 rounded border border-[#ffffff15] text-gray-400 hover:bg-white/5 hover:text-white transition-all"
+                  className="flex items-center justify-center h-7 w-7 rounded border border-slate-200 dark:border-[#ffffff15] text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white transition-all"
                 >
                   {rightPanelOpen
                     ? <PanelRightClose className="h-3.5 w-3.5" />
@@ -785,7 +785,7 @@ export default function InboxPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 px-3 text-xs bg-transparent border-[#ffffff15] text-gray-300 hover:bg-white/5 hover:text-white rounded"
+                  className="h-7 px-3 text-xs bg-transparent border-slate-200 dark:border-[#ffffff15] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white rounded"
                 >
                   Cerrar
                 </Button>
@@ -794,7 +794,7 @@ export default function InboxPage() {
 
             {/* Applied labels bar */}
             {convLabels.length > 0 && (
-              <div className="flex items-center gap-1.5 px-4 py-1.5 border-b border-[#ffffff08] bg-[#0a0a0a] flex-wrap shrink-0">
+              <div className="flex items-center gap-1.5 px-4 py-1.5 border-b border-slate-200 dark:border-[#ffffff08] bg-[var(--bg-primary)] flex-wrap shrink-0">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {convLabels.map((cl: any) => (
                   <span
@@ -809,7 +809,7 @@ export default function InboxPage() {
 
             {/* 24h window banner — live countdown */}
             {activeConversation.requiresTemplate && (
-              <div className="bg-amber-950/40 text-amber-300 px-4 py-2 text-xs flex items-center justify-center gap-2 border-b border-[#ffffff08] shrink-0">
+              <div className="bg-amber-950/40 text-amber-300 px-4 py-2 text-xs flex items-center justify-center gap-2 border-b border-slate-200 dark:border-[#ffffff08] shrink-0">
                 <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />
                 {windowCountdown === "cerrada"
                   ? "Ventana cerrada — usá una plantilla para reiniciar la conversación"
@@ -832,7 +832,7 @@ export default function InboxPage() {
                         <div className={`max-w-[70%] rounded-md p-3 shadow-md ${
                           isOutbound
                             ? "bg-[#1a3a2a] text-[#dcfce7] border border-whatsapp/15"
-                            : "bg-[#1a1a1a] text-white border border-[#ffffff10]"
+                            : "bg-[var(--bg-card)] text-slate-900 dark:text-white border border-slate-200 dark:border-[#ffffff10]"
                         }`}>
                           {msg.mediaUrl ? (
                             <div className="mb-1">
@@ -867,14 +867,14 @@ export default function InboxPage() {
             </ScrollArea>
 
             {/* Input area */}
-            <div className="shrink-0 border-t border-[#ffffff10] bg-[#111111]">
-              <div className="flex border-b border-[#ffffff08]">
+            <div className="shrink-0 border-t border-slate-200 dark:border-[#ffffff10] bg-[var(--bg-surface)]">
+              <div className="flex border-b border-slate-200 dark:border-[#ffffff08]">
                 <button
                   onClick={() => setInputMode("message")}
                   className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold transition-colors border-b-2 -mb-px ${
                     inputMode === "message"
                       ? "border-whatsapp text-whatsapp"
-                      : "border-transparent text-gray-500 hover:text-gray-300"
+                      : "border-transparent text-gray-500 hover:text-slate-600 dark:text-gray-300"
                   }`}
                 >
                   <Send className="h-3 w-3" />
@@ -885,7 +885,7 @@ export default function InboxPage() {
                   className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold transition-colors border-b-2 -mb-px ${
                     inputMode === "note"
                       ? "border-yellow-400 text-yellow-400"
-                      : "border-transparent text-gray-500 hover:text-gray-300"
+                      : "border-transparent text-gray-500 hover:text-slate-600 dark:text-gray-300"
                   }`}
                 >
                   <StickyNote className="h-3 w-3" />
@@ -897,7 +897,7 @@ export default function InboxPage() {
                 {inputMode === "note" ? (
                   <textarea
                     placeholder="Escribe una nota interna... (solo visible para el equipo)"
-                    className="flex-1 bg-yellow-950/30 border border-yellow-500/20 text-white placeholder-yellow-900/50 focus:outline-none focus:ring-1 focus:ring-yellow-500/40 rounded-md px-3 py-2 text-sm resize-none min-h-[56px] max-h-32"
+                    className="flex-1 bg-yellow-950/30 border border-yellow-500/20 text-slate-900 dark:text-white placeholder-yellow-900/50 focus:outline-none focus:ring-1 focus:ring-yellow-500/40 rounded-md px-3 py-2 text-sm resize-none min-h-[56px] max-h-32"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={(e) => {
@@ -909,23 +909,23 @@ export default function InboxPage() {
                     <div className="relative" ref={attachmentRef}>
                       <Button
                         onClick={() => setAttachmentOpen(!attachmentOpen)}
-                        className="h-10 w-10 p-0 shrink-0 bg-[#1a1a1a] border border-[#ffffff10] hover:bg-[#ffffff10] text-gray-400"
+                        className="h-10 w-10 p-0 shrink-0 bg-[var(--bg-card)] border border-slate-200 dark:border-[#ffffff10] hover:bg-[#ffffff10] text-slate-500 dark:text-gray-400"
                         variant="outline"
                         disabled={uploading}
                       >
                         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
                       </Button>
                       {attachmentOpen && (
-                        <div className="absolute bottom-full left-0 mb-2 w-48 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl py-1 z-50">
-                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
+                        <div className="absolute bottom-full left-0 mb-2 w-48 rounded-lg border border-slate-200 dark:border-[#ffffff15] bg-[var(--bg-surface)] shadow-2xl py-1 z-50">
+                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white cursor-pointer transition-colors">
                             <ImageIcon className="h-4 w-4" /> Imagen
                             <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, "image")} />
                           </label>
-                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
+                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white cursor-pointer transition-colors">
                             <Headphones className="h-4 w-4" /> Audio
                             <input type="file" accept="audio/*" className="hidden" onChange={(e) => handleFileUpload(e, "audio")} />
                           </label>
-                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer transition-colors">
+                          <label className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white cursor-pointer transition-colors">
                             <FileText className="h-4 w-4" /> Documento
                             <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={(e) => handleFileUpload(e, "document")} />
                           </label>
@@ -934,7 +934,7 @@ export default function InboxPage() {
                     </div>
                     <Input
                       placeholder="Escribe un mensaje..."
-                      className="flex-1 bg-[#1a1a1a] border-0 text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
+                      className="flex-1 bg-[var(--bg-card)] border-0 text-slate-900 dark:text-white placeholder-gray-600 focus-visible:ring-1 focus-visible:ring-whatsapp rounded-md px-4 h-10"
                       value={text}
                       onChange={(e) => setText(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -947,7 +947,7 @@ export default function InboxPage() {
                   className={`rounded-md h-10 w-10 p-0 shrink-0 transition-all ${
                     inputMode === "note"
                       ? "bg-yellow-500 hover:bg-yellow-400 text-black"
-                      : "bg-whatsapp hover:bg-whatsappHover text-black"
+                      : "bg-green-500 dark:bg-whatsapp hover:bg-green-500 dark:bg-whatsappHover text-black"
                   }`}
                 >
                   {inputMode === "note" ? <StickyNote className="h-4 w-4" /> : <Send className="h-4 w-4" />}
@@ -970,14 +970,14 @@ export default function InboxPage() {
 
       {/* ══════════ RIGHT: Contact panel (320px, slide-in) ══════════ */}
       <div
-        className={`border-l border-[#ffffff10] bg-[#111111] flex flex-col shrink-0 overflow-hidden transition-all duration-200 ease-in-out ${
+        className={`border-l border-slate-200 dark:border-[#ffffff10] bg-[var(--bg-surface)] flex flex-col shrink-0 overflow-hidden transition-all duration-200 ease-in-out ${
           activeConversation && rightPanelOpen ? "w-80 opacity-100" : "w-0 opacity-0"
         }`}
       >
         {activeConversation && rightPanelOpen && (
           <>
             {/* ── Panel header ── */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#ffffff10] bg-[#0d0d0d] shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-[#ffffff10] bg-[#0d0d0d] shrink-0">
               <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Contacto</span>
               <div className="flex items-center gap-2">
                 {contactRefreshedAgo && (
@@ -994,10 +994,10 @@ export default function InboxPage() {
 
             <ScrollArea className="flex-1 min-h-0">
               {/* ── Avatar + name ── */}
-              <div className="px-4 py-5 border-b border-[#ffffff08] text-center space-y-3 bg-[#0d0d0d]">
+              <div className="px-4 py-5 border-b border-slate-200 dark:border-[#ffffff08] text-center space-y-3 bg-[#0d0d0d]">
                 <div className="relative inline-block">
-                  <Avatar className="h-16 w-16 mx-auto border-2 border-[#ffffff15]">
-                    <AvatarFallback className="text-2xl bg-whatsapp/10 text-whatsapp font-bold">
+                  <Avatar className="h-16 w-16 mx-auto border-2 border-slate-200 dark:border-[#ffffff15]">
+                    <AvatarFallback className="text-2xl bg-green-500 dark:bg-whatsapp/10 text-whatsapp font-bold">
                       {contact?.whatsappName?.charAt(0) ?? contact?.fullName?.charAt(0) ?? "C"}
                     </AvatarFallback>
                   </Avatar>
@@ -1008,11 +1008,11 @@ export default function InboxPage() {
                     }`}
                     title={contact?.aiEnabled ? "IA activa" : "IA pausada"}
                   >
-                    <Bot className="h-2 w-2 text-white" />
+                    <Bot className="h-2 w-2 text-slate-900 dark:text-white" />
                   </span>
                 </div>
                 <div>
-                  <h2 className="font-semibold text-sm text-white leading-tight">
+                  <h2 className="font-semibold text-sm text-slate-900 dark:text-white leading-tight">
                     {contact?.fullName || contact?.whatsappName || "Desconocido"}
                   </h2>
                   <p className="text-[11px] text-white/40 mt-0.5">{contact?.whatsappPhone}</p>
@@ -1028,10 +1028,10 @@ export default function InboxPage() {
                 <select
                   value={contact?.status ?? "NEW"}
                   onChange={(e) => updateContactMutation.mutate({ status: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-xs text-white focus:outline-none focus:border-white/25 cursor-pointer"
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] rounded-md px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-white/25 cursor-pointer"
                 >
                   {LEAD_STATUS_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value} className="bg-[#1a1a1a]">
+                    <option key={o.value} value={o.value} className="bg-[var(--bg-card)]">
                       {o.label}
                     </option>
                   ))}
@@ -1064,7 +1064,7 @@ export default function InboxPage() {
                       {leadScore}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-slate-50 dark:bg-white/5 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-700 ${
                         leadScore >= 70 ? "bg-green-500"
@@ -1131,13 +1131,13 @@ export default function InboxPage() {
                 <div className="relative" ref={panelLabelRef}>
                   <button
                     onClick={() => setPanelLabelOpen((o) => !o)}
-                    className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors border border-white/10 rounded px-2 py-1"
+                    className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors border border-[var(--border-color)] rounded px-2 py-1"
                   >
                     <Plus className="h-2.5 w-2.5" />
                     Agregar etiqueta...
                   </button>
                   {panelLabelOpen && (
-                    <div className="absolute left-0 top-full mt-1 z-50 w-52 rounded-lg border border-[#ffffff15] bg-[#111111] shadow-2xl p-2 space-y-1">
+                    <div className="absolute left-0 top-full mt-1 z-50 w-52 rounded-lg border border-slate-200 dark:border-[#ffffff15] bg-[var(--bg-surface)] shadow-2xl p-2 space-y-1">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       {(workspaceLabels as any[])
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1147,7 +1147,7 @@ export default function InboxPage() {
                           <button
                             key={label.id}
                             onClick={() => { addLabelMutation.mutate(label.id); setPanelLabelOpen(false) }}
-                            className={`w-full text-left inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded hover:bg-white/5 ${labelColor(label?.color)}`}
+                            className={`w-full text-left inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded hover:bg-slate-50 dark:bg-white/5 ${labelColor(label?.color)}`}
                           >
                             {label.name}
                           </button>
@@ -1194,7 +1194,7 @@ export default function InboxPage() {
               </Section>
 
               {/* ── Internal Notes ── */}
-              <div className="px-4 py-4 border-b border-[#ffffff08]">
+              <div className="px-4 py-4 border-b border-slate-200 dark:border-[#ffffff08]">
                 <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-1.5 mb-3">
                   <StickyNote className="h-3 w-3" /> Notas Internas
                 </h4>
@@ -1224,7 +1224,7 @@ export default function InboxPage() {
                   size="sm"
                   onClick={() => archiveMutation.mutate()}
                   disabled={archiveMutation.isPending}
-                  className="w-full h-8 text-xs border-white/10 bg-transparent text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors gap-1.5"
+                  className="w-full h-8 text-xs border-[var(--border-color)] bg-transparent text-white/50 hover:bg-slate-50 dark:bg-white/5 hover:text-white/80 transition-colors gap-1.5"
                 >
                   <Archive className="h-3.5 w-3.5" />
                   {archiveMutation.isPending ? "Archivando..." : "Archivar conversación"}
@@ -1246,9 +1246,9 @@ export default function InboxPage() {
 
       {/* ── Delete confirmation dialog ── */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="bg-[#111] border-white/10 text-white max-w-sm">
+        <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
+            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-2">
               <Trash2 className="h-4 w-4 text-red-400" />
               Eliminar conversación
             </DialogTitle>
@@ -1260,14 +1260,14 @@ export default function InboxPage() {
             <Button
               variant="outline"
               onClick={() => setShowDeleteConfirm(false)}
-              className="flex-1 border-white/10 bg-transparent text-white/60 hover:bg-white/5"
+              className="flex-1 border-[var(--border-color)] bg-transparent text-white/60 hover:bg-slate-50 dark:bg-white/5"
             >
               Cancelar
             </Button>
             <Button
               onClick={() => deleteMutation.mutate()}
               disabled={deleteMutation.isPending}
-              className="flex-1 bg-red-500/90 hover:bg-red-500 text-white border-0"
+              className="flex-1 bg-red-500/90 hover:bg-red-500 text-slate-900 dark:text-white border-0"
             >
               {deleteMutation.isPending ? "Eliminando..." : "Eliminar"}
             </Button>

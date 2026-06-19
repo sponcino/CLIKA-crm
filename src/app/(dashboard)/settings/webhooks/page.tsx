@@ -133,13 +133,13 @@ function EventPills({ events }: { events: string[] }) {
       {visible.map((ev) => (
         <span
           key={ev}
-          className="inline-block text-[9px] font-mono bg-white/5 border border-white/10 text-white/50 px-1.5 py-0.5 rounded"
+          className="inline-block text-[9px] font-mono bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-white/50 px-1.5 py-0.5 rounded"
         >
           {ev}
         </span>
       ))}
       {rest > 0 && (
-        <span className="inline-block text-[9px] bg-white/5 border border-white/10 text-white/40 px-1.5 py-0.5 rounded">
+        <span className="inline-block text-[9px] bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-white/40 px-1.5 py-0.5 rounded">
           +{rest}
         </span>
       )}
@@ -309,7 +309,7 @@ export default function WebhooksSettingsPage() {
         <div className="flex items-center gap-3">
           <Webhook className="h-5 w-5 text-[#25D366]" />
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">Webhooks</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Webhooks</h1>
             <p className="text-xs text-gray-500 mt-0.5">
               Conecta CLIKA con n8n, Make, Zapier u otros servicios. Los eventos se envían como POST con firma HMAC.
             </p>
@@ -326,7 +326,7 @@ export default function WebhooksSettingsPage() {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
 
         {/* Table header */}
         <div className="grid grid-cols-[1fr_1.4fr_160px_80px_120px_96px] gap-0 border-b border-[#ffffff08] px-4 py-2.5">
@@ -377,7 +377,7 @@ export default function WebhooksSettingsPage() {
                   >
                     {/* Nombre */}
                     <div className="min-w-0 pr-3">
-                      <p className="text-sm font-semibold text-white truncate">{wh.name}</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{wh.name}</p>
                     </div>
 
                     {/* URL */}
@@ -429,7 +429,7 @@ export default function WebhooksSettingsPage() {
                       <button
                         onClick={() => openEdit(wh)}
                         title="Editar webhook"
-                        className="h-7 w-7 flex items-center justify-center rounded text-gray-500 hover:text-white hover:bg-white/10 transition-all"
+                        className="h-7 w-7 flex items-center justify-center rounded text-gray-500 hover:text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
                       >
                         <Pencil className="h-3 w-3" />
                       </button>
@@ -476,7 +476,7 @@ export default function WebhooksSettingsPage() {
       </div>
 
       {/* ── Payload reference ── */}
-      <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-4 space-y-2">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-4 space-y-2">
         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Referencia del Payload</p>
         <p className="text-xs text-gray-500">
           Todos los eventos se envían como <span className="text-white/60 font-mono">POST</span> con{" "}
@@ -498,9 +498,9 @@ export default function WebhooksSettingsPage() {
 
       {/* ══ Modal ══ */}
       <Dialog open={modalOpen} onOpenChange={(o) => !o && closeModal()}>
-        <DialogContent className="bg-[#111111] border-[#ffffff15] text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white dark:bg-[#111111] border-slate-200 dark:border-[#ffffff15] text-slate-900 dark:text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white font-bold text-base">
+            <DialogTitle className="text-slate-900 dark:text-white font-bold text-base">
               {editingId ? "Editar Webhook" : "Nuevo Webhook"}
             </DialogTitle>
           </DialogHeader>
@@ -509,37 +509,37 @@ export default function WebhooksSettingsPage() {
 
             {/* Nombre */}
             <div className="space-y-1.5">
-              <Label className="text-xs text-gray-400 font-medium">Nombre</Label>
+              <Label className="text-xs text-slate-500 dark:text-gray-400 font-medium">Nombre</Label>
               <Input
                 value={form.name}
                 onChange={(e) => setField("name", e.target.value)}
                 placeholder="Ej: Zapier, Mi CRM, HubSpot"
-                className="bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
+                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
               />
             </div>
 
             {/* URL */}
             <div className="space-y-1.5">
-              <Label className="text-xs text-gray-400 font-medium">
+              <Label className="text-xs text-slate-500 dark:text-gray-400 font-medium">
                 URL del Webhook <span className="text-[#25D366]">*</span>
               </Label>
               <Input
                 value={form.url}
                 onChange={(e) => setField("url", e.target.value)}
                 placeholder="https://hooks.zapier.com/hooks/catch/..."
-                className="bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
+                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
               />
               <p className="text-[10px] text-white/25">URL donde enviaremos los eventos (POST)</p>
             </div>
 
             {/* Secret */}
             <div className="space-y-1.5">
-              <Label className="text-xs text-gray-400 font-medium">Secret opcional</Label>
+              <Label className="text-xs text-slate-500 dark:text-gray-400 font-medium">Secret opcional</Label>
               <Input
                 value={form.secret}
                 onChange={(e) => setField("secret", e.target.value)}
                 placeholder="tu-secret-key"
-                className="bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
+                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 font-mono"
               />
               <p className="text-[10px] text-white/25">
                 Para verificar la firma HMAC-SHA256 de los requests
@@ -548,7 +548,7 @@ export default function WebhooksSettingsPage() {
 
             {/* Events */}
             <div className="space-y-3">
-              <Label className="text-xs text-gray-400 font-medium">
+              <Label className="text-xs text-slate-500 dark:text-gray-400 font-medium">
                 Eventos a recibir <span className="text-[#25D366]">*</span>
               </Label>
 
@@ -581,7 +581,7 @@ export default function WebhooksSettingsPage() {
             {/* Enabled toggle */}
             <div className="flex items-center justify-between py-3 border-t border-white/8">
               <div>
-                <p className="text-sm text-white font-medium">Webhook activo</p>
+                <p className="text-sm text-slate-900 dark:text-white font-medium">Webhook activo</p>
                 <p className="text-[11px] text-gray-500 mt-0.5">
                   Desactívalo para pausar sin eliminar
                 </p>
@@ -594,7 +594,7 @@ export default function WebhooksSettingsPage() {
               <Button
                 variant="outline"
                 onClick={closeModal}
-                className="flex-1 border-white/10 bg-transparent text-gray-300 hover:bg-white/5"
+                className="flex-1 border-[var(--border-color)] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
               >
                 Cancelar
               </Button>

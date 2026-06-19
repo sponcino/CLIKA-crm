@@ -130,9 +130,9 @@ const TEMPLATES = [
 ]
 
 // ─── Style constants ──────────────────────────────────────────────────────────
-const inputCls = "bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
-const textareaCls = "bg-[#1a1a1a] border-white/10 text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none"
-const labelCls = "text-xs text-gray-400 font-medium"
+const inputCls = "bg-[var(--bg-card)] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20"
+const textareaCls = "bg-[var(--bg-card)] border-[var(--border-color)] text-slate-900 dark:text-white text-sm focus-visible:ring-1 focus-visible:ring-[#25D366] focus-visible:border-[#25D366] placeholder:text-white/20 resize-none"
+const labelCls = "text-xs text-slate-500 dark:text-gray-400 font-medium"
 
 // ─── Toggle ───────────────────────────────────────────────────────────────────
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -215,13 +215,13 @@ function StepFormFields({
           <select
             value={form.nextStepId}
             onChange={(e) => set("nextStepId", e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-white/10 text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] appearance-none"
+            className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-[#25D366] appearance-none"
           >
-            <option value="" className="bg-[#1a1a1a]">— Fin del flujo —</option>
+            <option value="" className="bg-[var(--bg-card)]">— Fin del flujo —</option>
             {steps
               .filter((s) => s.id !== editId)
               .map((s) => (
-                <option key={s.stepId} value={s.stepId} className="bg-[#1a1a1a]">
+                <option key={s.stepId} value={s.stepId} className="bg-[var(--bg-card)]">
                   {s.name} ({s.stepId})
                 </option>
               ))}
@@ -481,18 +481,18 @@ export default function FunnelsPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full w-full bg-[#0a0a0a] text-white overflow-hidden">
+    <div className="flex h-full w-full bg-[var(--bg-primary)] text-slate-900 dark:text-white overflow-hidden">
 
       {/* ══ LEFT PANEL: Funnel list ══ */}
-      <div className="w-[260px] border-r border-[#ffffff10] flex flex-col bg-[#0a0a0a] shrink-0">
+      <div className="w-[260px] border-r border-[#ffffff10] flex flex-col bg-[var(--bg-primary)] shrink-0">
         <div className="px-4 py-3.5 border-b border-[#ffffff10] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <GitFork className="h-4 w-4 text-[#25D366]" />
-            <h2 className="font-bold text-sm text-white">Funnels</h2>
+            <h2 className="font-bold text-sm text-slate-900 dark:text-white">Funnels</h2>
           </div>
           <button
             onClick={() => setShowCreateFunnel((v) => !v)}
-            className="h-6 w-6 flex items-center justify-center rounded text-gray-500 hover:text-white hover:bg-white/10 transition-all"
+            className="h-6 w-6 flex items-center justify-center rounded text-gray-500 hover:text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -507,7 +507,7 @@ export default function FunnelsPage() {
               onChange={(e) => setNewFunnelName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && newFunnelName.trim() && createFunnel.mutate(newFunnelName)}
               placeholder="Nombre del funnel..."
-              className="h-7 text-xs bg-[#1a1a1a] border-white/10 text-white"
+              className="h-7 text-xs bg-[var(--bg-card)] border-[var(--border-color)] text-slate-900 dark:text-white"
             />
             <div className="flex gap-2">
               <button
@@ -519,7 +519,7 @@ export default function FunnelsPage() {
               </button>
               <button
                 onClick={() => { setShowCreateFunnel(false); setNewFunnelName("") }}
-                className="px-2 text-gray-500 hover:text-white rounded hover:bg-white/5"
+                className="px-2 text-gray-500 hover:text-slate-900 dark:text-white rounded hover:bg-slate-50 dark:bg-white/5"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -542,8 +542,8 @@ export default function FunnelsPage() {
                 onClick={() => setSelectedId(funnel.id)}
                 className={`w-full text-left px-4 py-3 transition-all flex items-center gap-3 ${
                   selectedId === funnel.id
-                    ? "bg-[#ffffff0d] text-white"
-                    : "text-gray-400 hover:bg-[#ffffff06] hover:text-white"
+                    ? "bg-[#ffffff0d] text-slate-900 dark:text-white"
+                    : "text-slate-500 dark:text-gray-400 hover:bg-[#ffffff06] hover:text-slate-900 dark:text-white"
                 }`}
               >
                 <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${funnel.isActive ? "bg-[#25D366]" : "bg-gray-600"}`} />
@@ -578,19 +578,19 @@ export default function FunnelsPage() {
                         value={editFunnelName}
                         onChange={(e) => setEditFunnelName(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") handleSaveFunnelName(); if (e.key === "Escape") setEditingFunnelName(false) }}
-                        className="h-8 text-base font-bold bg-[#1a1a1a] border-white/15 text-white max-w-xs"
+                        className="h-8 text-base font-bold bg-[var(--bg-card)] border-white/15 text-slate-900 dark:text-white max-w-xs"
                       />
                       <button onClick={handleSaveFunnelName} className="text-[#25D366] hover:opacity-80"><Check className="h-4 w-4" /></button>
-                      <button onClick={() => setEditingFunnelName(false)} className="text-gray-500 hover:text-white"><X className="h-4 w-4" /></button>
+                      <button onClick={() => setEditingFunnelName(false)} className="text-gray-500 hover:text-slate-900 dark:text-white"><X className="h-4 w-4" /></button>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 group">
-                      <h1 className="text-lg font-bold text-white tracking-tight">Funnel de Ventas</h1>
+                      <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Funnel de Ventas</h1>
                       <span className="text-gray-500 text-lg">/</span>
                       <span className="text-lg font-bold text-[#25D366]">{selected.name}</span>
                       <button
                         onClick={() => { setEditFunnelName(selected.name); setEditingFunnelName(true) }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:text-white"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:text-slate-900 dark:text-white"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
@@ -604,7 +604,7 @@ export default function FunnelsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setShowTemplateModal(true)}
-                    className="h-8 px-3 text-xs bg-transparent border-white/10 text-gray-300 hover:text-white hover:bg-white/5"
+                    className="h-8 px-3 text-xs bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5"
                   >
                     Usar Plantilla
                   </Button>
@@ -633,7 +633,7 @@ export default function FunnelsPage() {
               </div>
 
               {/* ── WhatsApp Status ── */}
-              <div className="bg-[#111111] border border-[#ffffff0d] rounded-md">
+              <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md">
                 <div className="p-4 flex items-center justify-between">
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Estado de WhatsApp</p>
                   <a
@@ -648,18 +648,18 @@ export default function FunnelsPage() {
                 <div className="px-4 pb-4 flex items-center gap-4">
                   <div>
                     <p className="text-[10px] text-gray-600 mb-0.5">Número</p>
-                    <p className="text-sm text-white font-mono">
+                    <p className="text-sm text-slate-900 dark:text-white font-mono">
                       {wpConfig?.displayPhoneNumber ?? "No configurado"}
                     </p>
                   </div>
-                  <div className="h-8 w-px bg-white/5" />
+                  <div className="h-8 w-px bg-slate-50 dark:bg-white/5" />
                   <div>
                     <p className="text-[10px] text-gray-600 mb-0.5">Calidad</p>
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
                       Desconocida
                     </span>
                   </div>
-                  <div className="h-8 w-px bg-white/5" />
+                  <div className="h-8 w-px bg-slate-50 dark:bg-white/5" />
                   <div>
                     <p className="text-[10px] text-gray-600 mb-0.5">Verificación</p>
                     {wpConfig?.connectionStatus === "CONNECTED" ? (
@@ -667,7 +667,7 @@ export default function FunnelsPage() {
                         Verificado
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-500/10 text-slate-500 dark:text-gray-400 border border-gray-500/20">
                         No verificado
                       </span>
                     )}
@@ -676,9 +676,9 @@ export default function FunnelsPage() {
               </div>
 
               {/* ── Ad Attribution ── */}
-              <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-4 flex items-center justify-between gap-4">
+              <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md p-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-white">Atribución de Anuncios</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">Atribución de Anuncios</p>
                   <p className="text-xs text-gray-500 mt-0.5">
                     Guarda metadatos de campañas cuando los contactos llegan desde anuncios de Facebook/Instagram
                   </p>
@@ -690,7 +690,7 @@ export default function FunnelsPage() {
               </div>
 
               {/* ── Steps table ── */}
-              <div className="bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
+              <div className="bg-[var(--bg-secondary)] border border-[#ffffff0d] rounded-md overflow-hidden">
                 {/* Table header */}
                 <div className="grid grid-cols-[48px_1fr_140px_160px_80px] gap-0 border-b border-[#ffffff08] px-4 py-2.5">
                   {["ORDEN", "PASO", "SIGUIENTE", "CRITERIO DE TRANSICIÓN", "ACCIONES"].map((h) => (
@@ -724,7 +724,7 @@ export default function FunnelsPage() {
 
                         {/* Paso */}
                         <div className="min-w-0 pr-3">
-                          <p className="text-sm font-semibold text-white truncate">{step.name}</p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{step.name}</p>
                           <p className="text-[10px] font-mono text-gray-600 mt-0.5">{step.stepId}</p>
                         </div>
 
@@ -733,7 +733,7 @@ export default function FunnelsPage() {
                           {step.nextStepId ? (
                             <>
                               <ArrowRight className="h-3 w-3 text-gray-600 shrink-0" />
-                              <span className="text-xs text-gray-400 font-mono truncate">{step.nextStepId}</span>
+                              <span className="text-xs text-slate-500 dark:text-gray-400 font-mono truncate">{step.nextStepId}</span>
                             </>
                           ) : (
                             <span className="text-[10px] text-gray-600 italic">Fin del flujo</span>
@@ -755,7 +755,7 @@ export default function FunnelsPage() {
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => openEditStep(step)}
-                            className="h-7 w-7 flex items-center justify-center rounded text-gray-500 hover:text-white hover:bg-white/10 transition-all"
+                            className="h-7 w-7 flex items-center justify-center rounded text-gray-500 hover:text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
                             title="Editar paso"
                           >
                             <Pencil className="h-3 w-3" />
@@ -783,7 +783,7 @@ export default function FunnelsPage() {
                   className={`text-xs px-3 py-1.5 rounded border transition-all ${
                     selected.isActive
                       ? "border-[#25D366]/20 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20"
-                      : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/10"
+                      : "border-[var(--border-color)] bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/10"
                   }`}
                 >
                   {selected.isActive ? "Funnel activo" : "Funnel inactivo"}
@@ -804,9 +804,9 @@ export default function FunnelsPage() {
 
       {/* ══ Template Modal ══ */}
       <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
-        <DialogContent className="bg-[#111] border-white/10 text-white max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader className="shrink-0">
-            <DialogTitle className="text-white text-base font-bold">Usar Plantilla</DialogTitle>
+            <DialogTitle className="text-slate-900 dark:text-white text-base font-bold">Usar Plantilla</DialogTitle>
             <p className="text-xs text-gray-500 mt-0.5">
               Selecciona una plantilla para cargar pasos pre-configurados. Esto reemplazará los pasos actuales.
             </p>
@@ -823,13 +823,13 @@ export default function FunnelsPage() {
                     className={`p-4 rounded-lg border text-left transition-all ${
                       isSelected
                         ? "border-[#25D366]/40 bg-[#25D366]/8"
-                        : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/5"
+                        : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-slate-50 dark:bg-white/5"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{tpl.icon}</span>
-                        <p className="text-sm font-semibold text-white leading-tight">{tpl.label}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">{tpl.label}</p>
                       </div>
                       {isSelected && (
                         <span className="h-5 w-5 rounded-full bg-[#25D366] flex items-center justify-center shrink-0">
@@ -857,7 +857,7 @@ export default function FunnelsPage() {
             <Button
               variant="outline"
               onClick={() => setShowTemplateModal(false)}
-              className="flex-1 border-white/10 bg-transparent text-gray-300 hover:bg-white/5"
+              className="flex-1 border-[var(--border-color)] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
             >
               Cancelar
             </Button>
@@ -873,9 +873,9 @@ export default function FunnelsPage() {
 
       {/* ══ Add / Edit Step Dialog ══ */}
       <Dialog open={showStepDialog} onOpenChange={setShowStepDialog}>
-        <DialogContent className="bg-[#111] border-white/10 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-[#111] border-[var(--border-color)] text-slate-900 dark:text-white max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-base font-bold">
+            <DialogTitle className="text-slate-900 dark:text-white text-base font-bold">
               {editingStep ? "Editar Paso" : "Agregar Paso"}
             </DialogTitle>
           </DialogHeader>
@@ -893,7 +893,7 @@ export default function FunnelsPage() {
             <Button
               variant="outline"
               onClick={() => setShowStepDialog(false)}
-              className="flex-1 border-white/10 bg-transparent text-gray-300 hover:bg-white/5"
+              className="flex-1 border-[var(--border-color)] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5"
             >
               Cancelar
             </Button>

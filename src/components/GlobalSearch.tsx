@@ -48,21 +48,21 @@ export function GlobalSearch() {
     <>
       <button 
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 text-xs text-gray-500 bg-[#1a1a1a] hover:bg-[#222] border border-[#ffffff10] px-3 py-1.5 rounded-md transition-colors"
+        className="flex items-center gap-2 text-xs text-gray-500 bg-[var(--bg-card)] hover:bg-[#222] border border-[#ffffff10] px-3 py-1.5 rounded-md transition-colors"
       >
         <Search className="h-3.5 w-3.5" />
         <span className="hidden sm:inline-block w-40 text-left">Buscar contactos, mensajes...</span>
-        <kbd className="hidden sm:inline-block ml-auto pointer-events-none text-[10px] font-mono bg-[#ffffff10] px-1.5 rounded border border-[#ffffff15] text-gray-400">
+        <kbd className="hidden sm:inline-block ml-auto pointer-events-none text-[10px] font-mono bg-[#ffffff10] px-1.5 rounded border border-[#ffffff15] text-slate-500 dark:text-gray-400">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="p-0 border-white/10 bg-[#111] max-w-2xl overflow-hidden shadow-2xl gap-0">
-          <div className="flex items-center px-4 py-3 border-b border-white/5 bg-[#0a0a0a]">
-            <Search className="h-5 w-5 text-gray-400 mr-3" />
+        <DialogContent className="p-0 border-[var(--border-color)] bg-[#111] max-w-2xl overflow-hidden shadow-2xl gap-0">
+          <div className="flex items-center px-4 py-3 border-b border-white/5 bg-[var(--bg-primary)]">
+            <Search className="h-5 w-5 text-slate-500 dark:text-gray-400 mr-3" />
             <Input
-              className="flex-1 bg-transparent border-0 shadow-none text-white focus-visible:ring-0 text-base p-0 placeholder-gray-600 h-auto"
+              className="flex-1 bg-transparent border-0 shadow-none text-slate-900 dark:text-white focus-visible:ring-0 text-base p-0 placeholder-gray-600 h-auto"
               placeholder="Escribe para buscar en todo el workspace..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -89,9 +89,9 @@ export function GlobalSearch() {
                       <div 
                         key={c.id} 
                         onClick={() => navigateTo(`/contacts`)}
-                        className="flex flex-col px-3 py-2 cursor-pointer rounded-md hover:bg-white/5 transition-colors"
+                        className="flex flex-col px-3 py-2 cursor-pointer rounded-md hover:bg-slate-50 dark:bg-white/5 transition-colors"
                       >
-                        <span className="text-sm text-white font-medium">{c.whatsappName || "Desconocido"}</span>
+                        <span className="text-sm text-slate-900 dark:text-white font-medium">{c.whatsappName || "Desconocido"}</span>
                         <span className="text-xs text-gray-500 font-mono">{c.whatsappPhone} {c.email ? `• ${c.email}` : ''}</span>
                       </div>
                     ))}
@@ -112,10 +112,10 @@ export function GlobalSearch() {
                       <div 
                         key={c.id} 
                         onClick={() => navigateTo(`/inbox`)}
-                        className="flex flex-col px-3 py-2 cursor-pointer rounded-md hover:bg-white/5 transition-colors"
+                        className="flex flex-col px-3 py-2 cursor-pointer rounded-md hover:bg-slate-50 dark:bg-white/5 transition-colors"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-white font-medium flex items-center gap-2">
+                          <span className="text-sm text-slate-900 dark:text-white font-medium flex items-center gap-2">
                             <MessageSquare className="h-3.5 w-3.5 text-whatsapp" />
                             {c.contact?.whatsappName || c.contact?.whatsappPhone}
                           </span>
@@ -142,12 +142,12 @@ export function GlobalSearch() {
                       <div 
                         key={m.id} 
                         onClick={() => navigateTo(`/inbox`)}
-                        className="flex flex-col px-3 py-2 cursor-pointer rounded-md hover:bg-white/5 transition-colors"
+                        className="flex flex-col px-3 py-2 cursor-pointer rounded-md hover:bg-slate-50 dark:bg-white/5 transition-colors"
                       >
-                        <span className="text-xs text-gray-400 font-medium mb-1">
+                        <span className="text-xs text-slate-500 dark:text-gray-400 font-medium mb-1">
                           De: {m.conversation?.contact?.whatsappName || m.conversation?.contact?.whatsappPhone}
                         </span>
-                        <p className="text-sm text-white truncate">{m.content}</p>
+                        <p className="text-sm text-slate-900 dark:text-white truncate">{m.content}</p>
                       </div>
                     ))}
                   </div>

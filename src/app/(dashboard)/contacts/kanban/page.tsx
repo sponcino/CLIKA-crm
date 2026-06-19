@@ -170,9 +170,9 @@ export default function KanbanPage() {
   }
 
   const renderContactCard = (contact: any) => (
-    <div className="bg-[#111111] p-3 rounded-md border border-[#ffffff10] shadow-sm mb-2 text-xs hover:border-[#ffffff20] transition-colors">
-      <div className="font-semibold text-white mb-1 truncate">{contact.whatsappName || contact.fullName || "Sin nombre"}</div>
-      <div className="text-gray-400 mb-2 font-mono">{contact.whatsappPhone}</div>
+    <div className="bg-[var(--bg-secondary)] p-3 rounded-md border border-[#ffffff10] shadow-sm mb-2 text-xs hover:border-[#ffffff20] transition-colors">
+      <div className="font-semibold text-slate-900 dark:text-white mb-1 truncate">{contact.whatsappName || contact.fullName || "Sin nombre"}</div>
+      <div className="text-slate-500 dark:text-gray-400 mb-2 font-mono">{contact.whatsappPhone}</div>
       <div className="flex items-center justify-between">
         <span className="text-whatsapp bg-whatsapp/10 px-1.5 py-0.5 rounded text-[10px] font-bold">
           Score: {contact.leadScore}
@@ -184,12 +184,12 @@ export default function KanbanPage() {
     </div>
   );
 
-  if (isLoading) return <div className="p-8 text-center text-gray-400">Cargando Kanban...</div>;
+  if (isLoading) return <div className="p-8 text-center text-slate-500 dark:text-gray-400">Cargando Kanban...</div>;
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] bg-[#0a0a0a] overflow-hidden">
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] bg-[var(--bg-primary)] overflow-hidden">
       <div className="p-6 pb-4 border-b border-[#ffffff10] shrink-0">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Kanban de Contactos</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Kanban de Contactos</h1>
         <p className="text-gray-500 text-sm mt-1">Arrastra los contactos para cambiar su estado en el embudo de ventas.</p>
       </div>
 
@@ -206,7 +206,7 @@ export default function KanbanPage() {
               <div key={column.id} className="w-[280px] shrink-0 flex flex-col bg-[#0f0f0f] border border-[#ffffff08] rounded-xl overflow-hidden">
                 <div className="p-3 border-b border-[#ffffff08] bg-[#141414] font-semibold text-sm text-gray-200 flex justify-between items-center">
                   {column.title}
-                  <span className="bg-[#222222] text-xs text-gray-400 px-2 py-0.5 rounded-full">{items[column.id]?.length || 0}</span>
+                  <span className="bg-[#222222] text-xs text-slate-500 dark:text-gray-400 px-2 py-0.5 rounded-full">{items[column.id]?.length || 0}</span>
                 </div>
                 
                 <div className="flex-1 p-2 overflow-y-auto scrollbar-none">

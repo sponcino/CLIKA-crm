@@ -109,7 +109,7 @@ export default function QuickRepliesSettingsPage() {
         <div className="flex items-center gap-3">
           <MessageSquare className="h-5 w-5 text-whatsapp" />
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">Respuestas Rápidas</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Respuestas Rápidas</h1>
             <p className="text-gray-500 text-xs mt-0.5">
               Crea atajos para mensajes comunes. Escribe "/" en el chat para usarlos.
             </p>
@@ -118,7 +118,7 @@ export default function QuickRepliesSettingsPage() {
 
         <Button
           onClick={handleOpenNew}
-          className="bg-whatsapp hover:bg-whatsappHover text-black font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
+          className="bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90 hover:bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90Hover text-black font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
         >
           <Plus className="h-3.5 w-3.5" />
           Nueva Respuesta
@@ -126,10 +126,10 @@ export default function QuickRepliesSettingsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
         <Table>
-          <TableHeader className="bg-[#0a0a0a]">
-            <TableRow className="hover:bg-[#0a0a0a] border-b border-[#ffffff10]">
+          <TableHeader className="bg-slate-50 dark:bg-[#0a0a0a]">
+            <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-[#ffffff10]">
               <TableHead className="text-gray-500 font-semibold h-10 text-xs w-[30%]">Atajo / Título</TableHead>
               <TableHead className="text-gray-500 font-semibold h-10 text-xs w-[60%]">Contenido</TableHead>
               <TableHead className="text-gray-500 font-semibold h-10 text-xs text-right w-[10%]">Acciones</TableHead>
@@ -158,11 +158,11 @@ export default function QuickRepliesSettingsPage() {
                   className="border-b border-[#ffffff05] hover:bg-[#ffffff04] transition-colors"
                 >
                   <TableCell className="py-3">
-                    <span className="text-sm font-semibold text-whatsapp bg-whatsapp/10 px-2 py-0.5 rounded-md">
+                    <span className="text-sm font-semibold text-whatsapp bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90/10 px-2 py-0.5 rounded-md">
                       /{reply.title}
                     </span>
                   </TableCell>
-                  <TableCell className="py-3 text-gray-400 text-xs truncate max-w-xs">
+                  <TableCell className="py-3 text-slate-500 dark:text-gray-400 text-xs truncate max-w-xs">
                     {reply.content}
                   </TableCell>
                   <TableCell className="py-3 text-right">
@@ -171,7 +171,7 @@ export default function QuickRepliesSettingsPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleOpenEdit(reply)}
-                        className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/5"
+                        className="h-7 w-7 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-white/5"
                       >
                         <Edit2 className="h-3 w-3" />
                       </Button>
@@ -179,7 +179,7 @@ export default function QuickRepliesSettingsPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(reply.id)}
-                        className="h-7 w-7 text-gray-400 hover:text-red-400 hover:bg-red-400/10"
+                        className="h-7 w-7 text-slate-500 dark:text-gray-400 hover:text-red-400 hover:bg-red-400/10"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
@@ -193,43 +193,43 @@ export default function QuickRepliesSettingsPage() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-[#111111] border border-white/10 text-white rounded-md max-w-md">
+        <DialogContent className="bg-white dark:bg-[#111111] border border-[var(--border-color)] text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-white tracking-tight">
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
               {editingId ? "Editar Respuesta" : "Nueva Respuesta"}
             </DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <label className="text-xs text-gray-400 font-medium">Título (Atajo sin /)</label>
+              <label className="text-xs text-slate-500 dark:text-gray-400 font-medium">Título (Atajo sin /)</label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value.replace(/\s+/g, '-').toLowerCase())}
                 placeholder="ejemplo-saludo"
-                className="bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
               />
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-xs text-gray-400 font-medium">Mensaje</label>
+              <label className="text-xs text-slate-500 dark:text-gray-400 font-medium">Mensaje</label>
               <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="¡Hola! ¿En qué podemos ayudarte?"
-                className="bg-[#1a1a1a] border-white/10 text-white text-sm h-24 resize-none focus-visible:ring-whatsapp"
+                className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-24 resize-none focus-visible:ring-whatsapp"
               />
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpen(false)} className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 h-8 text-xs">
+            <Button variant="outline" onClick={() => setIsOpen(false)} className="bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 h-8 text-xs">
               Cancelar
             </Button>
             <Button 
               onClick={handleSave} 
               disabled={saving || !title.trim() || !content.trim()} 
-              className="bg-whatsapp hover:bg-whatsappHover text-black font-semibold h-8 text-xs px-4"
+              className="bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90 hover:bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90Hover text-black font-semibold h-8 text-xs px-4"
             >
               {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
               {saving ? "Guardando..." : "Guardar"}

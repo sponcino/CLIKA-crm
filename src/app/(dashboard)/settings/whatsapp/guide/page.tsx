@@ -76,14 +76,14 @@ export default function WhatsAppGuidePage() {
     <div className="max-w-3xl space-y-8">
       {/* Header */}
       <div>
-        <Link href="/settings/whatsapp" className="text-xs text-gray-500 hover:text-white flex items-center gap-1 w-fit mb-4 transition-colors">
+        <Link href="/settings/whatsapp" className="text-xs text-gray-500 hover:text-slate-900 dark:text-white flex items-center gap-1 w-fit mb-4 transition-colors">
           <ArrowLeft className="h-3 w-3" />
           Volver a WhatsApp
         </Link>
         <div className="flex items-center gap-3">
           <Phone className="h-5 w-5 text-whatsapp" />
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">Guía de Configuración Meta</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Guía de Configuración Meta</h1>
             <p className="text-gray-500 text-xs mt-0.5">
               Sigue estos pasos para conectar la Cloud API oficial de WhatsApp.
             </p>
@@ -92,19 +92,19 @@ export default function WhatsAppGuidePage() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-[#111111] border border-[#ffffff0d] rounded-md p-4">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md p-4">
         <div className="flex items-center justify-between mb-2 text-xs">
-          <span className="font-medium text-gray-300">Progreso de configuración</span>
-          <span className={`font-bold ${isComplete ? "text-whatsapp" : "text-white"}`}>{progress}%</span>
+          <span className="font-medium text-slate-600 dark:text-gray-300">Progreso de configuración</span>
+          <span className={`font-bold ${isComplete ? "text-whatsapp" : "text-slate-900 dark:text-white"}`}>{progress}%</span>
         </div>
-        <div className="h-2 w-full bg-[#1a1a1a] rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-white dark:bg-[#1a1a1a] rounded-full overflow-hidden">
           <div 
-            className="h-full bg-whatsapp transition-all duration-500 ease-out"
+            className="h-full bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90 transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
         {isComplete && (
-          <div className="mt-3 flex items-center gap-1.5 text-xs text-whatsapp font-medium bg-whatsapp/10 border border-whatsapp/20 w-fit px-3 py-1.5 rounded-sm">
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-whatsapp font-medium bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90/10 border border-whatsapp/20 w-fit px-3 py-1.5 rounded-sm">
             <CheckCircle2 className="h-4 w-4" />
             ¡Todos los pasos completados! Ya puedes ir a probar la conexión.
           </div>
@@ -118,7 +118,7 @@ export default function WhatsAppGuidePage() {
           return (
             <div 
               key={step.id} 
-              className={`bg-[#111111] border rounded-md p-5 transition-colors duration-300 ${
+              className={`bg-white dark:bg-[#111111] border rounded-md p-5 transition-colors duration-300 ${
                 isDone ? "border-whatsapp/30" : "border-[#ffffff0d]"
               }`}
             >
@@ -128,14 +128,14 @@ export default function WhatsAppGuidePage() {
                   id={`step-${step.id}`} 
                   checked={!!isDone} 
                   onChange={() => toggleStep(step.id)}
-                  className="mt-1.5 h-4 w-4 rounded border-white/20 bg-[#1a1a1a] text-whatsapp focus:ring-whatsapp focus:ring-offset-[#111111]"
+                  className="mt-1.5 h-4 w-4 rounded border-white/20 bg-white dark:bg-[#1a1a1a] text-whatsapp focus:ring-whatsapp focus:ring-offset-[#111111]"
                 />
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center justify-between">
                     <label 
                       htmlFor={`step-${step.id}`}
                       className={`font-semibold cursor-pointer select-none transition-colors ${
-                        isDone ? "text-whatsapp line-through decoration-whatsapp/50" : "text-white"
+                        isDone ? "text-whatsapp line-through decoration-whatsapp/50" : "text-slate-900 dark:text-white"
                       }`}
                     >
                       {step.title}
@@ -144,21 +144,21 @@ export default function WhatsAppGuidePage() {
                       href={step.docUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-[10px] text-gray-500 hover:text-white flex items-center gap-1 uppercase font-bold tracking-wider"
+                      className="text-[10px] text-gray-500 hover:text-slate-900 dark:text-white flex items-center gap-1 uppercase font-bold tracking-wider"
                     >
                       Docs <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                   
-                  <p className={`text-sm transition-colors ${isDone ? "text-gray-600" : "text-gray-400"}`}>
+                  <p className={`text-sm transition-colors ${isDone ? "text-gray-600" : "text-slate-500 dark:text-gray-400"}`}>
                     {step.description}
                   </p>
 
                   {/* Special hint for Webhook step */}
                   {step.id === "webhook" && !isDone && (
-                    <div className="mt-4 bg-[#0a0a0a] border border-white/5 rounded-md p-3">
+                    <div className="mt-4 bg-slate-50 dark:bg-[#0a0a0a] border border-white/5 rounded-md p-3">
                       <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block mb-1">Tu URL de Webhook</span>
-                      <code className="text-xs text-gray-300 font-mono select-all">
+                      <code className="text-xs text-slate-600 dark:text-gray-300 font-mono select-all">
                         {webhookUrl}
                       </code>
                     </div>

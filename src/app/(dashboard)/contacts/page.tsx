@@ -12,7 +12,7 @@ import { useState } from "react"
 const STATUS_STYLES: Record<string, string> = {
   NEW:                  "bg-whatsapp/10 text-whatsapp border border-whatsapp/20",
   CONTACTED:            "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-  QUALIFIED:            "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20",
+  QUALIFIED:            "bg-green-100 dark:bg-indigo-500/10 text-green-700 dark:text-indigo-400 border border-indigo-500/20",
   INTERESTED:           "bg-purple-500/10 text-purple-400 border border-purple-500/20",
   APPOINTMENT_SCHEDULED:"bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   PROPOSAL_SENT:        "bg-orange-500/10 text-orange-400 border border-orange-500/20",
@@ -52,18 +52,18 @@ export default function ContactsPage() {
   })
 
   return (
-    <div className="p-8 w-full h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased">
+    <div className="p-8 w-full h-full flex flex-col bg-slate-50 dark:bg-[#0a0a0a] text-[var(--text-primary)] font-sans antialiased">
       {/* Top bar */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Contactos</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Contactos</h1>
           <p className="text-xs text-gray-500 mt-0.5">{allContacts.length} contactos en total</p>
         </div>
         <Button
           onClick={handleExport}
           variant="outline"
           size="sm"
-          className="flex items-center gap-2 border-[#ffffff15] bg-transparent text-gray-300 hover:bg-white/5 hover:text-white text-xs h-8 px-3"
+          className="flex items-center gap-2 border-slate-200 dark:border-[#ffffff15] bg-transparent text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 hover:text-slate-900 dark:text-white text-xs h-8 px-3"
         >
           <Download className="h-3.5 w-3.5" />
           Exportar CSV
@@ -86,8 +86,8 @@ export default function ContactsPage() {
       {/* Table */}
       <div className="border border-[var(--border-color)] rounded-md flex-1 overflow-auto bg-[var(--bg-secondary)] scrollbar-thin">
         <Table>
-          <TableHeader className="bg-[var(--bg-primary)]">
-            <TableRow className="hover:bg-[var(--bg-primary)] border-b border-[var(--border-color)]">
+          <TableHeader className="bg-slate-50 dark:bg-[#0a0a0a]">
+            <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-[var(--border-color)]">
               <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Nombre</TableHead>
               <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Teléfono</TableHead>
               <TableHead className="text-[var(--text-secondary)] font-semibold h-10">Estado</TableHead>
@@ -108,10 +108,10 @@ export default function ContactsPage() {
             ) : (
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               filtered.map((contact: any) => (
-                <TableRow key={contact.id} className="border-b border-[var(--border-color)] cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 bg-[var(--bg-secondary)] transition-all">
+                <TableRow key={contact.id} className="border-b border-[var(--border-color)] cursor-pointer hover:bg-black/5 dark:hover:bg-slate-50 dark:bg-white/5 bg-[var(--bg-secondary)] transition-all">
                   <TableCell className="py-3">
                     <div>
-                      <p className="font-semibold text-white">
+                      <p className="font-semibold text-slate-900 dark:text-white">
                         {contact.whatsappName || contact.fullName || "Desconocido"}
                       </p>
                       {contact.email && (
@@ -119,9 +119,9 @@ export default function ContactsPage() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-300 py-3 font-mono text-xs">{contact.whatsappPhone}</TableCell>
+                  <TableCell className="text-slate-600 dark:text-gray-300 py-3 font-mono text-xs">{contact.whatsappPhone}</TableCell>
                   <TableCell className="py-3">
-                    <Badge className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-sm ${STATUS_STYLES[contact.status] ?? "bg-gray-500/10 text-gray-400 border border-gray-500/20"}`}>
+                    <Badge className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-sm ${STATUS_STYLES[contact.status] ?? "bg-slate-100 dark:bg-gray-500/10 text-slate-600 dark:text-gray-400 border border-gray-500/20"}`}>
                       {contact.status}
                     </Badge>
                   </TableCell>
@@ -133,7 +133,7 @@ export default function ContactsPage() {
                           style={{ width: `${Math.min(100, contact.leadScore)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-gray-400">{contact.leadScore}</span>
+                      <span className="text-xs text-slate-500 dark:text-gray-400">{contact.leadScore}</span>
                     </div>
                   </TableCell>
                   <TableCell className="py-3">
@@ -155,7 +155,7 @@ export default function ContactsPage() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-400 py-3 text-xs">
+                  <TableCell className="text-slate-500 dark:text-gray-400 py-3 text-xs">
                     {contact.lastMessageAt ? new Date(contact.lastMessageAt).toLocaleDateString("es-AR") : "—"}
                   </TableCell>
                 </TableRow>

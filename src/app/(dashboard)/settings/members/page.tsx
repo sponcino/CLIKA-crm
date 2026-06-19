@@ -52,7 +52,7 @@ const ROLE_CONFIG: Record<
   },
   VIEWER: {
     label: "Viewer",
-    className: "bg-gray-900 text-gray-400 border-gray-700/40",
+    className: "bg-gray-900 text-slate-500 dark:text-gray-400 border-gray-700/40",
     icon: <Eye className="h-3 w-3" />,
   },
 };
@@ -141,7 +141,7 @@ export default function MembersSettingsPage() {
         <div className="flex items-center gap-3">
           <Users className="h-5 w-5 text-whatsapp" />
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">Miembros del Workspace</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Miembros del Workspace</h1>
             <p className="text-gray-500 text-xs mt-0.5">
               {loading ? "Cargando..." : `${members.length} miembro${members.length !== 1 ? "s" : ""} en este workspace`}
             </p>
@@ -151,7 +151,7 @@ export default function MembersSettingsPage() {
         <Button
           id="btn-invite-member"
           onClick={() => setInviteOpen(true)}
-          className="bg-[#111111] hover:bg-white/5 border border-white/10 text-white font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
+          className="bg-white dark:bg-[#111111] hover:bg-slate-50 dark:bg-white/5 border border-[var(--border-color)] text-slate-900 dark:text-white font-semibold h-8 text-xs px-3 rounded-md flex items-center gap-2"
         >
           <UserPlus className="h-3.5 w-3.5" />
           Invitar miembro
@@ -159,10 +159,10 @@ export default function MembersSettingsPage() {
       </div>
 
       {/* Members Table */}
-      <div className="bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff0d] rounded-md overflow-hidden">
         <Table>
-          <TableHeader className="bg-[#0a0a0a]">
-            <TableRow className="hover:bg-[#0a0a0a] border-b border-[#ffffff10]">
+          <TableHeader className="bg-slate-50 dark:bg-[#0a0a0a]">
+            <TableRow className="hover:bg-slate-50 dark:bg-[#0a0a0a] border-b border-[#ffffff10]">
               <TableHead className="text-gray-500 font-semibold h-10 text-xs">Miembro</TableHead>
               <TableHead className="text-gray-500 font-semibold h-10 text-xs">Email</TableHead>
               <TableHead className="text-gray-500 font-semibold h-10 text-xs">Rol</TableHead>
@@ -203,19 +203,19 @@ export default function MembersSettingsPage() {
                     {/* Name + Avatar */}
                     <TableCell className="py-3">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-7 w-7 border border-white/10 shrink-0">
-                          <AvatarFallback className="bg-[#1a1a1a] text-gray-300 text-[10px] font-bold">
+                        <Avatar className="h-7 w-7 border border-[var(--border-color)] shrink-0">
+                          <AvatarFallback className="bg-white dark:bg-[#1a1a1a] text-slate-600 dark:text-gray-300 text-[10px] font-bold">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm font-medium text-white">
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">
                           {member.user.name ?? "—"}
                         </span>
                       </div>
                     </TableCell>
 
                     {/* Email */}
-                    <TableCell className="py-3 text-gray-400 text-xs font-mono">
+                    <TableCell className="py-3 text-slate-500 dark:text-gray-400 text-xs font-mono">
                       {member.user.email}
                     </TableCell>
 
@@ -245,7 +245,7 @@ export default function MembersSettingsPage() {
       </div>
 
       {/* Role legend */}
-      <div className="bg-[#111111] border border-[#ffffff08] rounded-md p-4">
+      <div className="bg-white dark:bg-[#111111] border border-[#ffffff08] rounded-md p-4">
         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">
           Roles disponibles
         </p>
@@ -270,16 +270,16 @@ export default function MembersSettingsPage() {
       
       {/* Invite Dialog */}
       <Dialog open={inviteOpen} onOpenChange={(open) => !open && handleCloseInvite()}>
-        <DialogContent className="bg-[#111111] border border-white/10 text-white rounded-md max-w-md">
+        <DialogContent className="bg-white dark:bg-[#111111] border border-[var(--border-color)] text-slate-900 dark:text-white rounded-md max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-white tracking-tight">Invitar Miembro</DialogTitle>
+            <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Invitar Miembro</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-2">
             {!tempPassword ? (
                 <>
                 <div className="space-y-1.5">
-                    <Label className="text-xs text-gray-400 font-medium" htmlFor="inviteEmail">
+                    <Label className="text-xs text-slate-500 dark:text-gray-400 font-medium" htmlFor="inviteEmail">
                         Correo Electrónico
                     </Label>
                     <Input
@@ -288,19 +288,19 @@ export default function MembersSettingsPage() {
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
                         placeholder="usuario@empresa.com"
-                        className="bg-[#1a1a1a] border-white/10 text-white text-sm h-9 focus-visible:ring-whatsapp"
+                        className="bg-white dark:bg-[#1a1a1a] border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 focus-visible:ring-whatsapp"
                     />
                 </div>
                 
                 <div className="space-y-1.5">
-                    <Label className="text-xs text-gray-400 font-medium" htmlFor="inviteRole">
+                    <Label className="text-xs text-slate-500 dark:text-gray-400 font-medium" htmlFor="inviteRole">
                         Rol
                     </Label>
                     <select
                         id="inviteRole"
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value)}
-                        className="w-full bg-[#1a1a1a] border border-white/10 text-white text-sm h-9 rounded-md px-3 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none"
+                        className="w-full bg-white dark:bg-[#1a1a1a] border border-[var(--border-color)] text-slate-900 dark:text-white text-sm h-9 rounded-md px-3 focus:ring-1 focus:ring-whatsapp focus:border-whatsapp outline-none"
                     >
                         <option value="ADMIN">Admin</option>
                         <option value="MANAGER">Manager</option>
@@ -310,24 +310,24 @@ export default function MembersSettingsPage() {
                 </div>
                 </>
             ) : (
-                <div className="space-y-3 bg-whatsapp/10 border border-whatsapp/20 p-4 rounded-md">
+                <div className="space-y-3 bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90/10 border border-whatsapp/20 p-4 rounded-md">
                     <p className="text-xs text-whatsapp font-medium text-center">
                         ¡Usuario creado e invitado exitosamente!
                     </p>
-                    <p className="text-xs text-gray-300 text-center">
+                    <p className="text-xs text-slate-600 dark:text-gray-300 text-center">
                         Comparte esta contraseña temporal con el usuario para que pueda iniciar sesión:
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                         <Input 
                            value={tempPassword} 
                            readOnly 
-                           className="bg-[#0a0a0a] border-whatsapp/30 text-white font-mono h-9 focus-visible:ring-0 text-center"
+                           className="bg-slate-50 dark:bg-[#0a0a0a] border-whatsapp/30 text-slate-900 dark:text-white font-mono h-9 focus-visible:ring-0 text-center"
                         />
                         <Button
                             variant="outline"
                             size="icon"
                             onClick={handleCopyPassword}
-                            className="h-9 w-9 bg-[#0a0a0a] border-whatsapp/30 text-whatsapp hover:text-white hover:bg-whatsapp shrink-0 transition-colors"
+                            className="h-9 w-9 bg-slate-50 dark:bg-[#0a0a0a] border-whatsapp/30 text-whatsapp hover:text-slate-900 dark:text-white hover:bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90 shrink-0 transition-colors"
                         >
                             <Copy className="h-4 w-4" />
                         </Button>
@@ -339,13 +339,13 @@ export default function MembersSettingsPage() {
           <DialogFooter className="mt-2">
             {!tempPassword ? (
                 <>
-                <Button variant="outline" onClick={handleCloseInvite} className="bg-transparent border-white/10 text-gray-300 hover:bg-white/5 h-8 text-xs">
+                <Button variant="outline" onClick={handleCloseInvite} className="bg-transparent border-[var(--border-color)] text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:bg-white/5 h-8 text-xs">
                     Cancelar
                 </Button>
                 <Button 
                     onClick={handleInvite} 
                     disabled={inviting || !inviteEmail.trim()} 
-                    className="bg-whatsapp hover:bg-whatsappHover text-black font-semibold h-8 text-xs px-4"
+                    className="bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90 hover:bg-green-500 dark:bg-whatsapp hover:bg-green-600 dark:hover:bg-whatsapp/90Hover text-black font-semibold h-8 text-xs px-4"
                 >
                     {inviting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
                     {inviting ? "Invitando..." : "Invitar"}
